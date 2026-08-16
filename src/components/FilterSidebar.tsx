@@ -18,6 +18,7 @@ export default function FilterSidebar({ products, onFilterChange }: FilterSideba
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMainCats, setSelectedMainCats] = useState<string[]>([]);
   const [selectedSubCats, setSelectedSubCats] = useState<string[]>([]);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // Dynamically calculate available subcategories based on selected main categories
   const availableSubCategories = selectedMainCats.length === 0 
@@ -60,8 +61,19 @@ export default function FilterSidebar({ products, onFilterChange }: FilterSideba
   };
 
   return (
-    <aside className={styles.sidebar}>
-      <h2 className={styles.filterTitle}>Filters</h2>
+    <>
+      <div className={styles.mobileFilterToggle} onClick={() => setIsMobileOpen(true)}>
+        <span>Filter & Sort</span>
+        <span>+</span>
+      </div>
+      
+      {isMobileOpen && <div className={styles.overlay} onClick={() => setIsMobileOpen(false)}></div>}
+
+      <aside className={`${styles.sidebar} ${isMobileOpen ? styles.open : ''}`}>
+        <div className={styles.sidebarHeaderMobile}>
+          <h2 className={styles.filterTitle}>Filters</h2>
+          <button className={styles.closeBtn} onClick={() => setIsMobileOpen(false)}>✕</button>
+        </div>
       
       <div className={styles.filterSection}>
         <h3>Price Range</h3>
@@ -142,5 +154,6 @@ export default function FilterSidebar({ products, onFilterChange }: FilterSideba
         </div>
       )}
     </aside>
+    </>
   );
 }

@@ -106,8 +106,10 @@
   transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.bannerCard:hover .bannerCardImg {
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .bannerCard:hover .bannerCardImg {
+    transform: scale(1.05);
+  }
 }
 
 .bannerOverlay {
@@ -120,8 +122,10 @@
   transition: background 0.3s;
 }
 
-.bannerCard:hover .bannerOverlay {
-  background: rgba(0,0,0,0.4);
+@media (hover: hover) and (pointer: fine) {
+  .bannerCard:hover .bannerOverlay {
+    background: rgba(0,0,0,0.4);
+  }
 }
 
 .bannerText {
@@ -136,9 +140,11 @@
   transition: background 0.3s, color 0.3s;
 }
 
-.bannerCard:hover .bannerText {
-  background: white;
-  color: var(--primary-color);
+@media (hover: hover) and (pointer: fine) {
+  .bannerCard:hover .bannerText {
+    background: white;
+    color: var(--primary-color);
+  }
 }
 
 /* Trending Collection */
@@ -171,8 +177,10 @@
   transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.categoryCard:hover .categoryCardImg {
-  transform: scale(1.1);
+@media (hover: hover) and (pointer: fine) {
+  .categoryCard:hover .categoryCardImg {
+    transform: scale(1.1);
+  }
 }
 
 .categoryOverlay {
@@ -195,8 +203,10 @@
   transition: transform 0.3s ease;
 }
 
-.categoryCard:hover .categoryText {
-  transform: translateY(-10px);
+@media (hover: hover) and (pointer: fine) {
+  .categoryCard:hover .categoryText {
+    transform: translateY(-10px);
+  }
 }
 
 /* Top Picks */
@@ -216,8 +226,10 @@
   background: white;
 }
 
-.productCard:hover {
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+@media (hover: hover) and (pointer: fine) {
+  .productCard:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  }
 }
 
 .cardImgWrapper {
@@ -239,13 +251,15 @@
   z-index: 2;
 }
 
-.productCard:hover .primaryImg {
-  opacity: 0;
-}
+@media (hover: hover) and (pointer: fine) {
+  .productCard:hover .primaryImg {
+    opacity: 0;
+  }
 
-.productCard:hover .secondaryImg {
-  opacity: 1;
-  transform: scale(1.05);
+  .productCard:hover .secondaryImg {
+    opacity: 1;
+    transform: scale(1.05);
+  }
 }
 
 .badge {

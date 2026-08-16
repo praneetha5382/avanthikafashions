@@ -59,8 +59,10 @@
   transition: box-shadow 0.3s;
 }
 
-.card:hover {
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
 }
 
 .imageWrapper {
@@ -99,13 +101,15 @@
   z-index: 2;
 }
 
-.card:hover .primaryImg {
-  opacity: 0;
-}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .primaryImg {
+    opacity: 0;
+  }
 
-.card:hover .secondaryImg {
-  opacity: 1;
-  transform: scale(1.05);
+  .card:hover .secondaryImg {
+    opacity: 1;
+    transform: scale(1.05);
+  }
 }
 
 .cardInfo {
