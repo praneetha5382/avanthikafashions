@@ -3,9 +3,27 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
   const url = req.nextUrl;
-  
-  // Get hostname of request (e.g. admin.avanthikafashions.com, or localhost:3000)
   const hostname = req.headers.get('host') || '';
+
+  // --- Basic Authentication for Admin ---
+  const isAdminRoute = hostname.startsWith('admin.') || url.pathname.startsWith('/admin');
+  
+  if (isAdminRoute) {
+    const basicAuth = req.headers.get('authorization');
+    const expectedUser = process.env.ADMIN_USERNAME || 'admin';
+    const expectedPass = process.env.ADMIN_PASSWORD || 'avanthika2026';
+
+    if (basicAuth) {
+      const authValue = basicAuth.split(' ')[1];
+      const [user, pwd] = atob(authValue).split(':');
+
+      if (!(user === expectedUser && pwd === expectedPass)) {
+        return new NextResponse('Unauthorized', { status: 401, headers: { 'WWW-Authenticate': 'Basic realm="Secure Area"' } });
+      }
+    } else {
+      return new NextResponse('Auth Required', { status: 401, headers: { 'WWW-Authenticate': 'Basic realm="Secure Area"' } });
+    }
+  }
 
   // Check if the current request is for the admin subdomain
   if (hostname.startsWith('admin.')) {
