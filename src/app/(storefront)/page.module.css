@@ -131,18 +131,22 @@
 .bannerText {
   color: white;
   font-family: var(--font-sans);
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: 400;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  border: 2px solid white;
-  padding: 12px 35px;
-  transition: background 0.3s, color 0.3s;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 15px 35px;
+  transition: all 0.4s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .bannerCard:hover .bannerText {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     color: var(--primary-color);
   }
 }
@@ -168,7 +172,7 @@
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  aspect-ratio: 3/4;
+  aspect-ratio: 4/5;
   text-decoration: none;
   display: block;
 }
@@ -186,21 +190,23 @@
 .categoryOverlay {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 40%);
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 30px 20px;
+  padding: 40px 20px;
 }
 
 .categoryText {
   color: white;
   font-family: var(--font-serif);
-  font-size: 2.2rem;
+  font-size: 1.8rem;
+  font-style: italic;
+  font-weight: 400;
   letter-spacing: 0.05em;
   text-align: center;
-  text-shadow: 0 2px 15px rgba(0,0,0,0.4);
-  transition: transform 0.3s ease;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -319,7 +325,7 @@
 
   .heroOverlay {
     /* Gradient from bottom up so text is readable over the image */
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
   }
   
   .heroContent {
@@ -328,17 +334,23 @@
   }
 
   .categoryName {
-    color: #fff; /* White on dark gradient */
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.25em;
+    font-size: 0.75rem;
+    margin-bottom: 10px;
   }
 
   .title {
-    font-size: 3rem;
+    font-size: 2.8rem;
     color: #fff;
+    line-height: 1.1;
+    margin-bottom: 15px;
   }
 
   .subtitle {
-    font-size: 1.1rem;
-    color: #ddd;
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 300;
     margin-bottom: 30px;
   }
   
@@ -351,5 +363,10 @@
 
   .bannerGrid {
     grid-template-columns: 1fr;
+  }
+  
+  .bannerCard {
+    height: auto;
+    aspect-ratio: 4/5; /* Premium portrait ratio for mobile */
   }
 }

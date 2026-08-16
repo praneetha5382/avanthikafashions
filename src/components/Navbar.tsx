@@ -50,16 +50,20 @@ export default function Navbar() {
             onMouseEnter={() => setActiveDropdown('collections')}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button className={styles.link} style={{background:'transparent', border:'none'}}>
-              COLLECTIONS <span className={styles.chevron}>▾</span>
+            <button 
+              className={styles.link} 
+              style={{background:'transparent', border:'none'}}
+              onClick={() => setActiveDropdown(activeDropdown === 'collections' ? null : 'collections')}
+            >
+              COLLECTIONS <span className={`${styles.chevron} ${activeDropdown === 'collections' ? styles.chevronUp : ''}`}>▾</span>
             </button>
-            <div className={`${styles.dropdownMenu} ${activeDropdown === 'collections' ? styles.showDropdown : ''}`} style={{ width: '600px', padding: '20px', display: 'flex', gap: '30px', flexWrap: 'wrap' }}>
+            <div className={`${styles.dropdownMenu} ${activeDropdown === 'collections' ? styles.showDropdown : ''}`}>
               {categories.map((c: any) => (
-                <div key={c.id} style={{ minWidth: '150px' }}>
-                  <Link href={`/collections/${c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} style={{ fontWeight: 'bold', color: 'var(--primary-color)', marginBottom: '10px', display: 'block' }} onClick={() => setMobileMenuOpen(false)}>
+                <div key={c.id} className={styles.dropdownGroup}>
+                  <Link href={`/collections/${c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className={styles.dropdownTitle} onClick={() => setMobileMenuOpen(false)}>
                     {c.name}
                   </Link>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div className={styles.dropdownSubItems}>
                     {c.subcategories?.map((sub: string, idx: number) => (
                       <Link 
                         key={idx} 

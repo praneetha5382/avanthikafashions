@@ -77,12 +77,6 @@
   width: 100%;
 }
 
-.chevron {
-  font-size: 0.7rem;
-  margin-left: 5px;
-  vertical-align: middle;
-}
-
 /* Dynamic Dropdown */
 .dropdownContainer {
   position: relative;
@@ -94,10 +88,11 @@
   top: 100%;
   left: 0;
   background-color: white;
-  min-width: 450px;
+  width: 500px;
   padding: 30px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   border: 1px solid var(--border-color);
+  border-radius: 8px;
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
@@ -106,6 +101,24 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 30px;
+}
+
+.chevron {
+  font-size: 0.7rem;
+  margin-left: 5px;
+  vertical-align: middle;
+  transition: transform 0.3s;
+  display: inline-block;
+}
+
+.chevronUp {
+  transform: rotate(180deg);
+}
+
+.dropdownSubItems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .showDropdown {
@@ -179,14 +192,16 @@
     position: fixed;
     top: 0;
     left: -100%;
-    width: 80vw;
+    width: 85vw; /* Slightly wider */
     height: 100vh;
     background-color: var(--secondary-color);
     flex-direction: column;
+    align-items: flex-start; /* Align text left */
     padding: 80px 40px;
-    transition: left 0.3s ease;
-    z-index: 200;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 2000; /* Ensure on top of everything */
+    box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+    overflow-y: auto;
   }
   
   .navLinks.mobileOpen {
@@ -212,5 +227,45 @@
   
   .iconBtn:first-child {
     display: none; /* Hide 'Search' text on mobile to save space */
+  }
+
+  .dropdownContainer {
+    display: block;
+    width: 100%;
+  }
+
+  .dropdownMenu {
+    position: static;
+    width: 100%;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+    background-color: transparent;
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: all 0.3s ease;
+    margin-top: 0;
+  }
+  
+  .showDropdown {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+    padding: 15px 0 10px 15px; /* Indent the sub-items */
+    margin-top: 10px;
+  }
+
+  .dropdownGroup {
+    width: 100%;
+  }
+
+  .dropdownTitle {
+    font-size: 1rem;
   }
 }
