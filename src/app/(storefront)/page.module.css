@@ -1,0 +1,341 @@
+.page {
+  background-color: var(--secondary-color);
+}
+
+.hero {
+  position: relative;
+  width: 100vw;
+  height: 100vh; /* Full screen to sit under the transparent header */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroImageWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(253,251,247,0.95) 0%, rgba(253,251,247,0.7) 40%, transparent 100%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 10;
+  text-align: left;
+  width: 100%;
+  max-width: 1200px;
+  padding: 100px 40px 0 40px; /* Top padding clears the absolute header */
+}
+
+.categoryName {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  margin-bottom: 20px;
+  color: var(--text-secondary);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 4.5rem;
+  font-weight: 400;
+  margin-bottom: 20px;
+  line-height: 1.1;
+  color: var(--primary-color);
+  max-width: 600px;
+}
+
+.subtitle {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-style: italic;
+  margin-bottom: 50px;
+  color: var(--text-secondary);
+  max-width: 500px;
+}
+
+/* -- NEW HOMEPAGE SECTIONS -- */
+.section {
+  padding: 60px 20px;
+}
+
+.sectionTitle {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: 40px;
+}
+
+/* Quick Links (Cinematic Banners) */
+.bannerGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bannerCard {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 250px;
+  text-decoration: none;
+  display: block;
+}
+
+.bannerCardImg {
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.bannerCard:hover .bannerCardImg {
+  transform: scale(1.05);
+}
+
+.bannerOverlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.bannerCard:hover .bannerOverlay {
+  background: rgba(0,0,0,0.4);
+}
+
+.bannerText {
+  color: white;
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 2px solid white;
+  padding: 12px 35px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.bannerCard:hover .bannerText {
+  background: white;
+  color: var(--primary-color);
+}
+
+/* Trending Collection */
+.trendingSection {
+  background-color: #FAFAFA;
+  padding: 60px 20px;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Trending Collection (Tall Portrait Cards) */
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.categoryCard {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 3/4;
+  text-decoration: none;
+  display: block;
+}
+
+.categoryCardImg {
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.categoryCard:hover .categoryCardImg {
+  transform: scale(1.1);
+}
+
+.categoryOverlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 40%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 30px 20px;
+}
+
+.categoryText {
+  color: white;
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-shadow: 0 2px 15px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease;
+}
+
+.categoryCard:hover .categoryText {
+  transform: translateY(-10px);
+}
+
+/* Top Picks */
+.topPicksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 25px;
+}
+
+.productCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+  background: white;
+}
+
+.productCard:hover {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.cardImgWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+}
+
+.primaryImg {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  z-index: 1;
+}
+
+.secondaryImg {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  z-index: 2;
+}
+
+.productCard:hover .primaryImg {
+  opacity: 0;
+}
+
+.productCard:hover .secondaryImg {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #ff4444;
+  color: white;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 2px;
+  z-index: 2;
+}
+
+.cardInfo {
+  padding: 15px;
+  text-align: center;
+}
+
+.cardTitle {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardPricing {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.strike {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.price {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: calc(100vh - 80px); /* Fill screen minus navbar */
+    align-items: flex-end; /* Push content to bottom */
+    padding-bottom: 40px;
+  }
+
+  .heroOverlay {
+    /* Gradient from bottom up so text is readable over the image */
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+  }
+  
+  .heroContent {
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .categoryName {
+    color: #fff; /* White on dark gradient */
+  }
+
+  .title {
+    font-size: 3rem;
+    color: #fff;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: #ddd;
+    margin-bottom: 30px;
+  }
+  
+  .btn-primary {
+    background-color: var(--secondary-color); /* Cream button */
+    color: var(--primary-color); /* Red text */
+    width: 100%;
+    display: block;
+  }
+
+  .bannerGrid {
+    grid-template-columns: 1fr;
+  }
+}

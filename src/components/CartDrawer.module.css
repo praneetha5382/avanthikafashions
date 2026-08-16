@@ -1,0 +1,141 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.overlayOpen {
+  opacity: 1;
+  visibility: visible;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100vh;
+  background: var(--secondary-color);
+  z-index: 1001;
+  transition: right 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+}
+
+.drawerOpen {
+  right: 0;
+}
+
+.header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h2 {
+  font-size: 1.2rem;
+  font-family: var(--font-serif);
+}
+
+.closeBtn {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.item {
+  display: flex;
+  gap: 15px;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 70px;
+  height: 90px;
+}
+
+.image {
+  object-fit: cover;
+}
+
+.details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.size {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 5px;
+}
+
+.qtyControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  border: 1px solid var(--border-color);
+  width: fit-content;
+  border-radius: 4px;
+}
+
+.qtyControls button {
+  padding: 5px 10px;
+  color: var(--text-secondary);
+}
+
+.removeBtn {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-decoration: underline;
+}
+
+.footer {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-light);
+}
+
+.subtotal {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.checkoutBtn {
+  width: 100%;
+}
+
+/* Mobile full width drawer */
+@media (max-width: 480px) {
+  .drawer {
+    width: 100vw;
+    right: -100vw;
+  }
+}

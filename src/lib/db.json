@@ -1,0 +1,382 @@
+{
+  "customers": [
+    {
+      "id": "cust1",
+      "name": "Arjun Reddy",
+      "mobile": "+91 9876543210",
+      "verified": true,
+      "joined": "2023-10-01"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat_banarasi",
+      "name": "Banarasi",
+      "subcategories": [
+        "Banarasi Sarees",
+        "Banarasi Kathan Silk",
+        "Banarasi Mashru",
+        "Banarasi Tissue Silk",
+        "Banarasi Georgette",
+        "Banarasi Organza",
+        "Banarasi Tussar"
+      ],
+      "isVisible": true
+    },
+    {
+      "id": "cat_kanchipuram",
+      "name": "Kanchipuram",
+      "subcategories": [
+        "Kanchipuram Silk",
+        "Kanchipuram Bridal",
+        "Kanchipuram Tissue",
+        "Kanchipuram Cotton",
+        "Semi Kanchipuram"
+      ]
+    },
+    {
+      "id": "cat_silk",
+      "name": "Silk",
+      "subcategories": [
+        "Soft Silk",
+        "Mysore Silk",
+        "Tussar Silk",
+        "Bhagalpur Silk",
+        "Raw Silk",
+        "Uppada Silk",
+        "Dharmavaram Silk",
+        "Chanderi Silk",
+        "Maheshwari Silk"
+      ]
+    },
+    {
+      "id": "cat_cotton",
+      "name": "Cotton",
+      "subcategories": [
+        "Mangalagiri Cotton",
+        "Gadwal Cotton",
+        "Pochampally Cotton",
+        "Chettinad Cotton",
+        "Venkatagiri Cotton",
+        "Narayanpet Cotton",
+        "Linen Cotton",
+        "Bengal Cotton"
+      ]
+    },
+    {
+      "id": "cat_fancy",
+      "name": "Fancy",
+      "subcategories": [
+        "Georgette",
+        "Chiffon",
+        "Crepe",
+        "Organza",
+        "Net Sarees",
+        "Modal Silk",
+        "Satin Silk"
+      ]
+    },
+    {
+      "id": "cat_ikat_patola",
+      "name": "Ikat & Patola",
+      "subcategories": [
+        "Pochampally Ikat",
+        "Patan Patola",
+        "Rajkot Patola",
+        "Sambalpuri Ikat"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "s1",
+      "sku": "AVN-SIG-001",
+      "slug": "the-royal-banarasi-heritage-saree",
+      "name": "The Royal Banarasi Heritage Saree",
+      "originalPrice": 15500,
+      "price": 8500,
+      "discount": "45% OFF",
+      "images": [
+        "/saree-hero.jpg"
+      ],
+      "description": "An absolute masterpiece. Handwoven over 120 days, this pure silk Banarasi saree is the epitome of South Indian royal heritage.",
+      "colors": [
+        "Ruby Red"
+      ],
+      "isTrending": true,
+      "isNewArrival": true,
+      "info": [
+        {
+          "title": "Fabric",
+          "content": "100% Pure Handloom Silk"
+        },
+        {
+          "title": "Weave Type",
+          "content": "Traditional Banarasi Zari"
+        },
+        {
+          "title": "Product Care",
+          "content": "Professional Dry Clean Only. Store in a breathable cotton bag."
+        }
+      ],
+      "mainCategory": "Banarasi",
+      "subCategory": "Banarasi Sarees"
+    },
+    {
+      "id": "s2",
+      "sku": "AVN-KCP-102",
+      "slug": "kanchipuram-bridal-silk",
+      "name": "Kanchipuram Bridal Silk Saree",
+      "originalPrice": 22000,
+      "price": 14500,
+      "discount": "34% OFF",
+      "images": [
+        "https://images.unsplash.com/photo-1610189014605-e366bc5bc9fb?q=80&w=800&auto=format&fit=crop"
+      ],
+      "description": "The quintessential Kanchi Pattu, featuring thick pure gold zari borders and heavy pallu, perfect for wedding ceremonies.",
+      "colors": [
+        "Emerald Green",
+        "Gold"
+      ],
+      "isTrending": true,
+      "isNewArrival": false,
+      "info": [
+        {
+          "title": "Fabric",
+          "content": "Pure Kanchipuram Silk with Silk Mark"
+        },
+        {
+          "title": "Product Care",
+          "content": "Dry clean only."
+        }
+      ],
+      "mainCategory": "Silk",
+      "subCategory": "Art Silk"
+    },
+    {
+      "id": "s3",
+      "sku": "AVN-ORG-305",
+      "slug": "floral-organza-tissue",
+      "name": "Floral Organza Tissue Saree",
+      "originalPrice": 6500,
+      "price": 3500,
+      "discount": "46% OFF",
+      "images": [
+        "https://images.unsplash.com/photo-1583391733958-d25e07fac662?q=80&w=800&auto=format&fit=crop"
+      ],
+      "description": "Lightweight and ethereal. This organza saree features delicate floral embroidery, making it an elegant choice for evening parties.",
+      "colors": [
+        "Pastel Pink"
+      ],
+      "isTrending": false,
+      "isNewArrival": true,
+      "info": [
+        {
+          "title": "Fabric",
+          "content": "Premium Organza Tissue"
+        },
+        {
+          "title": "Product Care",
+          "content": "Gentle hand wash or dry clean."
+        }
+      ],
+      "mainCategory": "Silk",
+      "subCategory": "Art Silk"
+    },
+    {
+      "id": "s4",
+      "sku": "AVN-CTN-401",
+      "slug": "mangalgiri-cotton-daily",
+      "name": "Mangalgiri Pure Cotton Saree",
+      "originalPrice": 2500,
+      "price": 1299,
+      "discount": "48% OFF",
+      "images": [
+        "https://images.unsplash.com/photo-1605763240000-7e93b172d754?q=80&w=800&auto=format&fit=crop"
+      ],
+      "description": "Breathable, crisp, and perfect for office wear. This Mangalgiri cotton saree comes with a classic Nizam border.",
+      "colors": [
+        "Indigo Blue"
+      ],
+      "isTrending": false,
+      "isNewArrival": true,
+      "info": [
+        {
+          "title": "Fabric",
+          "content": "100% Pure Cotton"
+        },
+        {
+          "title": "Product Care",
+          "content": "Machine wash cold. Starch recommended."
+        }
+      ],
+      "mainCategory": "Cotton",
+      "subCategory": "Mangalagiri Cotton"
+    },
+    {
+      "id": "s5",
+      "sku": "AVN-FNC-509",
+      "slug": "georgette-designer-party-wear",
+      "name": "Georgette Designer Party Wear",
+      "originalPrice": 8000,
+      "price": 4999,
+      "discount": "37% OFF",
+      "images": [
+        "https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=800&auto=format&fit=crop"
+      ],
+      "description": "Drape yourself in glamour with this flowy georgette saree, embellished with sequin borders and a designer blouse piece.",
+      "colors": [
+        "Midnight Black"
+      ],
+      "isTrending": true,
+      "isNewArrival": true,
+      "info": [
+        {
+          "title": "Fabric",
+          "content": "Viscose Georgette"
+        },
+        {
+          "title": "Product Care",
+          "content": "Dry clean only."
+        }
+      ],
+      "mainCategory": "Fancy",
+      "subCategory": "Georgette"
+    },
+    {
+      "id": "s6",
+      "sku": "AVN-IKT-602",
+      "slug": "pochampally-ikat-silk",
+      "name": "Pochampally Ikat Silk Saree",
+      "originalPrice": 12000,
+      "price": 8900,
+      "discount": "25% OFF",
+      "images": [
+        "https://images.unsplash.com/photo-1615886753866-79396af44305?q=80&w=800&auto=format&fit=crop"
+      ],
+      "description": "Authentic tie-and-dye Ikat silk from Pochampally. Known for its geometric patterns and vibrant color combinations.",
+      "colors": [
+        "Mustard Yellow",
+        "Crimson"
+      ],
+      "isTrending": true,
+      "isNewArrival": false,
+      "info": [
+        {
+          "title": "Fabric",
+          "content": "Pure Silk"
+        },
+        {
+          "title": "Product Care",
+          "content": "Dry clean only."
+        }
+      ],
+      "mainCategory": "Silk",
+      "subCategory": "Art Silk"
+    },
+    {
+      "name": "Chingari Dongari",
+      "originalPrice": 2000,
+      "price": 1499,
+      "isTrending": false,
+      "isNewArrival": true,
+      "images": [],
+      "colors": [],
+      "description": "it is very good product of boom boom shakalaka",
+      "info": [],
+      "discount": "25% OFF",
+      "id": "s1786896122198",
+      "sku": "AVN-3673",
+      "slug": "chingari-dongari",
+      "mainCategory": "Banarasi",
+      "subCategory": "Banarasi Sarees"
+    },
+    {
+      "name": "silakemo sikakulam silkuuu",
+      "originalPrice": 2500,
+      "price": 1499,
+      "mainCategory": "Silk",
+      "subCategory": "Crepe Silk",
+      "isTrending": false,
+      "isNewArrival": true,
+      "description": "silk amma silkuuuuu best best silkuuu",
+      "info": [
+        {
+          "title": "Fabric Details",
+          "content": "detailed expectation bokka"
+        }
+      ],
+      "variants": [
+        {
+          "color": "rusk red",
+          "images": [
+            "/uploads/1786904332405-chinnu-image.jpg",
+            "/uploads/1786904332405-chinnu-image.jpg"
+          ]
+        },
+        {
+          "color": "blue jam",
+          "images": [
+            "/uploads/1786904435411-ChatGPT-Image-May-13,-2026,-11_16_05-PM.png",
+            "/uploads/1786904435411-ChatGPT-Image-May-13,-2026,-11_16_05-PM.png"
+          ]
+        }
+      ],
+      "discount": "40% OFF",
+      "id": "s1786904437176",
+      "sku": "AVN-7346",
+      "slug": "silakemo-sikakulam-silkuuu"
+    },
+    {
+      "name": "Royal Deep Blue Dikkum Dikkum",
+      "originalPrice": 5000,
+      "price": 3499,
+      "mainCategory": "Kanchipuram",
+      "subCategory": "Kanchipuram Bridal",
+      "isTrending": false,
+      "isNewArrival": true,
+      "description": "It is very good product try once you wont try again i promise",
+      "info": [
+        {
+          "title": "Product Care",
+          "content": "Bleaching powder nirma"
+        },
+        {
+          "title": "Shipping & Delivery",
+          "content": "i wont dispatch what you do "
+        },
+        {
+          "title": "Return Policies",
+          "content": "7-day easy returns if the product is defective or incorrect."
+        }
+      ],
+      "variants": [
+        {
+          "color": "Pachaka Koka",
+          "sku": "SKU-787707",
+          "images": [
+            "/uploads/1786907307576-manju.jpg",
+            "/uploads/1786907314208-rajesh.jpg"
+          ]
+        },
+        {
+          "color": "Rich Red",
+          "sku": "SKU-736469",
+          "images": [
+            "/uploads/1786907341662-chinnu-image.jpg",
+            "/uploads/1786907351202-ChatGPT-Image-May-13,-2026,-11_16_10-PM.png"
+          ]
+        }
+      ],
+      "discount": "30% OFF",
+      "id": "s1786907375383",
+      "slug": "royal-deep-blue-dikkum-dikkum"
+    }
+  ],
+  "siteSettings": {
+    "showHero": true,
+    "showQuickLinks": true,
+    "showTrending": true,
+    "showTopPicks": true
+  }
+}
