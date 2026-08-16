@@ -5,8 +5,10 @@ import styles from './page.module.css';
 import NextImage from 'next/image';
 
 export default function AdminDashboard() {
-  const [data, setData] = useState({ categories: [], products: [], menus: [], customers: [] });
+  const [data, setData] = useState<any>({ categories: [], products: [], menus: [], customers: [], siteSettings: { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true } });
   const [activeTab, setActiveTab] = useState('inventory'); // inventory, categories, navigation, customers
+  const [menuItems, setMenuItems] = useState<any[]>([{ name: '', href: '' }]);
+  const [menuTitle, setMenuTitle] = useState('');
   
   // --- Inventory State ---
   const [formData, setFormData] = useState({

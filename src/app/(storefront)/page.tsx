@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Home() {
-  const [data, setData] = useState({ categories: [], products: [], siteSettings: { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true } });
+  const [data, setData] = useState<any>({ categories: [], products: [], siteSettings: { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true } });
 
   useEffect(() => {
     fetch('/api/products').then(res => res.json()).then(res => {
