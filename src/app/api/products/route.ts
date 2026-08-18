@@ -21,10 +21,16 @@ export async function GET() {
     const siteSettings = settings?.find((s: any) => s.key === 'siteSettings')?.value || {
       showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true
     };
+    
+    const hiddenProducts = settings?.find((s: any) => s.key === 'hiddenProducts')?.value || [];
+    const productsWithVisibility = (products || []).map((p: any) => ({
+      ...p,
+      isVisible: !hiddenProducts.includes(p.id)
+    }));
 
     return NextResponse.json({
       categories: categories || [],
-      products: products || [],
+      products: productsWithVisibility,
       settings: settings || [],
       customers: customers || [],
       siteSettings
@@ -93,7 +99,14 @@ export async function POST(request: Request) {
 
     // Toggle Product Visibility
     if (payload.action === 'toggleProductVisibility') {
-      const { error } = await supabase.from('products').update({ isVisible: payload.isVisible }).eq('id', payload.id);
+      const { data: settings } = await supabase.from('settings').select('*').eq('key', 'hiddenProducts').single();
+      let hidden = settings?.value || [];
+      if (payload.isVisible === false) {
+        if (!hidden.includes(payload.id)) hidden.push(payload.id);
+      } else {
+        hidden = hidden.filter((id: string) => id !== payload.id);
+      }
+      const { error } = await supabase.from('settings').upsert({ key: 'hiddenProducts', value: hidden });
       if (error) throw error;
       return NextResponse.json({ success: true });
     }

@@ -361,7 +361,10 @@ export default function AdminDashboard() {
                 <p>No products yet.</p>
               ) : (
                 <div style={{overflowX: 'auto'}}>
-                  <table className={styles.table}>
+                  {Array.from(new Set(data.products.map((p: any) => p.mainCategory))).map((categoryName: any) => (
+                    <div key={categoryName} style={{ marginBottom: '30px' }}>
+                      <h3 style={{ padding: '10px', background: '#f0f0f0', borderLeft: '4px solid var(--primary-color)', margin: '0 0 10px 0' }}>{categoryName}</h3>
+                      <table className={styles.table}>
                     <thead>
                       <tr>
                         <th>Image</th>
@@ -373,7 +376,7 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.products.map((p: any) => (
+                      {data.products.filter((p: any) => p.mainCategory === categoryName).map((p: any) => (
                         <tr key={p.id}>
                           <td>
                             <img src={p.variants[0]?.images[0] || '/placeholder.jpg'} alt={p.name} style={{width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px'}} />
@@ -421,6 +424,8 @@ export default function AdminDashboard() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
+                ))}
                 </div>
               )}
             </div>

@@ -369,4 +369,14 @@
     height: auto;
     aspect-ratio: 9/16; /* Premium portrait ratio for mobile */
   }
+
+  .categoryGrid,
+  .topPicksGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .categoryText {
+    font-size: 1.2rem;
+  }
 }

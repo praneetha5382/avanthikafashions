@@ -163,12 +163,30 @@
 }
 
 .iconBtn {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--text-primary);
-  font-weight: 500;
-  transition: color 0.3s;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  letter-spacing: 1px;
+  color: var(--text-color);
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background: var(--primary-color);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
 }
 
 /* Mobile Layout */
