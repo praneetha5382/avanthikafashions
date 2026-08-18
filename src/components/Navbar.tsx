@@ -114,7 +114,12 @@ export default function Navbar() {
             </button>
             {activeDropdown === 'shop' && (
               <div className={styles.dropdownMenu}>
-                {categories.map((c: any) => (
+                {(categories.length > 0 ? categories : [
+                  { id: '1', name: 'Sarees' },
+                  { id: '2', name: 'Lehengas' },
+                  { id: '3', name: 'Kurti Sets' },
+                  { id: '4', name: 'Indo Western' }
+                ]).map((c: any) => (
                   <Link key={c.id} href={`/collections/${c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className={styles.dropdownItem} onClick={() => setMobileMenuOpen(false)}>
                     {c.name}
                   </Link>

@@ -122,10 +122,8 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
+  opacity: 1;
+  visibility: visible;
   z-index: 100;
   display: grid;
   grid-template-columns: repeat(2, 1fr);

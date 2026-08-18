@@ -50,7 +50,16 @@ export default function ProductGallery({ images }: { images: string[] }) {
         )}
 
         {/* Main Image (Desktop) & Swipeable Carousel (Mobile) */}
-        <div className={styles.carousel}>
+        <div 
+          className={styles.carousel}
+          onScroll={(e) => {
+            const target = e.currentTarget;
+            const scrollPosition = target.scrollLeft;
+            const slideWidth = target.clientWidth;
+            const newIndex = Math.round(scrollPosition / slideWidth);
+            if (newIndex !== activeIndex) setActiveIndex(newIndex);
+          }}
+        >
           <div 
             className={styles.carouselTrack}
             style={{ transform: `translateX(-${activeIndex * 100}%)` }}
@@ -91,15 +100,38 @@ export default function ProductGallery({ images }: { images: string[] }) {
       {isLightboxOpen && (
         <div className={styles.lightboxOverlay} onClick={() => setIsLightboxOpen(false)}>
           <button className={styles.closeButton} onClick={() => setIsLightboxOpen(false)}>×</button>
-          <div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
-             <NextImage 
-              src={currentImage} 
-              alt="Fullscreen Product View" 
-              fill 
-              className={styles.lightboxImage} 
-              unoptimized 
-            />
+          <div 
+            className={`${styles.lightboxContent} ${styles.lightboxScroll}`} 
+            onClick={(e) => e.stopPropagation()}
+            onScroll={(e) => {
+              const target = e.currentTarget;
+              const scrollPosition = target.scrollLeft;
+              const slideWidth = target.clientWidth;
+              const newIndex = Math.round(scrollPosition / slideWidth);
+              if (newIndex !== activeIndex) setActiveIndex(newIndex);
+            }}
+          >
+            {displayImages.map((src, idx) => (
+               <div key={idx} className={styles.lightboxSlide}>
+                 <NextImage 
+                  src={src} 
+                  alt="Fullscreen Product View" 
+                  fill 
+                  className={styles.lightboxImage} 
+                  unoptimized 
+                />
+               </div>
+            ))}
           </div>
+          
+          {/* Lightbox Dots */}
+          {displayImages.length > 1 && (
+            <div className={styles.lightboxDots}>
+              {displayImages.map((_, idx) => (
+                <div key={idx} className={`${styles.dot} ${idx === activeIndex ? styles.active : ''}`} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </>
