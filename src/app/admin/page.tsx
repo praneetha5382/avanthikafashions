@@ -4,11 +4,14 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import NextImage from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 
 export default function AdminDashboard() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [data, setData] = useState<any>({ categories: [], products: [], menus: [], customers: [], orders: [], siteSettings: { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true } });
-  const [activeTab, setActiveTab] = useState('orders'); // orders, inventory, categories, storefront, customers
+  const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, all-orders, orders, inventory, categories, storefront, customers
+  const [dashboardDateFilter, setDashboardDateFilter] = useState('This Month');
+  const [allOrdersDateFilter, setAllOrdersDateFilter] = useState('All Time');
   const [menuItems, setMenuItems] = useState<any[]>([{ name: '', href: '' }]);
   const [menuTitle, setMenuTitle] = useState('');
   // --- Inventory State ---
@@ -35,7 +38,7 @@ export default function AdminDashboard() {
   const [targetMainCategory, setTargetMainCategory] = useState('');
 
   // --- Order Filter State ---
-  const [orderFilterStatus, setOrderFilterStatus] = useState('New Orders');
+  const [orderFilterStatus, setOrderFilterStatus] = useState('Pending Orders');
   const [quickScanInput, setQuickScanInput] = useState('');
   const [quickScanResult, setQuickScanResult] = useState<any | null>(null);
   const [trackingModalOrder, setTrackingModalOrder] = useState<any | null>(null);
@@ -461,7 +464,9 @@ export default function AdminDashboard() {
           />
         </div>
         <nav className={styles.navLinks}>
-          <button className={activeTab === 'orders' ? styles.active : ''} onClick={() => {setActiveTab('orders'); setIsMobileSidebarOpen(false);}}>🚚 Orders & Dispatch</button>
+          <button className={activeTab === 'dashboard' ? styles.active : ''} onClick={() => {setActiveTab('dashboard'); setIsMobileSidebarOpen(false);}}>📊 Main Dashboard</button>
+          <button className={activeTab === 'orders' ? styles.active : ''} onClick={() => {setActiveTab('orders'); setIsMobileSidebarOpen(false);}}>🚚 Dispatch Pipeline</button>
+          <button className={activeTab === 'all-orders' ? styles.active : ''} onClick={() => {setActiveTab('all-orders'); setIsMobileSidebarOpen(false);}}>📋 All Orders</button>
           <button className={activeTab === 'inventory' ? styles.active : ''} onClick={() => {setActiveTab('inventory'); setIsMobileSidebarOpen(false);}}>📦 Manage Inventory</button>
           <button className={activeTab === 'add-product' ? styles.active : ''} onClick={() => {
             setEditingProductId(null);
@@ -486,8 +491,242 @@ export default function AdminDashboard() {
         </nav>
       </aside>
 
-      {/* Main Content Area */}
       <main className={styles.mainContent}>
+
+        {activeTab === 'dashboard' && (
+          <div className={styles.tabContent}>
+            <header className={styles.tabHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h1>Main Analytics Dashboard</h1>
+                <p>Track your sales, revenue, and product performance.</p>
+              </div>
+              <select 
+                value={dashboardDateFilter} 
+                onChange={(e) => setDashboardDateFilter(e.target.value)}
+                className={styles.input}
+                style={{ width: '200px' }}
+              >
+                <option value="Today">Today</option>
+                <option value="This Week">This Week</option>
+                <option value="This Month">This Month</option>
+                <option value="This Year">This Year</option>
+                <option value="All Time">All Time</option>
+              </select>
+            </header>
+            
+            {/* Compute Metrics */}
+            {(() => {
+              const now = new Date();
+              let filteredOrders = data.orders.filter((o: any) => o.status !== 'Cancelled');
+              if (dashboardDateFilter === 'Today') {
+                filteredOrders = filteredOrders.filter((o: any) => new Date(o.created_at).toDateString() === now.toDateString());
+              } else if (dashboardDateFilter === 'This Week') {
+                const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+                filteredOrders = filteredOrders.filter((o: any) => new Date(o.created_at) >= startOfWeek);
+              } else if (dashboardDateFilter === 'This Month') {
+                filteredOrders = filteredOrders.filter((o: any) => {
+                  const d = new Date(o.created_at);
+                  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                });
+              } else if (dashboardDateFilter === 'This Year') {
+                filteredOrders = filteredOrders.filter((o: any) => new Date(o.created_at).getFullYear() === now.getFullYear());
+              }
+
+              const totalRevenue = filteredOrders.reduce((sum: number, o: any) => sum + (o.total || 0), 0);
+              const totalOrders = filteredOrders.length;
+              const pendingOrders = filteredOrders.filter((o: any) => ['Pending', 'New', 'Pending Payment'].includes(o.status)).length;
+              const avgOrderValue = totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : 0;
+
+              // Product Sales Calc
+              const productSales: any = {};
+              filteredOrders.forEach((o: any) => {
+                o.items?.forEach((item: any) => {
+                  if (!productSales[item.name]) productSales[item.name] = { name: item.name, quantity: 0, revenue: 0 };
+                  productSales[item.name].quantity += item.quantity;
+                  productSales[item.name].revenue += item.price * item.quantity;
+                });
+              });
+              const topProducts = Object.values(productSales).sort((a: any, b: any) => b.quantity - a.quantity).slice(0, 5);
+
+              // Chart Data Prep
+              const chartDataObj: any = {};
+              filteredOrders.forEach((o: any) => {
+                 let key = '';
+                 const d = new Date(o.created_at);
+                 if (dashboardDateFilter === 'This Year' || dashboardDateFilter === 'All Time') {
+                    key = d.toLocaleString('default', { month: 'short', year: '2-digit' });
+                 } else {
+                    key = d.toLocaleDateString('default', { month: 'short', day: 'numeric' });
+                 }
+                 if (!chartDataObj[key]) chartDataObj[key] = { name: key, Revenue: 0, Orders: 0 };
+                 chartDataObj[key].Revenue += (o.total || 0);
+                 chartDataObj[key].Orders += 1;
+              });
+              const chartData = Object.values(chartDataObj);
+
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                  {/* Top KPIs */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                    <div style={{ background: 'white', padding: '25px', borderRadius: '12px', border: '1px solid #eaeaea', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                      <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9rem', fontWeight: 'bold', textTransform: 'uppercase' }}>Total Revenue</p>
+                      <h2 style={{ margin: 0, fontSize: '2.5rem', color: '#111' }}>₹{totalRevenue.toLocaleString()}</h2>
+                    </div>
+                    <div style={{ background: 'white', padding: '25px', borderRadius: '12px', border: '1px solid #eaeaea', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                      <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9rem', fontWeight: 'bold', textTransform: 'uppercase' }}>Orders Sold</p>
+                      <h2 style={{ margin: 0, fontSize: '2.5rem', color: '#111' }}>{totalOrders}</h2>
+                    </div>
+                    <div style={{ background: 'white', padding: '25px', borderRadius: '12px', border: '1px solid #eaeaea', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                      <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9rem', fontWeight: 'bold', textTransform: 'uppercase' }}>Avg Order Value</p>
+                      <h2 style={{ margin: 0, fontSize: '2.5rem', color: '#111' }}>₹{avgOrderValue}</h2>
+                    </div>
+                    <div style={{ background: 'white', padding: '25px', borderRadius: '12px', border: '1px solid #eaeaea', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                      <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9rem', fontWeight: 'bold', textTransform: 'uppercase' }}>Pending To Pack</p>
+                      <h2 style={{ margin: 0, fontSize: '2.5rem', color: '#d97706' }}>{pendingOrders}</h2>
+                    </div>
+                  </div>
+
+                  {/* Charts */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
+                    <div style={{ background: 'white', padding: '25px', borderRadius: '12px', border: '1px solid #eaeaea' }}>
+                       <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Revenue & Order Trends</h3>
+                       <div style={{ width: '100%', height: '300px' }}>
+                         <ResponsiveContainer width="100%" height="100%">
+                           <LineChart data={chartData}>
+                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                             <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                             <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                             <RechartsTooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
+                             <Legend />
+                             <Line yAxisId="left" type="monotone" dataKey="Revenue" stroke="var(--primary-color)" strokeWidth={3} dot={{r: 4, fill: 'var(--primary-color)'}} activeDot={{r: 6}} />
+                             <Line yAxisId="right" type="monotone" dataKey="Orders" stroke="#3b82f6" strokeWidth={3} dot={{r: 4, fill: '#3b82f6'}} />
+                           </LineChart>
+                         </ResponsiveContainer>
+                       </div>
+                    </div>
+
+                    <div style={{ background: 'white', padding: '25px', borderRadius: '12px', border: '1px solid #eaeaea' }}>
+                       <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Top Selling Products</h3>
+                       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                         {topProducts.map((p: any, i: number) => (
+                           <li key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #f0f0f0' }}>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
+                               <span style={{ fontWeight: 'bold', color: '#888', width: '20px' }}>#{i+1}</span>
+                               <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{p.name}</span>
+                             </div>
+                             <div style={{ textAlign: 'right' }}>
+                               <div style={{ fontWeight: 'bold' }}>{p.quantity} sold</div>
+                               <div style={{ fontSize: '0.8rem', color: 'var(--primary-color)' }}>₹{p.revenue.toLocaleString()}</div>
+                             </div>
+                           </li>
+                         ))}
+                         {topProducts.length === 0 && <li style={{ color: '#888', textAlign: 'center', padding: '20px 0' }}>No sales data available.</li>}
+                       </ul>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
+        {activeTab === 'all-orders' && (
+          <div className={styles.tabContent}>
+            <header className={styles.tabHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h1>All Orders Database</h1>
+                <p>A comprehensive view of every order placed in your store.</p>
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <select 
+                  value={allOrdersDateFilter} 
+                  onChange={(e) => setAllOrdersDateFilter(e.target.value)}
+                  className={styles.input}
+                  style={{ width: '150px' }}
+                >
+                  <option value="All Time">All Time</option>
+                  <option value="This Year">This Year</option>
+                  <option value="This Month">This Month</option>
+                  <option value="Today">Today</option>
+                </select>
+              </div>
+            </header>
+
+            <div className={styles.card}>
+              <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Order Info</th>
+                      <th>Customer</th>
+                      <th>Items & SKUs</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      const now = new Date();
+                      let filtered = data.orders;
+                      if (allOrdersDateFilter === 'Today') {
+                        filtered = filtered.filter((o: any) => new Date(o.created_at).toDateString() === now.toDateString());
+                      } else if (allOrdersDateFilter === 'This Month') {
+                        filtered = filtered.filter((o: any) => {
+                          const d = new Date(o.created_at);
+                          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                        });
+                      } else if (allOrdersDateFilter === 'This Year') {
+                        filtered = filtered.filter((o: any) => new Date(o.created_at).getFullYear() === now.getFullYear());
+                      }
+
+                      if (filtered.length === 0) {
+                         return <tr><td colSpan={5} style={{textAlign: 'center', padding: '20px'}}>No orders found for {allOrdersDateFilter}.</td></tr>;
+                      }
+
+                      return filtered.map((order: any) => (
+                        <tr key={order.id}>
+                          <td style={{verticalAlign: 'top'}}>
+                            <strong>{order.id}</strong><br/>
+                            <span style={{fontSize: '0.85rem', color: '#666'}}>{new Date(order.created_at).toLocaleString()}</span>
+                          </td>
+                          <td style={{verticalAlign: 'top'}}>
+                            <strong>{order.customer_name}</strong><br/>
+                            <span style={{fontSize: '0.85rem', color: '#666'}}>{order.customer_phone}</span><br/>
+                            <span style={{fontSize: '0.85rem', color: '#666'}}>{order.shipping_address?.city}, {order.shipping_address?.state}</span>
+                          </td>
+                          <td style={{verticalAlign: 'top'}}>
+                            <ul style={{margin: 0, paddingLeft: '15px', fontSize: '0.85rem'}}>
+                              {order.items.map((item: any, idx: number) => (
+                                <li key={idx}>
+                                  {item.quantity}x {item.name} <br/>
+                                  <span style={{color: '#888'}}>SKU: {item.sku || item.id}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </td>
+                          <td style={{verticalAlign: 'top'}}>
+                            <strong>₹{order.total}</strong><br/>
+                            <span style={{fontSize: '0.75rem', color: '#888', textTransform: 'uppercase'}}>{order.payment_method}</span>
+                          </td>
+                          <td style={{verticalAlign: 'top'}}>
+                             <span style={{ 
+                                display: 'inline-block', padding: '5px 10px', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold',
+                                background: order.status === 'Delivered' ? '#d1fae5' : order.status === 'Cancelled' ? '#fee2e2' : order.status === 'Shipped' ? '#dbeafe' : order.status === 'Packed' ? '#fef3c7' : '#f1f5f9',
+                                color: order.status === 'Delivered' ? '#047857' : order.status === 'Cancelled' ? '#b91c1c' : order.status === 'Shipped' ? '#1d4ed8' : order.status === 'Packed' ? '#d97706' : '#475569',
+                              }}>
+                                {order.status}
+                             </span>
+                          </td>
+                        </tr>
+                      ));
+                    })()}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
         
         {activeTab === 'orders' && (
           <div className={styles.tabContent}>
@@ -538,9 +777,9 @@ export default function AdminDashboard() {
             )}
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-              {['New Orders', 'Package Confirmation', 'Packed & Ready', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
+              {['Pending Orders', 'Package Confirmation', 'Packed & Ready', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
                 const count = data.orders.filter((o: any) => {
-                  if (status === 'New Orders') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New';
+                  if (status === 'Pending Orders') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New';
                   if (status === 'Packed & Ready') return o.status === 'Packed';
                   if (status === 'Dispatched') return o.status === 'Shipped';
                   if (status === 'Package Confirmation') return false; // Doesn't have a count, it's a utility tab
@@ -635,7 +874,7 @@ export default function AdminDashboard() {
                 <tbody>
                   {data.orders
                     .filter((o: any) => {
-                      if (orderFilterStatus === 'New Orders') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New';
+                      if (orderFilterStatus === 'Pending Orders') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New';
                       if (orderFilterStatus === 'Packed & Ready') return o.status === 'Packed';
                       if (orderFilterStatus === 'Dispatched') return o.status === 'Shipped';
                       return o.status === orderFilterStatus;
@@ -677,25 +916,25 @@ export default function AdminDashboard() {
                       </td>
                       <td style={{verticalAlign: 'top'}}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New' || order.status === 'Packed') && (
-                            <>
-                              <button 
-                                onClick={() => setTrackingModalOrder(order)}
-                                style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
-                                onMouseOver={(e) => e.currentTarget.style.background = '#bfdbfe'}
-                                onMouseOut={(e) => e.currentTarget.style.background = '#dbeafe'}
-                              >
-                                📦 Dispatch & Add Tracking
-                              </button>
-                              <button 
-                                onClick={() => setPrintLabelOrder(order)}
-                                style={{ background: '#f3e8ff', color: '#7e22ce', border: '1px solid #9333ea', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%', marginTop: '5px' }}
-                                onMouseOver={(e) => e.currentTarget.style.background = '#e9d5ff'}
-                                onMouseOut={(e) => e.currentTarget.style.background = '#f3e8ff'}
-                              >
-                                🖨️ Print Label
-                              </button>
-                            </>
+                          {(order.status === 'Packed') && (
+                            <button 
+                              onClick={() => setTrackingModalOrder(order)}
+                              style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
+                              onMouseOver={(e) => e.currentTarget.style.background = '#bfdbfe'}
+                              onMouseOut={(e) => e.currentTarget.style.background = '#dbeafe'}
+                            >
+                              📦 Dispatch & Add Tracking
+                            </button>
+                          )}
+                          {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New') && (
+                            <button 
+                              onClick={() => setPrintLabelOrder(order)}
+                              style={{ background: '#f3e8ff', color: '#7e22ce', border: '1px solid #9333ea', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%', marginTop: '5px' }}
+                              onMouseOver={(e) => e.currentTarget.style.background = '#e9d5ff'}
+                              onMouseOut={(e) => e.currentTarget.style.background = '#f3e8ff'}
+                            >
+                              🖨️ Print Label
+                            </button>
                           )}
 
                           {order.status === 'Shipped' && (
