@@ -4,6 +4,8 @@ import ProductDetailsClient from '@/components/ProductDetailsClient';
 import { notFound } from 'next/navigation';
 import { getServiceSupabase } from '@/lib/supabaseClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);

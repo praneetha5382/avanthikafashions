@@ -54,7 +54,8 @@ export async function POST(request: Request) {
         if (productData && productData.variants) {
           let updated = false;
           const newVariants = productData.variants.map((v: any) => {
-            if ((v.color === item.size || (item.size === 'One Size' && v.color === 'Default')) && v.stock !== undefined) {
+            const matchesColor = v.color === item.size || (item.size === 'One Size' && (!v.color || v.color === 'Default'));
+            if (matchesColor && v.stock !== undefined) {
               updated = true;
               return { ...v, stock: Math.max(0, v.stock - item.quantity) };
             }
