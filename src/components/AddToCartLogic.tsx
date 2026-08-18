@@ -76,13 +76,6 @@ export default function AddToCartLogic({ product, selectedVariant }: { product: 
         }}>
           <span>♡</span> Add to Wishlist
         </button>
-        
-        {/* Buy on video call */}
-        <button style={{
-          alignSelf: 'flex-start', padding: '8px 20px', background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', borderRadius: '25px', marginTop: '10px', cursor: 'pointer'
-        }}>
-          Buy on video call
-        </button>
       </div>
     </div>
   );

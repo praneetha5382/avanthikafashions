@@ -63,23 +63,12 @@ export default function Footer() {
 
           {/* Contact Icons */}
           <div className={styles.contactList}>
-            <a href="#"><span className={styles.icon}>📍</span> Store Locator</a>
             <a href="mailto:hello@avanthika.com"><span className={styles.icon}>✉️</span> Email Us</a>
             <a href="https://wa.me/919876543210"><span className={styles.icon}>💬</span> Whatsapp Us</a>
-            <a href="#"><span className={styles.icon}>🗂️</span> Sitemap</a>
           </div>
 
           <div className={styles.bottomRow}>
             <p className={styles.copyright}>&copy; {new Date().getFullYear()}, Avanthika Fashions. All rights reserved.</p>
-            <div className={styles.badges}>
-              {/* Fake App Store Badges */}
-              <div style={{ background: '#000', color: '#fff', padding: '5px 10px', borderRadius: '5px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <span>▶</span> GET IT ON Google Play
-              </div>
-              <div style={{ background: '#000', color: '#fff', padding: '5px 10px', borderRadius: '5px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <span>🍎</span> Download on the App Store
-              </div>
-            </div>
           </div>
         </div>
       </div>

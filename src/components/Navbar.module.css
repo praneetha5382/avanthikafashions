@@ -11,6 +11,7 @@
 .headerTransparent {
   background-color: transparent;
   position: absolute;
+  top: 32px; /* Offset for marquee */
   width: 100%;
   box-shadow: none;
   padding: 20px 0; /* Extra breathing room when overlaid on hero */
@@ -30,13 +31,17 @@
   flex: 1;
 }
 
-/* Force logo to be absolute center for symmetry */
+/* Logo naturally centers because left and right actions have flex: 1 */
 .logo {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   justify-content: center;
+  flex: 2; /* Take up remaining space */
+}
+
+/* Ensure logo scales on mobile */
+.logo img {
+  max-width: 100%;
+  height: auto;
 }
 
 .hamburger {
@@ -224,6 +229,7 @@
   }
   
   .navLinks {
+    display: flex; /* Make it visible on mobile */
     position: fixed;
     top: 0;
     left: -100%;

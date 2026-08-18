@@ -174,7 +174,7 @@
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  aspect-ratio: 9/16;
+  aspect-ratio: 3/4;
   text-decoration: none;
   display: block;
 }
@@ -243,7 +243,7 @@
 .cardImgWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 9/16;
+  aspect-ratio: 3/4;
 }
 
 .primaryImg {
