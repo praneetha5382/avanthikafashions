@@ -6,6 +6,11 @@ import { AuthProvider } from "@/context/AuthContext";
 export const metadata: Metadata = {
   title: "Avanthika | The Signature Saree Collection",
   description: "Experience the epitome of South Indian royal heritage.",
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  }
 };
 
 export const viewport: Viewport = {
