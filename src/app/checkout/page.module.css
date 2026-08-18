@@ -303,6 +303,8 @@
   display: flex;
   gap: 15px;
   margin-bottom: 30px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 30px;
 }
 
 .couponInput {
@@ -342,8 +344,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  border-top: 1px solid var(--border-color);
-  padding-top: 30px;
+  padding-top: 0px; /* Border removed to unify with billing section */
 }
 
 .row {
@@ -413,7 +414,7 @@
   .container {
     grid-template-columns: 1fr;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse; /* Summary first, form second */
   }
   .formSection {
     border-right: none;
