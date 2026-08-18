@@ -1040,66 +1040,94 @@ export default function AdminDashboard() {
       {/* Hidden Print Layout */}
       {printLabelOrder && (
         <div className={styles.printOnly}>
-          <div style={{ fontFamily: 'sans-serif', color: 'black' }}>
-            <h1 style={{ fontSize: '24px', margin: '0 0 10px 0', borderBottom: '2px solid black', paddingBottom: '5px' }}>
-              AVANTHIKA FASHIONS
-            </h1>
+          <div style={{ fontFamily: 'Arial, sans-serif', color: 'black' }}>
+            {/* Header with Logo */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '3px solid black', paddingBottom: '10px', marginBottom: '15px' }}>
+              <img src="/logo.png" style={{ height: '40px', objectFit: 'contain' }} alt="Avanthika Fashions" />
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '18px' }}>ORDER {printLabelOrder.id.substring(4)}</div>
+                <div style={{ fontSize: '12px' }}>{new Date().toLocaleDateString('en-IN')}</div>
+              </div>
+            </div>
             
-            <h2 style={{ fontSize: '18px', margin: '15px 0 5px 0', textTransform: 'uppercase' }}>SHIP TO:</h2>
-            <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 3px 0' }}>{printLabelOrder.customer_name}</p>
-            <p style={{ fontSize: '16px', margin: '0 0 3px 0', lineHeight: '1.4' }}>
-              {printLabelOrder.shipping_address?.address}<br/>
-              {printLabelOrder.shipping_address?.city}, {printLabelOrder.shipping_address?.state} {printLabelOrder.shipping_address?.pin}
-            </p>
-            <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '5px 0 15px 0' }}>Phone: {printLabelOrder.customer_phone}</p>
-            
-            <h2 style={{ fontSize: '18px', margin: '0 0 5px 0', borderBottom: '1px solid black', paddingBottom: '5px' }}>ORDER DETAILS</h2>
-            <p style={{ fontSize: '14px', margin: '0 0 10px 0' }}>Order ID: <strong>{printLabelOrder.id}</strong></p>
-            
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '15px', fontSize: '14px' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid black', textAlign: 'left' }}>
-                  <th style={{ padding: '4px 0' }}>Item</th>
-                  <th style={{ padding: '4px 0', textAlign: 'center' }}>Qty</th>
-                </tr>
-              </thead>
-              <tbody>
-                {printLabelOrder.items.map((item: any, idx: number) => (
-                  <tr key={idx} style={{ borderBottom: '1px dashed #ccc' }}>
-                    <td style={{ padding: '6px 0', fontWeight: 'bold' }}>
-                      {item.name} {item.size !== 'Standard' && `(${item.size})`}
-                      <br/><span style={{ fontSize: '12px', fontWeight: 'normal' }}>SKU: {item.sku || item.id}</span>
-                    </td>
-                    <td style={{ padding: '6px 0', textAlign: 'center', fontWeight: 'bold' }}>{item.quantity}</td>
+            {/* Shipping Address */}
+            <div style={{ border: '2px solid black', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
+              <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '5px', textTransform: 'uppercase' }}>Ship To:</div>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '4px' }}>{printLabelOrder.customer_name}</div>
+              <div style={{ fontSize: '16px', lineHeight: '1.4' }}>
+                {printLabelOrder.shipping_address?.address}<br/>
+                {printLabelOrder.shipping_address?.city}, {printLabelOrder.shipping_address?.state}<br/>
+                <span style={{ fontWeight: 'bold', fontSize: '18px' }}>PIN: {printLabelOrder.shipping_address?.pin}</span>
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', marginTop: '8px' }}>Phone: {printLabelOrder.customer_phone}</div>
+            </div>
+
+            {/* Items Table */}
+            <div style={{ marginBottom: '15px' }}>
+              <div style={{ fontSize: '14px', fontWeight: 'bold', borderBottom: '2px solid black', paddingBottom: '3px', marginBottom: '8px' }}>ITEMS ENCLOSED</div>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #000', textAlign: 'left' }}>
+                    <th style={{ padding: '4px 0' }}>Description</th>
+                    <th style={{ padding: '4px 0', textAlign: 'center', width: '40px' }}>Qty</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {printLabelOrder.items.map((item: any, idx: number) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid #ddd' }}>
+                      <td style={{ padding: '6px 0', fontWeight: 'bold' }}>
+                        {item.name} {item.size !== 'Standard' && `(${item.size})`}
+                        <br/><span style={{ fontSize: '12px', fontWeight: 'normal' }}>SKU: {item.sku || item.id}</span>
+                      </td>
+                      <td style={{ padding: '6px 0', textAlign: 'center', fontWeight: 'bold', fontSize: '16px' }}>{item.quantity}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             
-            <div style={{ borderTop: '2px solid black', paddingTop: '10px', fontSize: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+            {/* Cost Breakdown & Payment Status */}
+            <div style={{ borderTop: '2px solid black', paddingTop: '10px', fontSize: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span>Subtotal:</span>
                 <span>₹{printLabelOrder.subtotal}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span>Shipping:</span>
                 <span>₹{printLabelOrder.shipping_cost}</span>
               </div>
               {printLabelOrder.discount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>Discount:</span>
                   <span>-₹{printLabelOrder.discount}</span>
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '20px', marginTop: '5px', paddingTop: '5px', borderTop: '1px solid black' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '18px', marginTop: '5px', paddingTop: '5px', borderTop: '1px solid black' }}>
                 <span>TOTAL:</span>
                 <span>₹{printLabelOrder.total}</span>
               </div>
-              <div style={{ textAlign: 'center', marginTop: '15px', padding: '5px', background: 'black', color: 'white', fontWeight: 'bold', textTransform: 'uppercase' }}>
-                PAYMENT: {printLabelOrder.payment_method}
-              </div>
+            </div>
+
+            {/* Payment Method Badge */}
+            <div style={{ 
+              marginTop: '15px', 
+              padding: '10px', 
+              border: '2px solid black', 
+              background: printLabelOrder.payment_method?.toLowerCase() === 'cod' ? 'white' : 'black',
+              color: printLabelOrder.payment_method?.toLowerCase() === 'cod' ? 'black' : 'white',
+              textAlign: 'center', 
+              fontWeight: '900', 
+              fontSize: '22px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px'
+            }}>
+              {printLabelOrder.payment_method === 'cod' ? 'CASH ON DELIVERY' : 'PREPAID'}
             </div>
             
+            <div style={{ textAlign: 'center', marginTop: '15px' }}>
+              <img src={`https://barcodeapi.org/api/128/${printLabelOrder.id}`} style={{ height: '50px', maxWidth: '100%' }} alt="Barcode" />
+            </div>
+
           </div>
         </div>
       )}
