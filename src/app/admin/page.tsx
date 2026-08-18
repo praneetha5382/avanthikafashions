@@ -1040,56 +1040,55 @@ export default function AdminDashboard() {
       {/* Hidden Print Layout */}
       {printLabelOrder && (
         <div className={styles.printOnly} style={{ position: 'relative', padding: '10px', boxSizing: 'border-box' }}>
-          <div style={{ fontFamily: 'Arial, sans-serif', color: 'black' }}>
-            
-            {/* Header with Huge Logo */}
-            <div style={{ textAlign: 'center', marginBottom: '10px' }}>
-              <img src="/logo.png" style={{ height: '120px', objectFit: 'contain' }} alt="Avanthika Fashions" />
-            </div>
+          
+          {/* PREPAID STAMP (Absolute Positioned, Circular) */}
+          <div style={{
+            position: 'absolute',
+            top: '80px',
+            left: '50%',
+            transform: 'translateX(-50%) rotate(-15deg)',
+            width: '100px',
+            height: '100px',
+            borderRadius: '50%',
+            border: '4px solid black',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '18px',
+            fontWeight: '900',
+            textTransform: 'uppercase',
+            letterSpacing: '2px',
+            zIndex: 10,
+            backgroundColor: 'transparent'
+          }}>
+            PREPAID
+          </div>
 
-            {/* PREPAID STAMP (Absolute Positioned) */}
-            <div style={{
-              position: 'absolute',
-              top: '120px',
-              right: '20px',
-              border: '4px solid black',
-              padding: '4px 10px',
-              fontSize: '24px',
-              fontWeight: '900',
-              textTransform: 'uppercase',
-              letterSpacing: '3px',
-              transform: 'rotate(-15deg)',
-              zIndex: 10
-            }}>
-              PREPAID
-            </div>
+          <div style={{ fontFamily: 'Arial, sans-serif', color: 'black', position: 'relative', zIndex: 1 }}>
             
-            {/* Order Details Block */}
-            <div style={{ border: '2px solid black', borderBottom: 'none', padding: '8px', fontSize: '14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontWeight: 'bold' }}>ORDER ID:</span>
-                <span style={{ fontWeight: 'bold', fontSize: '16px' }}>{printLabelOrder.id}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontWeight: 'bold' }}>SKU(s):</span>
-                <span>{printLabelOrder.items.map((i: any) => i.sku || i.id).join(', ')}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: 'bold' }}>DATE:</span>
-                <span>{new Date().toLocaleDateString('en-IN')}</span>
+            {/* Header: Logo Left, Order Info Right */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid black', paddingBottom: '15px', marginBottom: '15px' }}>
+              <img src="/logo.png" style={{ height: '140px', objectFit: 'contain' }} alt="Avanthika Fashions" />
+              <div style={{ textAlign: 'right', marginTop: '10px' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '4px' }}>ORDER: {printLabelOrder.id.replace('ORD-', '')}</div>
+                <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>
+                  SKU(s): {printLabelOrder.items.map((i: any) => i.sku || i.id).join(', ')}
+                </div>
+                <div style={{ fontSize: '12px' }}>{new Date().toLocaleDateString('en-IN')}</div>
               </div>
             </div>
             
             {/* Shipping Address */}
-            <div style={{ border: '2px solid black', padding: '8px', marginBottom: '10px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '3px', textTransform: 'uppercase' }}>Ship To:</div>
-              <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '3px' }}>{printLabelOrder.customer_name}</div>
-              <div style={{ fontSize: '14px', lineHeight: '1.3' }}>
+            <div style={{ border: '2px solid black', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
+              <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '5px', textTransform: 'uppercase' }}>Ship To:</div>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '4px' }}>
+                {printLabelOrder.customer_name} <span style={{ fontSize: '16px', fontWeight: 'normal', marginLeft: '10px' }}>{printLabelOrder.customer_phone}</span>
+              </div>
+              <div style={{ fontSize: '16px', lineHeight: '1.4' }}>
                 {printLabelOrder.shipping_address?.address}<br/>
                 {printLabelOrder.shipping_address?.city}, {printLabelOrder.shipping_address?.state}<br/>
-                <span style={{ fontWeight: 'bold', fontSize: '16px' }}>PIN: {printLabelOrder.shipping_address?.pin}</span>
+                <span style={{ fontWeight: 'bold', fontSize: '18px' }}>PIN: {printLabelOrder.shipping_address?.pin}</span>
               </div>
-              <div style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '5px' }}>Phone: {printLabelOrder.customer_phone}</div>
             </div>
 
             {/* Items Table */}
