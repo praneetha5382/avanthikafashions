@@ -1,16 +1,9 @@
 .header {
   background-color: #fff0f5; /* Soft pink header */
   padding: 10px 0; /* Restore decent padding */
-  position: sticky; /* Sticky but smart */
-  top: 0;
+  position: relative; /* Not sticky, scrolls natively without lag */
   z-index: 1000; 
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease-in-out, background-color 0.3s ease;
-  transform: translateY(0);
-}
-
-.headerHidden {
-  transform: translateY(-100%);
 }
 
 .headerTransparent {

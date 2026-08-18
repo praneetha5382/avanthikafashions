@@ -18,10 +18,6 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   
-  // Smart Header Logic
-  const [showNavbar, setShowNavbar] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  
   const { isLoggedIn } = useAuth();
   const router = useRouter();
   
@@ -29,30 +25,11 @@ export default function Navbar() {
   const isHome = pathname === '/';
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (typeof window !== 'undefined') {
-        const currentScrollY = window.scrollY;
-        // Hide only if scrolling down and scrolled past 100px
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
-          setShowNavbar(false);
-        } else {
-          // Show when scrolling up
-          setShowNavbar(true);
-        }
-        setLastScrollY(currentScrollY);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
-
-  useEffect(() => {
     fetch('/api/products').then(res => res.json()).then(data => {
       if (data.categories) {
         setCategories(data.categories.filter((c: any) => c.isVisible !== false));
       }
-    });
+    }).catch(err => console.error("Error fetching categories:", err));
   }, []);
 
   return (
@@ -63,7 +40,7 @@ export default function Navbar() {
         onClose={() => setIsLoginModalOpen(false)} 
         onSuccess={() => router.push('/account')}
       />
-      <header className={`${styles.header} ${isHome ? styles.headerTransparent : ''} ${!showNavbar ? styles.headerHidden : ''}`}>
+      <header className={`${styles.header} ${isHome ? styles.headerTransparent : ''}`}>
       <div className={`container ${styles.navContainer}`}>
         
         {/* Left: Mobile Hamburger & WhatsApp */}
@@ -89,10 +66,6 @@ export default function Navbar() {
         <div className={styles.actions}>
           <button aria-label="Search" className={styles.iconBtn} onClick={() => setIsSearchOpen(true)}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          </button>
-          
-          <button aria-label="Wishlist" className={styles.iconBtn}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
           </button>
 
           <button aria-label="Cart" className={styles.iconBtn} onClick={toggleCart} style={{position: 'relative', display: 'flex', alignItems: 'center'}}>
