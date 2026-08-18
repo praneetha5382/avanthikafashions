@@ -322,3 +322,28 @@
   font-size: 0.8rem;
   font-weight: 500;
 }
+.printOnly {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printOnly, .printOnly * {
+    visibility: visible;
+  }
+  .printOnly {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4in; /* 4x6 label standard */
+    padding: 0.1in;
+    margin: 0;
+  }
+  @page {
+    size: 4in 6in;
+    margin: 0;
+  }
+}

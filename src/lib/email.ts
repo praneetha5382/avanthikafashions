@@ -36,12 +36,22 @@ export const sendOrderConfirmationEmail = async (order: any) => {
       <h3 style="border-bottom: 1px solid #eaeaea; padding-bottom: 5px;">Items Ordered</h3>
       <ul style="list-style: none; padding: 0;">
         ${order.items.map((item: any) => `
-          <li style="margin-bottom: 10px; display: flex; justify-content: space-between;">
-            <span>${item.quantity}x ${item.name}</span>
+          <li style="margin-bottom: 10px; display: flex; justify-content: space-between; border-bottom: 1px dashed #eee; padding-bottom: 5px;">
+            <div>
+              <strong>${item.quantity}x ${item.name}</strong> ${item.size !== 'Standard' ? `(${item.size})` : ''}
+              <br/><span style="color: #666; font-size: 12px;">SKU: ${item.sku || item.id}</span>
+            </div>
             <strong>₹${(item.price * item.quantity).toLocaleString('en-IN')}</strong>
           </li>
         `).join('')}
       </ul>
+
+      <div style="margin-top: 15px; border-top: 1px solid #eaeaea; padding-top: 10px; text-align: right;">
+        <p style="margin: 0 0 5px 0;">Subtotal: ₹${order.subtotal?.toLocaleString('en-IN')}</p>
+        <p style="margin: 0 0 5px 0;">Shipping: ₹${order.shipping_cost?.toLocaleString('en-IN')}</p>
+        ${order.discount ? `<p style="margin: 0 0 5px 0; color: #16a34a;">Discount: -₹${order.discount.toLocaleString('en-IN')}</p>` : ''}
+        <h3 style="margin: 10px 0 0 0; font-size: 18px;">TOTAL: ₹${order.total?.toLocaleString('en-IN')}</h3>
+      </div>
 
       <h3 style="border-bottom: 1px solid #eaeaea; padding-bottom: 5px; margin-top: 20px;">Shipping Address</h3>
       <p style="margin: 0; line-height: 1.5;">

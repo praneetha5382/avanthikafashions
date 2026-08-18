@@ -35,11 +35,21 @@ export default function AdminDashboard() {
   const [targetMainCategory, setTargetMainCategory] = useState('');
 
   // --- Order Filter State ---
-  const [orderFilterStatus, setOrderFilterStatus] = useState('Processing');
+  const [orderFilterStatus, setOrderFilterStatus] = useState('Pending Orders');
   const [quickScanInput, setQuickScanInput] = useState('');
   const [quickScanResult, setQuickScanResult] = useState<any | null>(null);
   const [trackingModalOrder, setTrackingModalOrder] = useState<any | null>(null);
   const [trackingData, setTrackingData] = useState({ courier: 'DTDC', trackingId: '' });
+  const [printLabelOrder, setPrintLabelOrder] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (printLabelOrder) {
+      setTimeout(() => {
+        window.print();
+        setPrintLabelOrder(null);
+      }, 500);
+    }
+  }, [printLabelOrder]);
 
   useEffect(() => {
     Promise.all([
@@ -411,9 +421,9 @@ export default function AdminDashboard() {
             )}
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-              {['Processing', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
-                const mapStatus = status === 'Dispatched' ? 'Shipped' : status === 'Processing' ? 'Packed' : status;
-                const count = data.orders.filter((o: any) => o.status === mapStatus || (status === 'Processing' && (o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New'))).length;
+              {['Pending Orders', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
+                const mapStatus = status === 'Dispatched' ? 'Shipped' : status === 'Pending Orders' ? 'Packed' : status;
+                const count = data.orders.filter((o: any) => o.status === mapStatus || (status === 'Pending Orders' && (o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New'))).length;
                 return (
                 <button
                   key={status}
@@ -452,7 +462,7 @@ export default function AdminDashboard() {
                 <tbody>
                   {data.orders
                     .filter((o: any) => {
-                      if (orderFilterStatus === 'Processing') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New' || o.status === 'Packed';
+                      if (orderFilterStatus === 'Pending Orders') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New' || o.status === 'Packed';
                       if (orderFilterStatus === 'Dispatched') return o.status === 'Shipped';
                       return o.status === orderFilterStatus;
                     })
@@ -495,14 +505,24 @@ export default function AdminDashboard() {
                       <td style={{verticalAlign: 'top'}}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New' || order.status === 'Packed') && (
-                            <button 
-                              onClick={() => setTrackingModalOrder(order)}
-                              style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
-                              onMouseOver={(e) => e.currentTarget.style.background = '#bfdbfe'}
-                              onMouseOut={(e) => e.currentTarget.style.background = '#dbeafe'}
-                            >
-                              📦 Dispatch & Add Tracking
-                            </button>
+                            <>
+                              <button 
+                                onClick={() => setTrackingModalOrder(order)}
+                                style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
+                                onMouseOver={(e) => e.currentTarget.style.background = '#bfdbfe'}
+                                onMouseOut={(e) => e.currentTarget.style.background = '#dbeafe'}
+                              >
+                                📦 Dispatch & Add Tracking
+                              </button>
+                              <button 
+                                onClick={() => setPrintLabelOrder(order)}
+                                style={{ background: '#f3e8ff', color: '#7e22ce', border: '1px solid #9333ea', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%', marginTop: '5px' }}
+                                onMouseOver={(e) => e.currentTarget.style.background = '#e9d5ff'}
+                                onMouseOut={(e) => e.currentTarget.style.background = '#f3e8ff'}
+                              >
+                                🖨️ Print Label
+                              </button>
+                            </>
                           )}
 
                           {order.status === 'Shipped' && (
@@ -1016,6 +1036,73 @@ export default function AdminDashboard() {
         )}
 
       </main>
+      
+      {/* Hidden Print Layout */}
+      {printLabelOrder && (
+        <div className={styles.printOnly}>
+          <div style={{ fontFamily: 'sans-serif', color: 'black' }}>
+            <h1 style={{ fontSize: '24px', margin: '0 0 10px 0', borderBottom: '2px solid black', paddingBottom: '5px' }}>
+              AVANTHIKA FASHIONS
+            </h1>
+            
+            <h2 style={{ fontSize: '18px', margin: '15px 0 5px 0', textTransform: 'uppercase' }}>SHIP TO:</h2>
+            <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 3px 0' }}>{printLabelOrder.customer_name}</p>
+            <p style={{ fontSize: '16px', margin: '0 0 3px 0', lineHeight: '1.4' }}>
+              {printLabelOrder.shipping_address?.address}<br/>
+              {printLabelOrder.shipping_address?.city}, {printLabelOrder.shipping_address?.state} {printLabelOrder.shipping_address?.pin}
+            </p>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '5px 0 15px 0' }}>Phone: {printLabelOrder.customer_phone}</p>
+            
+            <h2 style={{ fontSize: '18px', margin: '0 0 5px 0', borderBottom: '1px solid black', paddingBottom: '5px' }}>ORDER DETAILS</h2>
+            <p style={{ fontSize: '14px', margin: '0 0 10px 0' }}>Order ID: <strong>{printLabelOrder.id}</strong></p>
+            
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '15px', fontSize: '14px' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid black', textAlign: 'left' }}>
+                  <th style={{ padding: '4px 0' }}>Item</th>
+                  <th style={{ padding: '4px 0', textAlign: 'center' }}>Qty</th>
+                </tr>
+              </thead>
+              <tbody>
+                {printLabelOrder.items.map((item: any, idx: number) => (
+                  <tr key={idx} style={{ borderBottom: '1px dashed #ccc' }}>
+                    <td style={{ padding: '6px 0', fontWeight: 'bold' }}>
+                      {item.name} {item.size !== 'Standard' && `(${item.size})`}
+                      <br/><span style={{ fontSize: '12px', fontWeight: 'normal' }}>SKU: {item.sku || item.id}</span>
+                    </td>
+                    <td style={{ padding: '6px 0', textAlign: 'center', fontWeight: 'bold' }}>{item.quantity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            
+            <div style={{ borderTop: '2px solid black', paddingTop: '10px', fontSize: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <span>Subtotal:</span>
+                <span>₹{printLabelOrder.subtotal}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <span>Shipping:</span>
+                <span>₹{printLabelOrder.shipping_cost}</span>
+              </div>
+              {printLabelOrder.discount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                  <span>Discount:</span>
+                  <span>-₹{printLabelOrder.discount}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '20px', marginTop: '5px', paddingTop: '5px', borderTop: '1px solid black' }}>
+                <span>TOTAL:</span>
+                <span>₹{printLabelOrder.total}</span>
+              </div>
+              <div style={{ textAlign: 'center', marginTop: '15px', padding: '5px', background: 'black', color: 'white', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                PAYMENT: {printLabelOrder.payment_method}
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      )}
     </div>
   );
 }

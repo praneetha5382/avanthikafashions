@@ -9,9 +9,8 @@
   flex: 1;
   position: relative;
   width: 100%;
-  height: 60vh;
-  min-height: 400px;
-  max-height: 550px;
+  aspect-ratio: 9/16;
+  height: auto;
   background-color: #F8F8F8;
   border-radius: 4px;
   overflow: hidden;
@@ -19,7 +18,7 @@
 }
 
 .mainImage {
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* Mobile Carousel Base Styles (Desktop uses JS active index) */
