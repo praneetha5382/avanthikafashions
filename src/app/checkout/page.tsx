@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 export default function CheckoutPage() {
-  const { cartItems, cartTotal, cartRequiresShipping } = useCart();
+  const { cartItems, cartTotal, cartRequiresShipping, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
 
@@ -29,6 +29,10 @@ export default function CheckoutPage() {
   // Coupon State
   const [couponCode, setCouponCode] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
+
+  // Success State
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderId, setOrderId] = useState('');
 
   const handleSendOtp = () => {
     if (phone.length < 10) {
@@ -57,15 +61,47 @@ export default function CheckoutPage() {
     }
   };
 
-  const handlePay = () => {
+  const handlePay = async () => {
     if (!email || !firstName || !lastName || !address || !city || !state || !pin) {
       return alert("Please fill in all delivery details.");
     }
     setLoading(true);
-    setTimeout(() => {
-      alert(`Processing via ${paymentMethod}...`);
+
+    try {
+      const payload = {
+        customer_phone: phone,
+        customer_email: email,
+        customer_name: `${firstName} ${lastName}`,
+        shipping_address: { address, city, state, pin },
+        items: cartItems,
+        subtotal: taxableAmount,
+        shipping_cost: shippingCost,
+        discount: discountAmount,
+        tax: tax,
+        total: finalTotal,
+        payment_method: paymentMethod
+      };
+
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        setOrderId(data.orderId);
+        setOrderSuccess(true);
+        clearCart();
+      } else {
+        alert(data.error || "Failed to process order.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred during checkout.");
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   // Pricing Logic
@@ -83,6 +119,17 @@ export default function CheckoutPage() {
         </Link>
       </header>
 
+      {orderSuccess ? (
+        <div className={styles.container} style={{justifyContent: 'center', minHeight: '60vh'}}>
+          <div style={{textAlign: 'center', padding: '40px', background: 'white', borderRadius: '8px', border: '1px solid var(--border-color)', maxWidth: '600px', width: '100%'}}>
+            <h2 style={{color: 'var(--primary-color)', fontSize: '2rem', marginBottom: '20px'}}>Order Confirmed!</h2>
+            <p style={{fontSize: '1.1rem', color: '#555', marginBottom: '10px'}}>Thank you for shopping with Avanthika Fashions.</p>
+            <p style={{fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '30px'}}>Your Order ID is: <span style={{color: 'var(--primary-color)'}}>{orderId}</span></p>
+            <p style={{marginBottom: '30px'}}>We have received your order and will begin processing it shortly. You will receive an SMS/Email with tracking details once it ships.</p>
+            <Link href="/" className="btn-primary" style={{display: 'inline-block', textDecoration: 'none'}}>Continue Shopping</Link>
+          </div>
+        </div>
+      ) : (
       <div className={styles.container}>
         {/* Left Form Section */}
         <div className={styles.formSection}>
@@ -258,6 +305,7 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }

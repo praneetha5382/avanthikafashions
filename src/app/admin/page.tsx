@@ -5,8 +5,8 @@ import styles from './page.module.css';
 import NextImage from 'next/image';
 
 export default function AdminDashboard() {
-  const [data, setData] = useState<any>({ categories: [], products: [], menus: [], customers: [], siteSettings: { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true } });
-  const [activeTab, setActiveTab] = useState('inventory'); // inventory, categories, navigation, customers
+  const [data, setData] = useState<any>({ categories: [], products: [], menus: [], customers: [], orders: [], siteSettings: { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true } });
+  const [activeTab, setActiveTab] = useState('orders'); // orders, inventory, categories, storefront, customers
   const [menuItems, setMenuItems] = useState<any[]>([{ name: '', href: '' }]);
   const [menuTitle, setMenuTitle] = useState('');
   
@@ -33,16 +33,20 @@ export default function AdminDashboard() {
   const [targetMainCategory, setTargetMainCategory] = useState('');
 
   useEffect(() => {
-    fetch('/api/products').then(res => res.json()).then(res => {
+    Promise.all([
+      fetch('/api/products').then(res => res.json()),
+      fetch('/api/orders').then(res => res.json())
+    ]).then(([prodRes, ordRes]) => {
       setData({
-        categories: res.categories || [],
-        products: res.products || [],
-        customers: res.customers || [],
-        siteSettings: res.siteSettings || { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true }
+        categories: prodRes.categories || [],
+        products: prodRes.products || [],
+        customers: prodRes.customers || [],
+        orders: ordRes.orders || [],
+        siteSettings: prodRes.siteSettings || { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true }
       });
-      if (res.categories?.length > 0) {
-        setFormData(f => ({ ...f, mainCategory: res.categories[0].name, subCategory: '' }));
-        setTargetMainCategory(res.categories[0].name);
+      if (prodRes.categories?.length > 0) {
+        setFormData(f => ({ ...f, mainCategory: prodRes.categories[0].name, subCategory: '' }));
+        setTargetMainCategory(prodRes.categories[0].name);
       }
     });
   }, []);
@@ -184,6 +188,7 @@ export default function AdminDashboard() {
           />
         </div>
         <nav className={styles.navLinks}>
+          <button className={activeTab === 'orders' ? styles.active : ''} onClick={() => setActiveTab('orders')}>🚚 Orders & Dispatch</button>
           <button className={activeTab === 'inventory' ? styles.active : ''} onClick={() => setActiveTab('inventory')}>📦 Add Product</button>
           <button className={activeTab === 'categories' ? styles.active : ''} onClick={() => setActiveTab('categories')}>🏷️ Manage Categories</button>
           <button className={activeTab === 'storefront' ? styles.active : ''} onClick={() => setActiveTab('storefront')}>⚙️ Storefront Settings</button>
@@ -194,6 +199,86 @@ export default function AdminDashboard() {
       {/* Main Content Area */}
       <main className={styles.mainContent}>
         
+        {activeTab === 'orders' && (
+          <div className={styles.tabContent}>
+            <header className={styles.tabHeader}>
+              <h1>Orders & Dispatch</h1>
+              <p>Manage incoming orders, view packing details, and update statuses.</p>
+            </header>
+            
+            <div className={styles.card}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Order Details</th>
+                    <th>Customer & Delivery</th>
+                    <th>Items to Pack</th>
+                    <th>Amount & Payment</th>
+                    <th>Status Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.orders.map((order: any) => (
+                    <tr key={order.id}>
+                      <td style={{verticalAlign: 'top'}}>
+                        <strong>{order.id}</strong><br/>
+                        <span style={{fontSize: '0.85rem', color: '#666'}}>{new Date(order.created_at).toLocaleString()}</span>
+                      </td>
+                      <td style={{verticalAlign: 'top'}}>
+                        <strong>{order.customer_name}</strong><br/>
+                        📞 {order.customer_phone}<br/>
+                        📧 {order.customer_email || 'N/A'}<br/>
+                        📍 {order.shipping_address?.address}, {order.shipping_address?.city}, {order.shipping_address?.state} - {order.shipping_address?.pin}
+                      </td>
+                      <td style={{verticalAlign: 'top'}}>
+                        <ul style={{margin: 0, paddingLeft: '15px', fontSize: '0.9rem'}}>
+                          {order.items.map((item: any, idx: number) => (
+                            <li key={idx} style={{marginBottom: '5px'}}>
+                              <strong>{item.quantity}x</strong> {item.name} 
+                              {item.size !== 'Standard' && ` (${item.size})`} 
+                              <br/><span style={{color: 'var(--primary-color)', fontWeight: 'bold'}}>SKU: {item.id}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td style={{verticalAlign: 'top'}}>
+                        <strong>₹{order.total}</strong><br/>
+                        <span style={{fontSize: '0.85rem', color: order.payment_method === 'cod' ? '#d97706' : '#059669', background: order.payment_method === 'cod' ? '#fef3c7' : '#d1fae5', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase'}}>{order.payment_method}</span>
+                      </td>
+                      <td style={{verticalAlign: 'top'}}>
+                        <select 
+                          className={styles.input} 
+                          value={order.status} 
+                          onChange={async (e) => {
+                            const newStatus = e.target.value;
+                            setData({...data, orders: data.orders.map((o:any) => o.id === order.id ? {...o, status: newStatus} : o)});
+                            await fetch('/api/orders', { method: 'PATCH', body: JSON.stringify({ id: order.id, status: newStatus }) });
+                          }}
+                          style={{
+                            background: order.status === 'Delivered' ? '#d1fae5' : order.status === 'Shipped' ? '#dbeafe' : order.status === 'Processing' ? '#fef3c7' : '#f3f4f6',
+                            fontWeight: 'bold',
+                            border: '1px solid #ccc'
+                          }}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Pending Payment">Pending Payment</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                  {data.orders.length === 0 && (
+                    <tr><td colSpan={5} style={{textAlign: 'center', padding: '20px'}}>No orders found.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'inventory' && (
           <div className={styles.tabContent}>
             <header className={styles.tabHeader}>
