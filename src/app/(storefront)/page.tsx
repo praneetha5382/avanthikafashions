@@ -53,31 +53,39 @@ export default function Home() {
       {/* Quick Links Row */}
       {data.siteSettings?.showQuickLinks && (
         <section className={`container ${styles.section}`}>
-          <div className={styles.bannerGrid}>
-            <Link href="/collections/under-999" className={styles.bannerCard}>
-              <Image src={getFallbackImage(0)} alt="Under 999" fill style={{ objectFit: 'cover' }} unoptimized className={styles.bannerCardImg} />
-              <div className={styles.bannerOverlay}>
-                <span className={styles.bannerText}>Under 999</span>
-              </div>
-            </Link>
-            <Link href="/collections/under-1499" className={styles.bannerCard}>
-              <Image src={getFallbackImage(1)} alt="Under 1499" fill style={{ objectFit: 'cover' }} unoptimized className={styles.bannerCardImg} />
-              <div className={styles.bannerOverlay}>
-                <span className={styles.bannerText}>Under 1499</span>
-              </div>
-            </Link>
-            <Link href="/collections/office-wear" className={styles.bannerCard}>
-              <Image src={getFallbackImage(2)} alt="Office Wear" fill style={{ objectFit: 'cover' }} unoptimized className={styles.bannerCardImg} />
-              <div className={styles.bannerOverlay}>
-                <span className={styles.bannerText}>Office Wear</span>
-              </div>
-            </Link>
-            <Link href="/collections/wedding" className={styles.bannerCard}>
-              <Image src={getFallbackImage(3)} alt="Wedding" fill style={{ objectFit: 'cover' }} unoptimized className={styles.bannerCardImg} />
-              <div className={styles.bannerOverlay}>
-                <span className={styles.bannerText}>Wedding Collection</span>
-              </div>
-            </Link>
+          <div className={styles.bannerGrid} style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+            {data.siteSettings?.promo1 !== false && (
+              <Link href="/collections/under-999" className={styles.bannerCard} style={{ flex: '1 1 300px', maxWidth: '600px' }}>
+                <Image src={getFallbackImage(0)} alt="Under 999" fill style={{ objectFit: 'cover' }} unoptimized className={styles.bannerCardImg} />
+                <div className={styles.bannerOverlay}>
+                  <span className={styles.bannerText}>Under 999</span>
+                </div>
+              </Link>
+            )}
+            {data.siteSettings?.promo2 !== false && (
+              <Link href="/collections/under-1499" className={styles.bannerCard} style={{ flex: '1 1 300px', maxWidth: '600px' }}>
+                <Image src={getFallbackImage(1)} alt="Under 1499" fill style={{ objectFit: 'cover' }} unoptimized className={styles.bannerCardImg} />
+                <div className={styles.bannerOverlay}>
+                  <span className={styles.bannerText}>Under 1499</span>
+                </div>
+              </Link>
+            )}
+            {data.siteSettings?.promo3 !== false && (
+              <Link href="/collections/office-wear" className={styles.bannerCard} style={{ flex: '1 1 300px', maxWidth: '600px' }}>
+                <Image src={getFallbackImage(2)} alt="Office Wear" fill style={{ objectFit: 'cover' }} unoptimized className={styles.bannerCardImg} />
+                <div className={styles.bannerOverlay}>
+                  <span className={styles.bannerText}>Office Wear</span>
+                </div>
+              </Link>
+            )}
+            {data.siteSettings?.promo4 !== false && (
+              <Link href="/collections/wedding" className={styles.bannerCard} style={{ flex: '1 1 300px', maxWidth: '600px' }}>
+                <Image src={getFallbackImage(3)} alt="Wedding" fill style={{ objectFit: 'cover' }} unoptimized className={styles.bannerCardImg} />
+                <div className={styles.bannerOverlay}>
+                  <span className={styles.bannerText}>Wedding Collection</span>
+                </div>
+              </Link>
+            )}
           </div>
         </section>
       )}

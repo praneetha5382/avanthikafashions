@@ -136,7 +136,7 @@ export default function CheckoutPage() {
             <p style={{fontSize: '1.1rem', color: '#555', marginBottom: '10px'}}>Thank you for shopping with Avanthika Fashions.</p>
             <p style={{fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '30px'}}>Your Order ID is: <span style={{color: 'var(--primary-color)'}}>{orderId}</span></p>
             <p style={{marginBottom: '30px'}}>We have received your order and will begin processing it shortly. You will receive an SMS/Email with tracking details once it ships.</p>
-            <Link href="/" className="btn-primary" style={{display: 'inline-block', textDecoration: 'none'}}>Continue Shopping</Link>
+            <Link href="/collections/all" className="btn-primary" style={{display: 'inline-block', textDecoration: 'none'}}>Continue Shopping</Link>
           </div>
         </div>
       ) : (

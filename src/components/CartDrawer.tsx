@@ -19,7 +19,16 @@ export default function CartDrawer() {
 
         <div className={styles.items}>
           {cartItems.length === 0 ? (
-            <p className={styles.empty}>Your bag is empty.</p>
+            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+              <p className={styles.empty}>Your bag is empty.</p>
+              <button 
+                onClick={toggleCart} 
+                className="btn-primary" 
+                style={{ marginTop: '20px', display: 'inline-block', textDecoration: 'none' }}
+              >
+                Continue Shopping
+              </button>
+            </div>
           ) : (
             cartItems.map(item => (
               <div key={item.id} className={styles.item}>

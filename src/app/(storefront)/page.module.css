@@ -86,9 +86,10 @@
 
 /* Quick Links (Cinematic Banners) */
 .bannerGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: center;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -362,12 +363,15 @@
   }
 
   .bannerGrid {
-    grid-template-columns: 1fr;
+    /* override flex gap to allow 2 columns neatly */
+    gap: 10px;
   }
   
   .bannerCard {
     height: auto;
-    aspect-ratio: 9/16; /* Premium portrait ratio for mobile */
+    aspect-ratio: 1/1; /* Square ratio for 2x2 grid on mobile */
+    flex: 1 1 calc(50% - 15px) !important;
+    min-width: 140px;
   }
 
   .categoryGrid,

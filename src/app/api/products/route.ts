@@ -19,7 +19,8 @@ export async function GET() {
     ]);
 
     const siteSettings = settings?.find((s: any) => s.key === 'siteSettings')?.value || {
-      showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true
+      showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true,
+      promo1: true, promo2: true, promo3: true, promo4: true
     };
     
     const hiddenProducts = settings?.find((s: any) => s.key === 'hiddenProducts')?.value || [];

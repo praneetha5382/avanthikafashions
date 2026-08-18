@@ -335,7 +335,10 @@ export default function AdminDashboard() {
                   <p><strong>Current Status:</strong> <span style={{ padding: '3px 8px', background: '#f0f0f0', borderRadius: '4px', fontWeight: 'bold' }}>{quickScanResult.status}</span></p>
                   
                   <div style={{ display: 'flex', gap: '10px', marginTop: '25px', flexWrap: 'wrap' }}>
-                    {(quickScanResult.status === 'Pending' || quickScanResult.status === 'Pending Payment' || quickScanResult.status === 'New' || quickScanResult.status === 'Packed') && (
+                    {(quickScanResult.status === 'Pending' || quickScanResult.status === 'Pending Payment' || quickScanResult.status === 'New') && (
+                      <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Packed'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#fef3c7', border: '1px solid #d97706', color: '#d97706', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>👍 Acknowledge & Process</button>
+                    )}
+                    {(quickScanResult.status === 'Packed') && (
                       <button onClick={() => { setTrackingModalOrder(quickScanResult); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#dbeafe', border: '1px solid #2563eb', color: '#1d4ed8', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>📦 Dispatch & Add Tracking</button>
                     )}
                   </div>
@@ -384,9 +387,9 @@ export default function AdminDashboard() {
             )}
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-              {['New', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
-                const mapStatus = status === 'Dispatched' ? 'Shipped' : status;
-                const count = data.orders.filter((o: any) => o.status === mapStatus || (status === 'New' && (o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'Packed'))).length;
+              {['New', 'Processing', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
+                const mapStatus = status === 'Dispatched' ? 'Shipped' : status === 'Processing' ? 'Packed' : status;
+                const count = data.orders.filter((o: any) => o.status === mapStatus || (status === 'New' && (o.status === 'Pending' || o.status === 'Pending Payment'))).length;
                 return (
                 <button
                   key={status}
@@ -424,7 +427,8 @@ export default function AdminDashboard() {
                 <tbody>
                   {data.orders
                     .filter((o: any) => {
-                      if (orderFilterStatus === 'New') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'Packed' || o.status === 'New';
+                      if (orderFilterStatus === 'New') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New';
+                      if (orderFilterStatus === 'Processing') return o.status === 'Packed';
                       if (orderFilterStatus === 'Dispatched') return o.status === 'Shipped';
                       return o.status === orderFilterStatus;
                     })
@@ -467,7 +471,18 @@ export default function AdminDashboard() {
                       </td>
                       <td style={{verticalAlign: 'top'}}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New' || order.status === 'Packed') && (
+                          {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New') && (
+                            <button 
+                              onClick={() => handleOrderStatusChange(order.id, 'Packed')}
+                              style={{ background: '#fef3c7', color: '#d97706', border: '1px solid #d97706', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
+                              onMouseOver={(e) => e.currentTarget.style.background = '#fde68a'}
+                              onMouseOut={(e) => e.currentTarget.style.background = '#fef3c7'}
+                            >
+                              👍 Acknowledge & Process
+                            </button>
+                          )}
+
+                          {order.status === 'Packed' && (
                             <button 
                               onClick={() => setTrackingModalOrder(order)}
                               style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
@@ -862,9 +877,20 @@ export default function AdminDashboard() {
               <p>Toggle homepage sections ON or OFF instantly.</p>
             </header>
             <div className={styles.card} style={{ maxWidth: '600px' }}>
-               {data.siteSettings && Object.keys(data.siteSettings).map(key => (
+               {data.siteSettings && Object.keys(data.siteSettings).map(key => {
+                  const labelMap: any = {
+                    showHero: 'Hero Banner Section',
+                    showQuickLinks: 'Quick Links Block',
+                    showTrending: 'Trending Category Section',
+                    showTopPicks: 'Top Picks Section',
+                    promo1: 'Promo Card: Under 999',
+                    promo2: 'Promo Card: Under 1499',
+                    promo3: 'Promo Card: Office Wear',
+                    promo4: 'Promo Card: Wedding Collection'
+                  };
+                  return (
                   <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #eee' }}>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 500 }}>{key.replace('show', '')} Section</span>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 500 }}>{labelMap[key] || key}</span>
                     <button 
                       onClick={async () => {
                         const newSettings = { ...data.siteSettings, [key]: !data.siteSettings[key] };
@@ -876,7 +902,8 @@ export default function AdminDashboard() {
                       {data.siteSettings[key] ? 'ENABLED' : 'DISABLED'}
                     </button>
                   </div>
-               ))}
+                  );
+               })}
             </div>
           </div>
         )}
