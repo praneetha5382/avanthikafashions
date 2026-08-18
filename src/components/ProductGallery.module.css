@@ -41,7 +41,7 @@
 .thumbnailWrapper {
   position: relative;
   width: 60px; /* Smaller thumbnails */
-  height: 80px;
+  aspect-ratio: 9/16;
   flex-shrink: 0;
   cursor: pointer;
   border: 2px solid transparent;

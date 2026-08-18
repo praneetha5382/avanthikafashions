@@ -25,6 +25,7 @@ export default function AdminDashboard() {
     variants: [{ color: '', sku: '', images: [] as string[] }]
   });
   const [uploadingVariantIndex, setUploadingVariantIndex] = useState<number | null>(null);
+  const [hasMultipleVariants, setHasMultipleVariants] = useState(false);
 
   // --- Category State ---
   const [newMainCategory, setNewMainCategory] = useState('');
@@ -114,6 +115,7 @@ export default function AdminDashboard() {
         ],
         variants: [{ color: '', sku: '', images: [] }]
       });
+      setHasMultipleVariants(false);
       alert('Product Launched!');
     }
   };
@@ -287,30 +289,67 @@ export default function AdminDashboard() {
 
                   {/* Proper Image Upload Zone (Color Variants) */}
                   <div className={styles.uploadZone}>
-                    <h3 style={{fontSize: '1rem', marginBottom: '10px'}}>Color Variants & Images</h3>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px'}}>
+                      <h3 style={{fontSize: '1rem', margin: 0}}>Product Images & Variants</h3>
+                      <label style={{fontSize: '0.9rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold'}}>
+                        <input type="checkbox" checked={hasMultipleVariants} onChange={(e) => setHasMultipleVariants(e.target.checked)} />
+                        Product has multiple colors/variants
+                      </label>
+                    </div>
+                    
+                    <p className={styles.helper} style={{marginBottom: '10px'}}>
+                      Upload 9:16 aspect ratio images (e.g. 1080x1920) for best display.
+                    </p>
                     
                     {formData.variants.map((variant, idx) => (
                       <div key={idx} style={{padding: '15px', border: '1px solid #ddd', borderRadius: '8px', marginBottom: '15px', background: '#fff'}}>
-                        <div className={styles.row}>
-                          <div className={styles.fieldGroup}>
-                            <label>Color Name</label>
-                            <input 
-                              className={styles.input} type="text" placeholder="e.g. Ruby Red" 
-                              value={variant.color} required
-                              onChange={e => {
-                                const titleCased = e.target.value.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
-                                const newVars = [...formData.variants]; newVars[idx].color = titleCased; setFormData({...formData, variants: newVars});
-                              }} 
-                            />
+                        {hasMultipleVariants && (
+                          <div className={styles.row}>
+                            <div className={styles.fieldGroup}>
+                              <label>Color Name</label>
+                              <input 
+                                className={styles.input} type="text" placeholder="e.g. Ruby Red" 
+                                value={variant.color} required={hasMultipleVariants}
+                                onChange={e => {
+                                  const titleCased = e.target.value.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+                                  const newVars = [...formData.variants]; newVars[idx].color = titleCased; setFormData({...formData, variants: newVars});
+                                }} 
+                              />
+                            </div>
+                            <div className={styles.fieldGroup}>
+                              <label>Specific SKU for this Color</label>
+                              <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
+                                <div style={{display: 'flex', alignItems: 'center', background: '#f5f5f5', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '0 15px', flex: 1}}>
+                                  <span style={{fontWeight: 'bold', color: '#666', marginRight: '5px'}}>SKU-</span>
+                                  <input 
+                                    type="text" placeholder="123456" maxLength={6}
+                                    value={variant.sku.replace('SKU-', '')} required={hasMultipleVariants}
+                                    style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem'}}
+                                    onChange={e => {
+                                      const sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
+                                      const newVars = [...formData.variants]; 
+                                      newVars[idx].sku = sanitizedValue ? `SKU-${sanitizedValue}` : ''; 
+                                      setFormData({...formData, variants: newVars});
+                                    }} 
+                                  />
+                                </div>
+                                {formData.variants.length > 1 && (
+                                  <button type="button" onClick={() => setFormData({...formData, variants: formData.variants.filter((_, i) => i !== idx)})} style={{background: 'none', border: 'none', color: 'red', cursor: 'pointer', minWidth: '70px'}}>Remove</button>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                          <div className={styles.fieldGroup}>
-                            <label>Specific SKU for this Color</label>
-                            <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
-                              <div style={{display: 'flex', alignItems: 'center', background: '#f5f5f5', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '0 15px', flex: 1}}>
+                        )}
+
+                        {!hasMultipleVariants && (
+                          <div className={styles.row}>
+                            <div className={styles.fieldGroup}>
+                              <label>Product SKU</label>
+                              <div style={{display: 'flex', alignItems: 'center', background: '#f5f5f5', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '0 15px', maxWidth: '300px'}}>
                                 <span style={{fontWeight: 'bold', color: '#666', marginRight: '5px'}}>SKU-</span>
                                 <input 
                                   type="text" placeholder="123456" maxLength={6}
-                                  value={variant.sku.replace('SKU-', '')} required
+                                  value={variant.sku.replace('SKU-', '')} required={!hasMultipleVariants}
                                   style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem'}}
                                   onChange={e => {
                                     const sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
@@ -320,15 +359,12 @@ export default function AdminDashboard() {
                                   }} 
                                 />
                               </div>
-                              {formData.variants.length > 1 && (
-                                <button type="button" onClick={() => setFormData({...formData, variants: formData.variants.filter((_, i) => i !== idx)})} style={{background: 'none', border: 'none', color: 'red', cursor: 'pointer', minWidth: '70px'}}>Remove</button>
-                              )}
                             </div>
                           </div>
-                        </div>
+                        )}
 
-                        <div className={styles.fieldGroup} style={{marginTop: '10px'}}>
-                          <label>Upload Images for {variant.color || 'this color'} (Unlimited)</label>
+                        <div className={styles.fieldGroup} style={{marginTop: hasMultipleVariants ? '10px' : '0'}}>
+                          <label>Upload Images {hasMultipleVariants ? `for ${variant.color || 'this color'}` : ''} (Unlimited)</label>
                           <input type="file" multiple accept="image/*" onChange={(e) => handleFileUpload(e, idx)} className={styles.fileInput} />
                           {uploadingVariantIndex === idx && <p className={styles.helper}>Uploading securely to server...</p>}
                           
@@ -343,7 +379,9 @@ export default function AdminDashboard() {
                       </div>
                     ))}
 
-                    <button type="button" onClick={() => setFormData({...formData, variants: [...formData.variants, {color: '', sku: '', images: []}]})} className="btn-secondary" style={{width: 'auto'}}>+ Add Another Color</button>
+                    {hasMultipleVariants && (
+                      <button type="button" onClick={() => setFormData({...formData, variants: [...formData.variants, {color: '', sku: '', images: []}]})} className="btn-secondary" style={{width: 'auto'}}>+ Add Another Color</button>
+                    )}
                   </div>
 
                   <button type="submit" className="btn-primary" style={{marginTop: '20px'}}>Launch Product</button>

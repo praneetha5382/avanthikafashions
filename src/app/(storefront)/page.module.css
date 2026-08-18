@@ -172,7 +172,7 @@
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  aspect-ratio: 4/5;
+  aspect-ratio: 9/16;
   text-decoration: none;
   display: block;
 }
@@ -241,7 +241,7 @@
 .cardImgWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 3/4;
+  aspect-ratio: 9/16;
 }
 
 .primaryImg {
@@ -367,6 +367,6 @@
   
   .bannerCard {
     height: auto;
-    aspect-ratio: 4/5; /* Premium portrait ratio for mobile */
+    aspect-ratio: 9/16; /* Premium portrait ratio for mobile */
   }
 }

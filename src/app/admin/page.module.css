@@ -159,7 +159,7 @@
 
 .previewBox {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 9/16;
   border-radius: 4px;
   overflow: hidden;
   border: 1px solid var(--border-color);
