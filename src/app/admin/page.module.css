@@ -335,11 +335,11 @@
   }
   .printOnly {
     display: block;
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     width: 4in; /* 4x6 label standard */
-    padding: 0.1in;
+    padding: 0;
     margin: 0;
   }
   @page {
