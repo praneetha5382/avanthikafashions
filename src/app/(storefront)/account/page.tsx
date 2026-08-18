@@ -58,6 +58,13 @@ export default function AccountPage() {
 
   return (
     <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '0 20px', minHeight: '60vh' }}>
+      <style>{`
+        @keyframes activePulse {
+          0% { box-shadow: 0 0 0 0 rgba(193, 18, 31, 0.7); }
+          70% { box-shadow: 0 0 0 10px rgba(193, 18, 31, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(193, 18, 31, 0); }
+        }
+      `}</style>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid #eee', paddingBottom: '20px' }}>
         <div>
           <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-color)' }}>My Account</h1>
@@ -142,12 +149,26 @@ export default function AccountPage() {
                           (idx === 2 && ['Shipped', 'Delivered'].includes(order.status)) ||
                           (idx === 3 && order.status === 'Delivered');
                         
+                        const isCurrentState = 
+                          (idx === 0 && (order.status === 'Pending' || order.status === 'New' || order.status === 'Pending Payment')) ||
+                          (idx === 1 && order.status === 'Packed') ||
+                          (idx === 2 && order.status === 'Shipped') ||
+                          (idx === 3 && order.status === 'Delivered');
+
                         return (
                           <div key={step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3, flex: 1 }}>
-                            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: isActive ? 'var(--primary-color)' : '#eaeaea', color: isActive ? 'white' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem', border: `3px solid white`, transition: 'all 0.3s' }}>
+                            <div style={{ 
+                              width: '24px', height: '24px', borderRadius: '50%', 
+                              background: isActive ? 'var(--primary-color)' : '#eaeaea', 
+                              color: isActive ? 'white' : 'transparent', 
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                              fontWeight: 'bold', fontSize: '0.8rem', border: `3px solid white`, 
+                              transition: 'all 0.3s',
+                              animation: isCurrentState ? 'activePulse 2s infinite' : 'none'
+                            }}>
                               {isActive ? '✓' : ''}
                             </div>
-                            <span style={{ fontSize: '0.75rem', marginTop: '5px', fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#333' : '#999' }}>{step}</span>
+                            <span style={{ fontSize: '0.75rem', marginTop: '8px', fontWeight: isActive ? 'bold' : 'normal', color: isCurrentState ? 'var(--primary-color)' : (isActive ? '#333' : '#999') }}>{step}</span>
                           </div>
                         );
                       })}

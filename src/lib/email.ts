@@ -129,7 +129,7 @@ export const sendOrderConfirmationEmail = async (order: any) => {
           </div>
 
           <div class="actions">
-            <a href="https://avanthikafashions.vercel.app/account" class="btn">Track Your Order</a>
+            <a href="https://avanthikafashions.com/account" class="btn">Track Your Order</a>
           </div>
         </div>
         <div class="footer">
@@ -210,7 +210,7 @@ export const sendOrderStatusEmail = async (order: any) => {
           ` : ''}
 
           <div class="actions">
-            <a href="https://avanthikafashions.vercel.app/account" class="btn">Track Your Order</a>
+            <a href="https://avanthikafashions.com/account" class="btn">Track Your Order</a>
           </div>
         </div>
         <div class="footer">
