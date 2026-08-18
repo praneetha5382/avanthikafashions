@@ -1042,10 +1042,13 @@ export default function AdminDashboard() {
         <div className={styles.printOnly}>
           <div style={{ fontFamily: 'Arial, sans-serif', color: 'black' }}>
             {/* Header with Logo */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '3px solid black', paddingBottom: '10px', marginBottom: '15px' }}>
-              <img src="/logo.png" style={{ height: '40px', objectFit: 'contain' }} alt="Avanthika Fashions" />
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '18px' }}>ORDER {printLabelOrder.id.substring(4)}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid black', paddingBottom: '15px', marginBottom: '15px' }}>
+              <img src="/logo.png" style={{ height: '80px', objectFit: 'contain' }} alt="Avanthika Fashions" />
+              <div style={{ textAlign: 'right', marginTop: '10px' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '4px' }}>ORDER: {printLabelOrder.id.replace('ORD-', '')}</div>
+                <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>
+                  SKU(s): {printLabelOrder.items.map((i: any) => i.sku || i.id).join(', ')}
+                </div>
                 <div style={{ fontSize: '12px' }}>{new Date().toLocaleDateString('en-IN')}</div>
               </div>
             </div>
@@ -1113,15 +1116,15 @@ export default function AdminDashboard() {
               marginTop: '15px', 
               padding: '10px', 
               border: '2px solid black', 
-              background: printLabelOrder.payment_method?.toLowerCase() === 'cod' ? 'white' : 'black',
-              color: printLabelOrder.payment_method?.toLowerCase() === 'cod' ? 'black' : 'white',
+              background: 'black',
+              color: 'white',
               textAlign: 'center', 
               fontWeight: '900', 
               fontSize: '22px',
               textTransform: 'uppercase',
               letterSpacing: '2px'
             }}>
-              {printLabelOrder.payment_method === 'cod' ? 'CASH ON DELIVERY' : 'PREPAID'}
+              PREPAID
             </div>
             
             <div style={{ textAlign: 'center', marginTop: '15px' }}>
