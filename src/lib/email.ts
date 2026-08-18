@@ -145,15 +145,15 @@ export const sendOrderConfirmationEmail = async (order: any) => {
       await transporter.sendMail({
         from: '"Avanthika Fashions" <getreelife@gmail.com>',
         to: customerEmail,
-        subject: \`Order Confirmed: \${order.id}\`,
+        subject: `Order Confirmed: ${order.id}`,
         html: emailHtml,
       });
-      console.log(\`[Email System] Order confirmation email sent to \${customerEmail}\`);
+      console.log(`[Email System] Order confirmation email sent to ${customerEmail}`);
     } catch (error) {
-      console.error(\`[Email System] Failed to send email to \${customerEmail}:\`, error);
+      console.error(`[Email System] Failed to send email to ${customerEmail}:`, error);
     }
   } else {
-    console.log(\`[Email System/MOCK] Would have sent order confirmation to \${customerEmail}.\`);
+    console.log(`[Email System/MOCK] Would have sent order confirmation to ${customerEmail}.`);
   }
 };
 
@@ -161,7 +161,7 @@ export const sendOrderStatusEmail = async (order: any) => {
   const customerEmail = order.customer_email;
   if (!customerEmail) return;
 
-  const emailHtml = \`
+  const emailHtml = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -198,42 +198,42 @@ export const sendOrderStatusEmail = async (order: any) => {
         </div>
         <div class="content">
           <h1>Order Update</h1>
-          <p>Hi \${order.customer_name}, the status of your order <strong>\${order.id}</strong> has been updated.</p>
+          <p>Hi ${order.customer_name}, the status of your order <strong>${order.id}</strong> has been updated.</p>
           
-          <div class="status-badge">\${order.status}</div>
+          <div class="status-badge">${order.status}</div>
           
-          \${order.status === 'Shipped' && order.shipping_address?.tracking ? \`
+          ${order.status === 'Shipped' && order.shipping_address?.tracking ? `
             <div class="tracking-box">
-              <p>Your order has been shipped via <strong>\${order.shipping_address.tracking.courier}</strong>.</p>
-              <p class="tracking-id">\${order.shipping_address.tracking.trackingId}</p>
+              <p>Your order has been shipped via <strong>${order.shipping_address.tracking.courier}</strong>.</p>
+              <p class="tracking-id">${order.shipping_address.tracking.trackingId}</p>
             </div>
-          \` : ''}
+          ` : ''}
 
           <div class="actions">
             <a href="https://avanthikafashions.vercel.app/account" class="btn">Track Your Order</a>
           </div>
         </div>
         <div class="footer">
-          <p>&copy; \${new Date().getFullYear()} Avanthika Fashions. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Avanthika Fashions. All rights reserved.</p>
         </div>
       </div>
     </body>
     </html>
-  \`;
+  `;
 
   if (transporter) {
     try {
       await transporter.sendMail({
         from: '"Avanthika Fashions" <getreelife@gmail.com>',
         to: customerEmail,
-        subject: \`Order Update: \${order.status} - \${order.id}\`,
+        subject: `Order Update: ${order.status} - ${order.id}`,
         html: emailHtml,
       });
-      console.log(\`[Email System] Order status email sent to \${customerEmail}\`);
+      console.log(`[Email System] Order status email sent to ${customerEmail}`);
     } catch (error) {
-      console.error(\`[Email System] Failed to send status email to \${customerEmail}:\`, error);
+      console.error(`[Email System] Failed to send status email to ${customerEmail}:`, error);
     }
   } else {
-    console.log(\`[Email System/MOCK] Would have sent status update to \${customerEmail}.\`);
+    console.log(`[Email System/MOCK] Would have sent status update to ${customerEmail}.`);
   }
 };
