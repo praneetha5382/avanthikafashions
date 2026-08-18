@@ -5,8 +5,10 @@ import NextImage from 'next/image';
 import styles from './Navbar.module.css';
 import { useCart } from '@/context/CartContext';
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import SearchOverlay from './SearchOverlay';
+import LoginModal from './LoginModal';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Navbar() {
   const { toggleCart, cartCount } = useCart();
@@ -14,6 +16,10 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
   
   const pathname = usePathname();
   const isHome = pathname === '/';
@@ -29,6 +35,11 @@ export default function Navbar() {
   return (
     <>
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+        onSuccess={() => router.push('/account')}
+      />
       <header className={`${styles.header} ${isHome ? styles.headerTransparent : ''}`}>
       <div className={`container ${styles.navContainer}`}>
         
@@ -89,6 +100,13 @@ export default function Navbar() {
 
         <div className={styles.actions}>
           <button aria-label="Search" className={styles.iconBtn} onClick={() => setIsSearchOpen(true)}>Search</button>
+          
+          {isLoggedIn ? (
+            <Link href="/account" className={styles.iconBtn} style={{textDecoration: 'none'}}>Profile</Link>
+          ) : (
+            <button aria-label="Login" className={styles.iconBtn} onClick={() => setIsLoginModalOpen(true)}>Login</button>
+          )}
+
           <button aria-label="Cart" className={styles.iconBtn} onClick={toggleCart}>
             Cart ({cartCount})
           </button>

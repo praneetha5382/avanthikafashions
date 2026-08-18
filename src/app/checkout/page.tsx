@@ -1,13 +1,15 @@
 'use client';
 
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import styles from './page.module.css';
 import NextImage from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function CheckoutPage() {
   const { cartItems, cartTotal, cartRequiresShipping, clearCart } = useCart();
+  const { isLoggedIn, userPhone, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
 
@@ -16,6 +18,13 @@ export default function CheckoutPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
+
+  useEffect(() => {
+    if (isLoggedIn && userPhone) {
+      setPhone(userPhone);
+      setOtpVerified(true);
+    }
+  }, [isLoggedIn, userPhone]);
 
   // Form State
   const [email, setEmail] = useState('');
@@ -46,6 +55,7 @@ export default function CheckoutPage() {
   const handleVerifyOtp = () => {
     if (otpCode === '1234') {
       setOtpVerified(true);
+      login(phone); // Save to profile
       alert("Phone number verified successfully!");
     } else {
       alert("Invalid OTP code. Please try again.");
@@ -256,7 +266,7 @@ export default function CheckoutPage() {
                 <div className={styles.details}>
                   <p className={styles.name}>{item.name}</p>
                 </div>
-                <p className={styles.itemPrice}>₹{(item.price * item.quantity).toFixed(2)}</p>
+                <p className={styles.itemPrice}>₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
               </div>
             ))}
             {cartItems.length === 0 && <p>Your cart is empty.</p>}
@@ -279,12 +289,12 @@ export default function CheckoutPage() {
           <div className={styles.totals}>
             <div className={styles.row}>
               <span className={styles.label}>Subtotal</span>
-              <span className={styles.value}>₹{cartTotal.toFixed(2)}</span>
+              <span className={styles.value}>₹{cartTotal.toLocaleString('en-IN')}</span>
             </div>
             {couponApplied && (
               <div className={styles.row}>
                 <span className={styles.label}>Discount (WELCOME10)</span>
-                <span className={styles.discountValue}>-₹{discountAmount.toFixed(2)}</span>
+                <span className={styles.discountValue}>-₹{discountAmount.toLocaleString('en-IN')}</span>
               </div>
             )}
             <div className={styles.row}>
@@ -292,16 +302,16 @@ export default function CheckoutPage() {
               {shippingCost === 0 ? (
                 <span className={styles.shippingValue}>Free Standard Shipping</span>
               ) : (
-                <span className={styles.value}>₹{shippingCost.toFixed(2)}</span>
+                <span className={styles.value}>₹{shippingCost.toLocaleString('en-IN')}</span>
               )}
             </div>
             <div className={`${styles.row} ${styles.grandTotal}`}>
               <span className={styles.label}>Total</span>
               <span className={styles.value}>
-                <span className={styles.currency}>INR</span> ₹{finalTotal.toFixed(2)}
+                <span className={styles.currency}>INR</span> ₹{finalTotal.toLocaleString('en-IN')}
               </span>
             </div>
-            <p className={styles.taxNote}>Including ₹{tax.toFixed(2)} in taxes</p>
+            <p className={styles.taxNote}>Including ₹{tax.toLocaleString('en-IN')} in taxes</p>
           </div>
         </div>
       </div>

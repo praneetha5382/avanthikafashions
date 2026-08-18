@@ -49,18 +49,43 @@ export default function ProductGallery({ images }: { images: string[] }) {
           </div>
         )}
 
-        {/* Main Image */}
-        <div className={styles.mainImageWrapper} onClick={() => setIsLightboxOpen(true)}>
-          <NextImage 
-            src={currentImage} 
-            alt="Product View" 
-            fill 
-            className={styles.mainImage} 
-            priority 
-            unoptimized 
-          />
+        {/* Main Image (Desktop) & Swipeable Carousel (Mobile) */}
+        <div className={styles.carousel}>
+          <div 
+            className={styles.carouselTrack}
+            style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+          >
+            {displayImages.map((src, idx) => (
+              <div 
+                key={idx} 
+                className={styles.carouselSlide}
+                onClick={() => setIsLightboxOpen(true)}
+              >
+                <NextImage 
+                  src={src} 
+                  alt="Product View" 
+                  fill 
+                  className={styles.mainImage} 
+                  priority={idx === 0}
+                  unoptimized 
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+      
+      {/* Mobile Pagination Dots */}
+      {displayImages.length > 1 && (
+        <div className={styles.carouselDots}>
+          {displayImages.map((_, idx) => (
+            <div 
+              key={idx} 
+              className={`${styles.dot} ${idx === activeIndex ? styles.active : ''}`}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Fullscreen Lightbox Overlay */}
       {isLightboxOpen && (

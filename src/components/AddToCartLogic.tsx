@@ -22,6 +22,7 @@ export default function AddToCartLogic({ product, selectedVariant }: { product: 
       size: selectedVariant?.color || 'One Size', 
       quantity: quantity,
       image: selectedVariant?.images?.[0] || product.images?.[0] || '',
+      sku: selectedVariant?.sku || product.sku || 'N/A',
       isFreeShipping: product.isFreeShipping !== false
     });
   };

@@ -9,9 +9,9 @@
   flex: 1;
   position: relative;
   width: 100%;
-  height: 60vh; /* Fixed percentage of screen height */
+  height: 60vh;
   min-height: 400px;
-  max-height: 550px; /* Constrain it so it never gets too tall */
+  max-height: 650px;
   background-color: #F8F8F8;
   border-radius: 4px;
   overflow: hidden;
@@ -19,7 +19,37 @@
 }
 
 .mainImage {
-  object-fit: contain; /* Keep the entire image visible without cropping */
+  object-fit: cover;
+}
+
+/* Mobile Carousel Base Styles (Desktop uses JS active index) */
+.carousel {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  min-height: 400px;
+  max-height: 650px;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #F8F8F8;
+}
+
+.carouselTrack {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.carouselSlide {
+  flex: 0 0 100%;
+  height: 100%;
+  position: relative;
+}
+
+.carouselDots {
+  display: none;
 }
 
 .thumbnails {
@@ -109,15 +139,56 @@
 
 @media (max-width: 900px) {
   .galleryContainer {
-    flex-direction: column-reverse; /* Put thumbs below main image on mobile */
+    flex-direction: column;
     gap: 15px;
+    margin-left: -15px;
+    margin-right: -15px;
+    width: calc(100% + 30px);
   }
   
-  .thumbnails {
-    flex-direction: row; /* Horizontal on mobile */
+  .carousel {
     overflow-x: auto;
-    overflow-y: hidden;
-    padding-right: 0;
-    padding-bottom: 5px;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    border-radius: 0;
+  }
+  
+  .carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carouselTrack {
+    /* override transform since we use native scrolling */
+    transform: none !important; 
+  }
+
+  .carouselSlide {
+    scroll-snap-align: start;
+  }
+
+  .thumbnails {
+    display: none;
+  }
+
+  .carouselDots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #ddd;
+    transition: background-color 0.2s;
+  }
+
+  .dot.active {
+    background-color: var(--primary-color);
   }
 }

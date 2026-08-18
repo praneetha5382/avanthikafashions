@@ -75,6 +75,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true });
     }
 
+    // Update existing product
+    if (payload.action === 'updateProduct') {
+      const { id, action, ...updateData } = payload;
+      
+      // Clean up transient data
+      delete updateData.colors;
+      delete updateData.images;
+      delete updateData.fabric;
+      delete updateData.weave;
+      delete updateData.categoryId;
+      
+      const { error } = await supabase.from('products').update(updateData).eq('id', id);
+      if (error) throw error;
+      return NextResponse.json({ success: true, product: { id, ...updateData } });
+    }
+
     // Default: Add Product
     const newProduct = { ...payload };
     newProduct.id = 's' + Date.now();

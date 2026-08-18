@@ -10,8 +10,8 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('orders'); // orders, inventory, categories, storefront, customers
   const [menuItems, setMenuItems] = useState<any[]>([{ name: '', href: '' }]);
   const [menuTitle, setMenuTitle] = useState('');
-  
   // --- Inventory State ---
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '', originalPrice: '', price: '', 
     mainCategory: '', subCategory: '', 
@@ -108,38 +108,53 @@ export default function AdminDashboard() {
       return alert("Please add at least one color variant with an image.");
     }
 
-    const res = await fetch('/api/products', {
-      method: 'POST',
-      body: JSON.stringify({
-        ...formData,
-        originalPrice: Number(formData.originalPrice),
-        price: Number(formData.price),
-        discount: formData.originalPrice !== formData.price ? Math.round(((Number(formData.originalPrice) - Number(formData.price)) / Number(formData.originalPrice)) * 100) + '% OFF' : null,
-        variants: formData.variants, // Replaces images/colors
-        info: formData.info.filter(i => i.title && i.content) // Only save filled sliders
-      })
-    });
-    if (res.ok) {
-      const result = await res.json();
-      setData({ ...data, products: [...data.products, result.product] });
-      // Reset form
-      setFormData({
-        name: '', originalPrice: '', price: '', 
-        mainCategory: data.categories[0]?.name || '', 
-        subCategory: '',
-        isTrending: false, isNewArrival: true,
-        isFreeShipping: true,
-        description: '', 
-        info: [
-          { title: 'Product Care', content: 'Dry clean only. Do not bleach.' },
-          { title: 'Shipping & Delivery', content: 'Dispatched within 24-48 hours. Delivery takes 3-5 business days.' },
-          { title: 'Return Policies', content: '7-day easy returns if the product is defective or incorrect.' }
-        ],
-        variants: [{ color: '', sku: '', images: [] }]
+    const payload = {
+      ...formData,
+      originalPrice: Number(formData.originalPrice),
+      price: Number(formData.price),
+      discount: formData.originalPrice !== formData.price ? Math.round(((Number(formData.originalPrice) - Number(formData.price)) / Number(formData.originalPrice)) * 100) + '% OFF' : null,
+      variants: formData.variants,
+      info: formData.info.filter(i => i.title && i.content)
+    };
+
+    if (editingProductId) {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'updateProduct', id: editingProductId, ...payload })
       });
-      setHasMultipleVariants(false);
-      alert('Product Launched!');
+      if (res.ok) {
+        const result = await res.json();
+        setData({ ...data, products: data.products.map((p: any) => p.id === editingProductId ? result.product : p) });
+        setEditingProductId(null);
+        alert("Product updated successfully!");
+      }
+    } else {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setData({ ...data, products: [...data.products, result.product] });
+        alert("Product launched successfully!");
+      }
     }
+
+    setFormData({
+      name: '', originalPrice: '', price: '', 
+      mainCategory: data.categories[0]?.name || '', 
+      subCategory: '',
+      isTrending: false, isNewArrival: true,
+      isFreeShipping: true,
+      description: '', 
+      info: [
+        { title: 'Product Care', content: 'Dry clean only. Do not bleach.' },
+        { title: 'Shipping & Delivery', content: 'Dispatched within 24-48 hours. Delivery takes 3-5 business days.' },
+        { title: 'Return Policies', content: '7-day easy returns if the product is defective or incorrect.' }
+      ],
+      variants: [{ color: '', sku: '', images: [] }]
+    });
+    setHasMultipleVariants(false);
   };
 
   const handleAddMainCategory = async (e: React.FormEvent) => {
@@ -250,7 +265,7 @@ export default function AdminDashboard() {
                             <li key={idx} style={{marginBottom: '5px'}}>
                               <strong>{item.quantity}x</strong> {item.name} 
                               {item.size !== 'Standard' && ` (${item.size})`} 
-                              <br/><span style={{color: 'var(--primary-color)', fontWeight: 'bold'}}>SKU: {item.id}</span>
+                              <br/><span style={{color: 'var(--primary-color)', fontWeight: 'bold'}}>SKU: {item.sku || item.id}</span>
                             </li>
                           ))}
                         </ul>
@@ -296,12 +311,99 @@ export default function AdminDashboard() {
         {activeTab === 'inventory' && (
           <div className={styles.tabContent}>
             <header className={styles.tabHeader}>
-              <h1>Launch New Product</h1>
-              <p>Fill out the details and upload actual photos to launch a product to the live site.</p>
+              <h1>Manage Inventory</h1>
+              <p>Add new products or edit existing ones.</p>
+            </header>
+
+            <div className={styles.card} style={{ marginBottom: '30px' }}>
+              <h2 style={{fontSize: '1.2rem', marginBottom: '15px'}}>Current Products</h2>
+              {data.products.length === 0 ? (
+                <p>No products yet.</p>
+              ) : (
+                <div style={{overflowX: 'auto'}}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.products.map((p: any) => (
+                        <tr key={p.id}>
+                          <td>
+                            <img src={p.variants[0]?.images[0] || '/placeholder.jpg'} alt={p.name} style={{width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px'}} />
+                          </td>
+                          <td><strong>{p.name}</strong><br/><span style={{fontSize: '0.8rem', color: '#666'}}>ID: {p.id}</span></td>
+                          <td>₹{p.price}</td>
+                          <td>{p.mainCategory} &gt; {p.subCategory}</td>
+                          <td>
+                            <button 
+                              onClick={() => {
+                                setEditingProductId(p.id);
+                                setFormData({
+                                  name: p.name,
+                                  originalPrice: p.originalPrice.toString(),
+                                  price: p.price.toString(),
+                                  mainCategory: p.mainCategory,
+                                  subCategory: p.subCategory,
+                                  isTrending: p.isTrending || false,
+                                  isNewArrival: p.isNewArrival || false,
+                                  isFreeShipping: p.isFreeShipping !== false,
+                                  description: p.description || '',
+                                  info: p.info || [],
+                                  variants: p.variants || [{ color: '', sku: '', images: [] }]
+                                });
+                                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                              }}
+                              style={{padding: '5px 10px', background: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+                            >
+                              Edit
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            <header className={styles.tabHeader}>
+              <h1>{editingProductId ? 'Edit Product' : 'Launch New Product'}</h1>
+              <p>{editingProductId ? 'Modify the product details below and save changes.' : 'Fill out the details and upload actual photos to launch a product to the live site.'}</p>
             </header>
             
             <div className={styles.grid2Col}>
               <div className={styles.card}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h2 style={{ fontSize: '1.2rem', margin: 0 }}>{editingProductId ? 'Edit Details' : 'Product Details'}</h2>
+                  {editingProductId && (
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setEditingProductId(null);
+                        setFormData({
+                          name: '', originalPrice: '', price: '', 
+                          mainCategory: data.categories[0]?.name || '', subCategory: '',
+                          isTrending: false, isNewArrival: true, isFreeShipping: true, description: '', 
+                          info: [
+                            { title: 'Product Care', content: 'Dry clean only. Do not bleach.' },
+                            { title: 'Shipping & Delivery', content: 'Dispatched within 24-48 hours. Delivery takes 3-5 business days.' },
+                            { title: 'Return Policies', content: '7-day easy returns if the product is defective or incorrect.' }
+                          ],
+                          variants: [{ color: '', sku: '', images: [] }]
+                        });
+                      }}
+                      style={{ background: 'none', border: '1px solid #ccc', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      Cancel Edit
+                    </button>
+                  )}
+                </div>
                 <form onSubmit={handleAddProduct} className={styles.form}>
                   
                   {/* explicit labels */}
@@ -483,7 +585,9 @@ export default function AdminDashboard() {
                     )}
                   </div>
 
-                  <button type="submit" className="btn-primary" style={{marginTop: '20px'}}>Launch Product</button>
+                  <button type="submit" className={`btn-primary ${styles.submitBtn}`}>
+                    {editingProductId ? 'Save Changes' : 'Launch Product Live'}
+                  </button>
                 </form>
               </div>
 

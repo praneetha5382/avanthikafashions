@@ -10,6 +10,7 @@ export interface CartItem {
   size: string;
   quantity: number;
   image: string;
+  sku?: string;
   isFreeShipping?: boolean;
 }
 
