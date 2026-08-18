@@ -563,11 +563,7 @@ export default function AdminDashboard() {
               filteredOrders.forEach((o: any) => {
                  let key = '';
                  const d = new Date(o.created_at);
-                 if (dashboardDateFilter === 'This Year' || dashboardDateFilter === 'All Time') {
-                    key = d.toLocaleString('default', { month: 'short', year: '2-digit' });
-                 } else {
-                    key = d.toLocaleDateString('default', { month: 'short', day: 'numeric' });
-                 }
+                 key = d.toLocaleDateString('default', { month: 'short', day: 'numeric' });
                  if (!chartDataObj[key]) chartDataObj[key] = { name: key, Revenue: 0, Orders: 0 };
                  chartDataObj[key].Revenue += (o.total || 0);
                  chartDataObj[key].Orders += 1;
