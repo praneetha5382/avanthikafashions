@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import styles from './AddToCartLogic.module.css';
 import { useRouter } from 'next/navigation';
 
-export default function AddToCartLogic({ product, selectedVariant }: { product: any, selectedVariant?: any }) {
+export default function AddToCartLogic({ product, selectedVariant, fomoThreshold = 10 }: { product: any, selectedVariant?: any, fomoThreshold?: number }) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const router = useRouter();
@@ -62,7 +62,7 @@ export default function AddToCartLogic({ product, selectedVariant }: { product: 
           <p style={{ marginTop: '15px', fontSize: '1.1rem', fontWeight: 500, fontFamily: 'monospace' }}>
             Sku: {selectedVariant?.sku || product.sku}
           </p>
-          {stock !== undefined && stock <= 10 && stock > 0 && (
+          {stock !== undefined && stock <= fomoThreshold && stock > 0 && (
             <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px', color: '#d32f2f', fontWeight: 'bold', fontSize: '0.9rem' }}>
               <div style={{ width: '8px', height: '8px', backgroundColor: '#d32f2f', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
               Only {stock} left in stock - order soon!

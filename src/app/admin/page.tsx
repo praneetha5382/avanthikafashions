@@ -921,16 +921,11 @@ export default function AdminDashboard() {
                                 <div style={{display: 'flex', alignItems: 'center', background: '#f5f5f5', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '0 15px', flex: 1}}>
                                   <span style={{fontWeight: 'bold', color: '#666', marginRight: '5px'}}>SKU-</span>
                                   <input 
-                                    type="text" placeholder="123456" maxLength={6}
-                                    value={variant.sku.replace('SKU-', '')} required={hasMultipleVariants}
-                                    disabled={!!editingProductId}
-                                    style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem', color: editingProductId ? '#999' : 'inherit'}}
-                                    onChange={e => {
-                                      const sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
-                                      const newVars = [...formData.variants]; 
-                                      newVars[idx].sku = sanitizedValue ? `SKU-${sanitizedValue}` : ''; 
-                                      setFormData({...formData, variants: newVars});
-                                    }} 
+                                    type="text" placeholder="Auto-Generated" maxLength={6}
+                                    value={variant.sku.replace('SKU-', '')} 
+                                    disabled={true}
+                                    style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem', color: '#999', cursor: 'not-allowed'}}
+                                    onChange={() => {}} 
                                   />
                                 </div>
                               </div>
@@ -963,16 +958,11 @@ export default function AdminDashboard() {
                               <div style={{display: 'flex', alignItems: 'center', background: '#f5f5f5', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '0 15px', maxWidth: '300px'}}>
                                 <span style={{fontWeight: 'bold', color: '#666', marginRight: '5px'}}>SKU-</span>
                                 <input 
-                                  type="text" placeholder="123456" maxLength={6}
-                                  value={variant.sku.replace('SKU-', '')} required={!hasMultipleVariants}
-                                  disabled={!!editingProductId}
-                                  style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem', color: editingProductId ? '#999' : 'inherit'}}
-                                  onChange={e => {
-                                    const sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
-                                    const newVars = [...formData.variants]; 
-                                    newVars[idx].sku = sanitizedValue ? `SKU-${sanitizedValue}` : ''; 
-                                    setFormData({...formData, variants: newVars});
-                                  }} 
+                                  type="text" placeholder="Auto-Generated" maxLength={6}
+                                  value={variant.sku.replace('SKU-', '')} 
+                                  disabled={true}
+                                  style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem', color: '#999', cursor: 'not-allowed'}}
+                                  onChange={() => {}} 
                                 />
                               </div>
                             </div>
@@ -1078,6 +1068,28 @@ export default function AdminDashboard() {
                   </div>
                   );
                })}
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #eee' }}>
+                 <div style={{display: 'flex', flexDirection: 'column'}}>
+                   <span style={{ fontSize: '1.1rem', fontWeight: 500 }}>FOMO Stock Threshold</span>
+                   <span style={{ fontSize: '0.85rem', color: '#666' }}>Show urgency counter if stock is below this number</span>
+                 </div>
+                 <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                   <input 
+                     type="number" 
+                     className={styles.input} 
+                     style={{width: '80px', margin: 0}}
+                     value={data.siteSettings?.fomoThreshold || 10}
+                     onChange={(e) => setData({...data, siteSettings: {...data.siteSettings, fomoThreshold: parseInt(e.target.value) || 0}})}
+                   />
+                   <button 
+                     onClick={async () => {
+                       await fetch('/api/products', { method: 'POST', body: JSON.stringify({ action: 'updateSettings', settings: data.siteSettings }) });
+                       alert("Saved!");
+                     }}
+                     className="btn-primary" style={{padding: '8px 15px'}}
+                   >Save</button>
+                 </div>
+               </div>
             </div>
           </div>
         )}

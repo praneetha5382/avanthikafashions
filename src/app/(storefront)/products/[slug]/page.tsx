@@ -21,6 +21,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     notFound();
   }
 
+  const { data: settings } = await supabase.from('settings').select('*').eq('key', 'siteSettings').single();
+  const fomoThreshold = settings?.value?.fomoThreshold || 10;
+
   return (
     <div className={styles.productPage}>
       <div className={styles.container}>
@@ -34,7 +37,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           )}
           <span>{product.name}</span>
         </nav>
-        <ProductDetailsClient product={product} />
+        <ProductDetailsClient product={product} fomoThreshold={fomoThreshold} />
       </div>
     </div>
   );

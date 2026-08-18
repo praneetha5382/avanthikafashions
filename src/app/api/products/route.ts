@@ -20,7 +20,8 @@ export async function GET() {
 
     const siteSettings = settings?.find((s: any) => s.key === 'siteSettings')?.value || {
       showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true,
-      promo1: true, promo2: true, promo3: true, promo4: true
+      promo1: true, promo2: true, promo3: true, promo4: true,
+      fomoThreshold: 10
     };
     
     const hiddenProducts = settings?.find((s: any) => s.key === 'hiddenProducts')?.value || [];
@@ -93,6 +94,30 @@ export async function POST(request: Request) {
       delete updateData.weave;
       delete updateData.categoryId;
       
+      // Auto-assign SKUs to any new variants added during edit
+      if (updateData.variants && Array.isArray(updateData.variants)) {
+        let maxSkuNum = 100000;
+        const { data: allProducts } = await supabase.from('products').select('variants');
+        if (allProducts) {
+          for (const p of allProducts) {
+            if (p.variants && Array.isArray(p.variants)) {
+              for (const v of p.variants) {
+                if (v.sku && v.sku.startsWith('SKU-')) {
+                  const num = parseInt(v.sku.replace('SKU-', ''), 10);
+                  if (!isNaN(num) && num > maxSkuNum) maxSkuNum = num;
+                }
+              }
+            }
+          }
+        }
+        for (let i = 0; i < updateData.variants.length; i++) {
+          if (!updateData.variants[i].sku) {
+            maxSkuNum++;
+            updateData.variants[i].sku = `SKU-${maxSkuNum}`;
+          }
+        }
+      }
+
       const { error } = await supabase.from('products').update(updateData).eq('id', id);
       if (error) throw error;
       return NextResponse.json({ success: true, product: { id, ...updateData } });
@@ -123,6 +148,30 @@ export async function POST(request: Request) {
     delete newProduct.fabric;
     delete newProduct.weave;
     delete newProduct.categoryId;
+
+    // Auto-generate SKUs for new variants
+    if (newProduct.variants && Array.isArray(newProduct.variants)) {
+      let maxSkuNum = 100000;
+      const { data: allProducts } = await supabase.from('products').select('variants');
+      if (allProducts) {
+        for (const p of allProducts) {
+          if (p.variants && Array.isArray(p.variants)) {
+            for (const v of p.variants) {
+              if (v.sku && v.sku.startsWith('SKU-')) {
+                const num = parseInt(v.sku.replace('SKU-', ''), 10);
+                if (!isNaN(num) && num > maxSkuNum) maxSkuNum = num;
+              }
+            }
+          }
+        }
+      }
+      for (let i = 0; i < newProduct.variants.length; i++) {
+        if (!newProduct.variants[i].sku) {
+          maxSkuNum++;
+          newProduct.variants[i].sku = `SKU-${maxSkuNum}`;
+        }
+      }
+    }
 
     const { error } = await supabase.from('products').insert(newProduct);
     if (error) {

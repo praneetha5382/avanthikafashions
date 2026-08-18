@@ -5,7 +5,7 @@ import ProductGallery from './ProductGallery';
 import AddToCartLogic from './AddToCartLogic';
 import styles from '../app/(storefront)/products/[slug]/page.module.css';
 
-export default function ProductDetailsClient({ product }: { product: any }) {
+export default function ProductDetailsClient({ product, fomoThreshold = 10 }: { product: any, fomoThreshold?: number }) {
   // Backwards compatibility for old database format
   const variants = product.variants && product.variants.length > 0 
     ? product.variants 
@@ -63,7 +63,7 @@ export default function ProductDetailsClient({ product }: { product: any }) {
         )}
 
         {/* Dynamic Pricing and Cart Logic */}
-        <AddToCartLogic product={product} selectedVariant={selectedVariant} />
+        <AddToCartLogic product={product} selectedVariant={selectedVariant} fomoThreshold={fomoThreshold} />
 
         {/* WhatsApp Chat Link */}
         <div style={{ margin: '20px 0', fontSize: '0.9rem', fontWeight: 500 }}>
