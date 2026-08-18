@@ -591,10 +591,9 @@ export default function AdminDashboard() {
                         <div style={{ background: '#fcfcfc', padding: '15px', borderRadius: '6px', border: '1px solid #eaeaea', fontSize: '0.85rem' }}>
                           <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary-color)', fontSize: '0.95rem' }}>Customer Details</h4>
                           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '6px' }}>
-                            <li><strong>Mobile Number:</strong> {order.customer_phone}</li>
+                            <li><strong>Full Name:</strong> {order.customer_name}</li>
+                            <li><strong>Phone Number:</strong> {order.customer_phone}</li>
                             <li><strong>Email Address:</strong> {order.customer_email || 'N/A'}</li>
-                            <li><strong>First Name:</strong> {order.customer_name.split(' ')[0] || ''}</li>
-                            <li><strong>Last Name:</strong> {order.customer_name.split(' ').slice(1).join(' ') || ''}</li>
                             <li><strong>Delivery Address:</strong> {order.shipping_address?.address}</li>
                             <li><strong>City:</strong> {order.shipping_address?.city}</li>
                             <li><strong>State:</strong> {order.shipping_address?.state}</li>

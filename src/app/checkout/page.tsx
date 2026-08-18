@@ -28,8 +28,7 @@ export default function CheckoutPage() {
 
   // Form State
   const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [fullName, setFullName] = useState('');
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
@@ -72,7 +71,7 @@ export default function CheckoutPage() {
   };
 
   const handlePay = async () => {
-    if (!email || !firstName || !lastName || !address || !city || !state || !pin) {
+    if (!email || !fullName || !address || !city || !state || !pin) {
       return alert("Please fill in all delivery details.");
     }
     setLoading(true);
@@ -81,7 +80,7 @@ export default function CheckoutPage() {
       const payload = {
         customer_phone: phone,
         customer_email: email,
-        customer_name: `${firstName} ${lastName}`,
+        customer_name: fullName,
         shipping_address: { address, city, state, pin },
         items: cartItems,
         subtotal: cartTotal,
@@ -190,8 +189,7 @@ export default function CheckoutPage() {
               <h3 style={{fontSize: '1.1rem', marginBottom: '10px', marginTop: '10px'}}>2. Delivery Details</h3>
               <div className={styles.formGrid}>
                 <input className={`${styles.inputField} ${styles.fullWidth}`} type="email" placeholder="Email Address" required value={email} onChange={e=>setEmail(e.target.value)} />
-                <input className={styles.inputField} type="text" placeholder="First name" required value={firstName} onChange={e=>setFirstName(e.target.value)} />
-                <input className={styles.inputField} type="text" placeholder="Last name" required value={lastName} onChange={e=>setLastName(e.target.value)} />
+                <input className={`${styles.inputField} ${styles.fullWidth}`} type="text" placeholder="Full Name" required value={fullName} onChange={e=>setFullName(e.target.value)} />
                 <input className={`${styles.inputField} ${styles.fullWidth}`} type="text" placeholder="Complete Delivery Address" required value={address} onChange={e=>setAddress(e.target.value)} />
                 <input className={styles.inputField} type="text" placeholder="City" required value={city} onChange={e=>setCity(e.target.value)} />
                 <select className={styles.inputField} required value={state} onChange={e=>setState(e.target.value)}>
