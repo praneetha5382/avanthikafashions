@@ -335,9 +335,9 @@ export default function AdminDashboard() {
                   <p><strong>Current Status:</strong> <span style={{ padding: '3px 8px', background: '#f0f0f0', borderRadius: '4px', fontWeight: 'bold' }}>{quickScanResult.status}</span></p>
                   
                   <div style={{ display: 'flex', gap: '10px', marginTop: '25px', flexWrap: 'wrap' }}>
-                    <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Packed'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#fef3c7', border: '1px solid #d97706', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Mark Packed</button>
-                    <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Shipped'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#dbeafe', border: '1px solid #2563eb', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Mark Shipped</button>
-                    <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Delivered'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#d1fae5', border: '1px solid #059669', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Mark Delivered</button>
+                    {(quickScanResult.status === 'Pending' || quickScanResult.status === 'Pending Payment' || quickScanResult.status === 'New' || quickScanResult.status === 'Packed') && (
+                      <button onClick={() => { setTrackingModalOrder(quickScanResult); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#dbeafe', border: '1px solid #2563eb', color: '#1d4ed8', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>📦 Dispatch & Add Tracking</button>
+                    )}
                   </div>
                   <button onClick={closeQuickScan} style={{ width: '100%', marginTop: '15px', padding: '10px', background: 'none', border: 'none', color: '#666', cursor: 'pointer', textDecoration: 'underline' }}>Close</button>
                 </div>
