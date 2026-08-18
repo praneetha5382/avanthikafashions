@@ -171,6 +171,7 @@ export default function AdminDashboard() {
         setData({ ...data, products: data.products.map((p: any) => p.id === editingProductId ? result.product : p) });
         setEditingProductId(null);
         alert("Product updated successfully!");
+        setActiveTab('inventory');
       }
     } else {
       const res = await fetch('/api/products', {
@@ -181,6 +182,7 @@ export default function AdminDashboard() {
         const result = await res.json();
         setData({ ...data, products: [...data.products, result.product] });
         alert("Product launched successfully!");
+        setActiveTab('inventory');
       }
     }
 
@@ -446,7 +448,8 @@ export default function AdminDashboard() {
         </div>
         <nav className={styles.navLinks}>
           <button className={activeTab === 'orders' ? styles.active : ''} onClick={() => {setActiveTab('orders'); setIsMobileSidebarOpen(false);}}>🚚 Orders & Dispatch</button>
-          <button className={activeTab === 'inventory' ? styles.active : ''} onClick={() => {setActiveTab('inventory'); setIsMobileSidebarOpen(false);}}>📦 Add Product</button>
+          <button className={activeTab === 'inventory' ? styles.active : ''} onClick={() => {setActiveTab('inventory'); setIsMobileSidebarOpen(false);}}>📦 Manage Inventory</button>
+          <button className={activeTab === 'add-product' ? styles.active : ''} onClick={() => {setActiveTab('add-product'); setIsMobileSidebarOpen(false);}}>➕ Add Product</button>
           <button className={activeTab === 'categories' ? styles.active : ''} onClick={() => {setActiveTab('categories'); setIsMobileSidebarOpen(false);}}>🏷️ Manage Categories</button>
           <button className={activeTab === 'storefront' ? styles.active : ''} onClick={() => {setActiveTab('storefront'); setIsMobileSidebarOpen(false);}}>⚙️ Storefront Settings</button>
           <button className={activeTab === 'customers' ? styles.active : ''} onClick={() => {setActiveTab('customers'); setIsMobileSidebarOpen(false);}}>👥 Customer Intelligence</button>
@@ -758,7 +761,7 @@ export default function AdminDashboard() {
                                   info: p.info || [],
                                   variants: p.variants || [{ color: '', sku: '', images: [] }]
                                 });
-                                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                                setActiveTab('add-product');
                               }}
                               style={{padding: '5px 10px', background: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
                             >
@@ -774,7 +777,11 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
+          </div>
+        )}
 
+        {activeTab === 'add-product' && (
+          <div className={styles.tabContent}>
             <header className={styles.tabHeader}>
               <h1>{editingProductId ? 'Edit Product' : 'Launch New Product'}</h1>
               <p>{editingProductId ? 'Modify the product details below and save changes.' : 'Fill out the details and upload actual photos to launch a product to the live site.'}</p>
