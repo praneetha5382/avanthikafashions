@@ -332,24 +332,17 @@ export default function AdminDashboard() {
           </div>
           
           {/* Shipping Address */}
-          <div style={{ border: '2px solid black', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '5px', textTransform: 'uppercase', color: '#555' }}>Ship To:</div>
-            
-            <div style={{ marginBottom: '8px' }}>
-              <span style={{ fontSize: '14px', color: '#444' }}>Name:</span><br/>
-              <span style={{ fontSize: '24px', fontWeight: '900', letterSpacing: '0.5px' }}>{printLabelOrder.customer_name}</span>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <span style={{ fontSize: '14px', color: '#444' }}>Phone:</span><br/>
-              <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{printLabelOrder.customer_phone}</span>
-            </div>
-
-            <div style={{ fontSize: '16px', lineHeight: '1.4', marginTop: '8px' }}>
-              {printLabelOrder.shipping_address?.address}<br/>
-              {printLabelOrder.shipping_address?.city}, {printLabelOrder.shipping_address?.state}<br/>
-              <span style={{ fontWeight: 'bold', fontSize: '18px' }}>PIN: {printLabelOrder.shipping_address?.pin}</span>
-            </div>
+          <div style={{ border: '2px solid black', padding: '12px', borderRadius: '4px', marginBottom: '15px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', textTransform: 'uppercase', borderBottom: '1px solid black', paddingBottom: '4px' }}>Customer Details</div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '14px', lineHeight: '1.6' }}>
+              <li><strong>Full Name:</strong> <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{printLabelOrder.customer_name}</span></li>
+              <li><strong>Phone Number:</strong> {printLabelOrder.customer_phone}</li>
+              {printLabelOrder.customer_email && <li><strong>Email Address:</strong> {printLabelOrder.customer_email}</li>}
+              <li><strong>Delivery Address:</strong> {printLabelOrder.shipping_address?.address}</li>
+              <li><strong>City:</strong> {printLabelOrder.shipping_address?.city}</li>
+              <li><strong>State:</strong> {printLabelOrder.shipping_address?.state}</li>
+              <li><strong>PIN code:</strong> <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{printLabelOrder.shipping_address?.pin}</span></li>
+            </ul>
           </div>
 
           {/* Items Table */}
