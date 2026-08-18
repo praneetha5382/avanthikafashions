@@ -304,30 +304,15 @@ export default function AdminDashboard() {
 
   if (printLabelOrder) {
     return (
-      <div className={styles.printOnly} style={{ position: 'relative', padding: '10px', boxSizing: 'border-box', backgroundColor: 'white', minHeight: '100vh' }}>
+      <div className={styles.printOnly} style={{ position: 'relative', padding: '10px', boxSizing: 'border-box', backgroundColor: 'white', minHeight: '100vh', width: '4in', margin: '0' }}>
         
-        {/* PREPAID STAMP (Absolute Positioned, Circular) */}
-        <div style={{
-          position: 'absolute',
-          top: '80px',
-          left: '50%',
-          transform: 'translateX(-50%) rotate(-15deg)',
-          width: '100px',
-          height: '100px',
-          borderRadius: '50%',
-          border: '4px solid black',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '18px',
-          fontWeight: '900',
-          textTransform: 'uppercase',
-          letterSpacing: '2px',
-          zIndex: 10,
-          backgroundColor: 'transparent'
-        }}>
-          PREPAID
-        </div>
+        {/* Force page margin 0 to hide browser headers/footers */}
+        <style dangerouslySetInnerHTML={{__html: `
+          @media print {
+            @page { margin: 0 !important; size: 4in 6in; }
+            body { margin: 0 !important; padding: 0 !important; background: white; }
+          }
+        `}} />
 
         <div style={{ fontFamily: 'Arial, sans-serif', color: 'black', position: 'relative', zIndex: 1 }}>
           
@@ -336,6 +321,9 @@ export default function AdminDashboard() {
             <img src="/logo.png" style={{ height: '140px', objectFit: 'contain' }} alt="Avanthika Fashions" />
             <div style={{ textAlign: 'right', marginTop: '10px' }}>
               <div style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '4px' }}>ORDER: {printLabelOrder.id.replace('ORD-', '')}</div>
+              <div style={{ display: 'inline-block', background: 'black', color: 'white', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold', fontSize: '14px', marginBottom: '8px' }}>
+                PREPAID
+              </div>
               <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>
                 SKU(s): {printLabelOrder.items.map((i: any) => i.sku || i.id).join(', ')}
               </div>
@@ -345,11 +333,19 @@ export default function AdminDashboard() {
           
           {/* Shipping Address */}
           <div style={{ border: '2px solid black', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '5px', textTransform: 'uppercase' }}>Ship To:</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '4px' }}>
-              {printLabelOrder.customer_name} <span style={{ fontSize: '16px', fontWeight: 'normal', marginLeft: '10px' }}>{printLabelOrder.customer_phone}</span>
+            <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '5px', textTransform: 'uppercase', color: '#555' }}>Ship To:</div>
+            
+            <div style={{ marginBottom: '8px' }}>
+              <span style={{ fontSize: '14px', color: '#444' }}>Name:</span><br/>
+              <span style={{ fontSize: '24px', fontWeight: '900', letterSpacing: '0.5px' }}>{printLabelOrder.customer_name}</span>
             </div>
-            <div style={{ fontSize: '16px', lineHeight: '1.4' }}>
+
+            <div style={{ marginBottom: '8px' }}>
+              <span style={{ fontSize: '14px', color: '#444' }}>Phone:</span><br/>
+              <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{printLabelOrder.customer_phone}</span>
+            </div>
+
+            <div style={{ fontSize: '16px', lineHeight: '1.4', marginTop: '8px' }}>
               {printLabelOrder.shipping_address?.address}<br/>
               {printLabelOrder.shipping_address?.city}, {printLabelOrder.shipping_address?.state}<br/>
               <span style={{ fontWeight: 'bold', fontSize: '18px' }}>PIN: {printLabelOrder.shipping_address?.pin}</span>
