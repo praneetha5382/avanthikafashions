@@ -35,7 +35,7 @@ export default function AdminDashboard() {
   const [targetMainCategory, setTargetMainCategory] = useState('');
 
   // --- Order Filter State ---
-  const [orderFilterStatus, setOrderFilterStatus] = useState('Pending Orders');
+  const [orderFilterStatus, setOrderFilterStatus] = useState('New Orders');
   const [quickScanInput, setQuickScanInput] = useState('');
   const [quickScanResult, setQuickScanResult] = useState<any | null>(null);
   const [trackingModalOrder, setTrackingModalOrder] = useState<any | null>(null);
@@ -519,7 +519,7 @@ export default function AdminDashboard() {
                   
                   <div style={{ display: 'flex', gap: '10px', marginTop: '25px', flexWrap: 'wrap' }}>
                     {(quickScanResult.status === 'Pending' || quickScanResult.status === 'Pending Payment' || quickScanResult.status === 'New') && (
-                      <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Packed'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#fef3c7', border: '1px solid #d97706', color: '#d97706', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>👍 Acknowledge & Process</button>
+                      <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Packed'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#d1fae5', border: '1px solid #059669', color: '#047857', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>✅ Mark as Packed (Ready for Dispatch)</button>
                     )}
                     {(quickScanResult.status === 'Packed') && (
                       <button onClick={() => { setTrackingModalOrder(quickScanResult); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#dbeafe', border: '1px solid #2563eb', color: '#1d4ed8', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>📦 Dispatch & Add Tracking</button>
@@ -570,9 +570,13 @@ export default function AdminDashboard() {
             )}
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-              {['Pending Orders', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
-                const mapStatus = status === 'Dispatched' ? 'Shipped' : status === 'Pending Orders' ? 'Packed' : status;
-                const count = data.orders.filter((o: any) => o.status === mapStatus || (status === 'Pending Orders' && (o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New'))).length;
+              {['New Orders', 'Packed & Ready', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
+                const count = data.orders.filter((o: any) => {
+                  if (status === 'New Orders') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New';
+                  if (status === 'Packed & Ready') return o.status === 'Packed';
+                  if (status === 'Dispatched') return o.status === 'Shipped';
+                  return o.status === status;
+                }).length;
                 return (
                 <button
                   key={status}
@@ -611,7 +615,8 @@ export default function AdminDashboard() {
                 <tbody>
                   {data.orders
                     .filter((o: any) => {
-                      if (orderFilterStatus === 'Pending Orders') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New' || o.status === 'Packed';
+                      if (orderFilterStatus === 'New Orders') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New';
+                      if (orderFilterStatus === 'Packed & Ready') return o.status === 'Packed';
                       if (orderFilterStatus === 'Dispatched') return o.status === 'Shipped';
                       return o.status === orderFilterStatus;
                     })

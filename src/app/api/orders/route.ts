@@ -25,8 +25,22 @@ export async function POST(request: Request) {
     const payload = await request.json();
     const supabase = getServiceSupabase();
     
-    // Generate an Order ID
-    const orderId = 'ORD-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    // Generate a sequential 6-digit Order ID
+    const { data: latestOrder } = await supabase
+      .from('orders')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    let newOrderNum = 100001;
+    if (latestOrder && latestOrder.id) {
+       const match = latestOrder.id.match(/\d{6}/);
+       if (match) {
+           newOrderNum = parseInt(match[0], 10) + 1;
+       }
+    }
+    const orderId = 'ORD-' + newOrderNum;
 
     const newOrder = {
       id: orderId,
