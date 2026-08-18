@@ -496,39 +496,7 @@ export default function AdminDashboard() {
                 <h1>Orders & Dispatch Pipeline</h1>
                 <p>Move orders through the fulfillment stages to keep tracking accurate.</p>
               </div>
-              <form onSubmit={handleQuickScan} style={{ display: 'flex', gap: '10px' }}>
-                <input 
-                  type="text" 
-                  placeholder="Scan or Enter Order ID..." 
-                  value={quickScanInput}
-                  onChange={(e) => setQuickScanInput(e.target.value)}
-                  className={styles.input}
-                  style={{ width: '250px' }}
-                />
-                <button type="submit" className="btn-primary" style={{ padding: '10px 20px' }}>Search</button>
-              </form>
             </header>
-
-            {quickScanResult && (
-              <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ background: 'white', padding: '30px', borderRadius: '12px', width: '500px', maxWidth: '90%' }}>
-                  <h2 style={{ marginTop: 0 }}>Quick Update</h2>
-                  <p><strong>Order ID:</strong> {quickScanResult.id}</p>
-                  <p><strong>Customer:</strong> {quickScanResult.customer_name}</p>
-                  <p><strong>Current Status:</strong> <span style={{ padding: '3px 8px', background: '#f0f0f0', borderRadius: '4px', fontWeight: 'bold' }}>{quickScanResult.status}</span></p>
-                  
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '25px', flexWrap: 'wrap' }}>
-                    {(quickScanResult.status === 'Pending' || quickScanResult.status === 'Pending Payment' || quickScanResult.status === 'New') && (
-                      <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Packed'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#d1fae5', border: '1px solid #059669', color: '#047857', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>✅ Mark as Packed (Ready for Dispatch)</button>
-                    )}
-                    {(quickScanResult.status === 'Packed') && (
-                      <button onClick={() => { setTrackingModalOrder(quickScanResult); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#dbeafe', border: '1px solid #2563eb', color: '#1d4ed8', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>📦 Dispatch & Add Tracking</button>
-                    )}
-                  </div>
-                  <button onClick={closeQuickScan} style={{ width: '100%', marginTop: '15px', padding: '10px', background: 'none', border: 'none', color: '#666', cursor: 'pointer', textDecoration: 'underline' }}>Close</button>
-                </div>
-              </div>
-            )}
 
             {trackingModalOrder && (
               <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -570,11 +538,12 @@ export default function AdminDashboard() {
             )}
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-              {['New Orders', 'Packed & Ready', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
+              {['New Orders', 'Package Confirmation', 'Packed & Ready', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
                 const count = data.orders.filter((o: any) => {
                   if (status === 'New Orders') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New';
                   if (status === 'Packed & Ready') return o.status === 'Packed';
                   if (status === 'Dispatched') return o.status === 'Shipped';
+                  if (status === 'Package Confirmation') return false; // Doesn't have a count, it's a utility tab
                   return o.status === status;
                 }).length;
                 return (
@@ -594,12 +563,63 @@ export default function AdminDashboard() {
                   }}
                 >
                   {status} 
-                  {status !== 'All' && ` (${count})`}
+                  {status !== 'Package Confirmation' && status !== 'All' && ` (${count})`}
                 </button>
                 );
               })}
             </div>
             
+            {orderFilterStatus === 'Package Confirmation' ? (
+              <div className={styles.card} style={{ textAlign: 'center', padding: '50px 20px', minHeight: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>Pack Station</h2>
+                <p style={{ color: '#666', marginBottom: '30px' }}>Scan or type the 6-digit Order ID to verify and pack.</p>
+                <form onSubmit={handleQuickScan} style={{ display: 'flex', gap: '10px', justifyContent: 'center', width: '100%', maxWidth: '500px' }}>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. ORD-100001" 
+                    value={quickScanInput}
+                    onChange={(e) => setQuickScanInput(e.target.value)}
+                    className={styles.input}
+                    style={{ flex: 1, fontSize: '1.2rem', padding: '15px' }}
+                    autoFocus
+                  />
+                  <button type="submit" className="btn-primary" style={{ padding: '15px 30px', fontSize: '1.2rem' }}>Scan</button>
+                </form>
+
+                {quickScanResult && (
+                  <div style={{ marginTop: '40px', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', padding: '30px', width: '100%', maxWidth: '600px', textAlign: 'left' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                       <div>
+                         <h3 style={{ margin: '0 0 5px 0', fontSize: '1.5rem' }}>{quickScanResult.id}</h3>
+                         <p style={{ margin: 0, color: '#666' }}>Customer: {quickScanResult.customer_name}</p>
+                       </div>
+                       <span style={{ padding: '5px 12px', background: '#f1f5f9', borderRadius: '20px', fontWeight: 'bold' }}>{quickScanResult.status}</span>
+                    </div>
+
+                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '15px', marginBottom: '20px' }}>
+                      <h4 style={{ margin: '0 0 10px 0' }}>Items to Pack:</h4>
+                      <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                        {quickScanResult.items?.map((item: any, idx: number) => (
+                          <li key={idx} style={{ marginBottom: '5px', fontSize: '1.1rem' }}>
+                            <strong>{item.quantity}x</strong> {item.name} <span style={{ color: 'var(--primary-color)' }}>({item.sku})</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      {(quickScanResult.status === 'Pending' || quickScanResult.status === 'Pending Payment' || quickScanResult.status === 'New') && (
+                        <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Packed'); setQuickScanResult({...quickScanResult, status: 'Packed'}); }} style={{ flex: 1, padding: '15px', background: '#d1fae5', border: '1px solid #059669', color: '#047857', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}>✅ Confirm Packed & Ready</button>
+                      )}
+                      {(quickScanResult.status === 'Packed') && (
+                         <div style={{ flex: 1, padding: '15px', background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem', textAlign: 'center' }}>🎉 Order Successfully Packed!</div>
+                      )}
+                      <button onClick={() => setQuickScanResult(null)} style={{ padding: '15px 20px', background: '#f1f5f9', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Clear</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
             <div className={styles.card}>
               <div className={styles.tableWrapper}>
                 <table className={styles.table}>
@@ -727,6 +747,7 @@ export default function AdminDashboard() {
                 </table>
               </div>
             </div>
+            )}
           </div>
         )}
 
