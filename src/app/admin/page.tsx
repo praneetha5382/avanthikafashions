@@ -44,10 +44,17 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (printLabelOrder) {
-      setTimeout(() => {
-        window.print();
+      const handleAfterPrint = () => {
         setPrintLabelOrder(null);
+      };
+      window.addEventListener('afterprint', handleAfterPrint);
+      const timer = setTimeout(() => {
+        window.print();
       }, 500);
+      return () => {
+        window.removeEventListener('afterprint', handleAfterPrint);
+        clearTimeout(timer);
+      };
     }
   }, [printLabelOrder]);
 
@@ -292,6 +299,115 @@ export default function AdminDashboard() {
   const closeQuickScan = () => {
     setQuickScanResult(null);
   };
+
+  if (printLabelOrder) {
+    return (
+      <div className={styles.printOnly} style={{ position: 'relative', padding: '10px', boxSizing: 'border-box', backgroundColor: 'white', minHeight: '100vh' }}>
+        
+        {/* PREPAID STAMP (Absolute Positioned, Circular) */}
+        <div style={{
+          position: 'absolute',
+          top: '80px',
+          left: '50%',
+          transform: 'translateX(-50%) rotate(-15deg)',
+          width: '100px',
+          height: '100px',
+          borderRadius: '50%',
+          border: '4px solid black',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '18px',
+          fontWeight: '900',
+          textTransform: 'uppercase',
+          letterSpacing: '2px',
+          zIndex: 10,
+          backgroundColor: 'transparent'
+        }}>
+          PREPAID
+        </div>
+
+        <div style={{ fontFamily: 'Arial, sans-serif', color: 'black', position: 'relative', zIndex: 1 }}>
+          
+          {/* Header: Logo Left, Order Info Right */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid black', paddingBottom: '15px', marginBottom: '15px' }}>
+            <img src="/logo.png" style={{ height: '140px', objectFit: 'contain' }} alt="Avanthika Fashions" />
+            <div style={{ textAlign: 'right', marginTop: '10px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '4px' }}>ORDER: {printLabelOrder.id.replace('ORD-', '')}</div>
+              <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>
+                SKU(s): {printLabelOrder.items.map((i: any) => i.sku || i.id).join(', ')}
+              </div>
+              <div style={{ fontSize: '12px' }}>{new Date().toLocaleDateString('en-IN')}</div>
+            </div>
+          </div>
+          
+          {/* Shipping Address */}
+          <div style={{ border: '2px solid black', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '5px', textTransform: 'uppercase' }}>Ship To:</div>
+            <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '4px' }}>
+              {printLabelOrder.customer_name} <span style={{ fontSize: '16px', fontWeight: 'normal', marginLeft: '10px' }}>{printLabelOrder.customer_phone}</span>
+            </div>
+            <div style={{ fontSize: '16px', lineHeight: '1.4' }}>
+              {printLabelOrder.shipping_address?.address}<br/>
+              {printLabelOrder.shipping_address?.city}, {printLabelOrder.shipping_address?.state}<br/>
+              <span style={{ fontWeight: 'bold', fontSize: '18px' }}>PIN: {printLabelOrder.shipping_address?.pin}</span>
+            </div>
+          </div>
+
+          {/* Items Table */}
+          <div style={{ marginBottom: '10px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 'bold', borderBottom: '2px solid black', paddingBottom: '2px', marginBottom: '4px' }}>ITEMS ENCLOSED</div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #000', textAlign: 'left' }}>
+                  <th style={{ padding: '2px 0' }}>Description</th>
+                  <th style={{ padding: '2px 0', textAlign: 'center', width: '30px' }}>Qty</th>
+                </tr>
+              </thead>
+              <tbody>
+                {printLabelOrder.items.map((item: any, idx: number) => (
+                  <tr key={idx} style={{ borderBottom: '1px solid #ddd' }}>
+                    <td style={{ padding: '4px 0', fontWeight: 'bold' }}>
+                      {item.name} {item.size !== 'Standard' && `(${item.size})`}
+                    </td>
+                    <td style={{ padding: '4px 0', textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }}>{item.quantity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Cost Breakdown */}
+          <div style={{ borderTop: '2px solid black', paddingTop: '5px', fontSize: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+              <span>Subtotal:</span>
+              <span>₹{printLabelOrder.subtotal}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+              <span>Shipping:</span>
+              <span>₹{printLabelOrder.shipping_cost}</span>
+            </div>
+            {printLabelOrder.discount > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                <span>Discount:</span>
+                <span>-₹{printLabelOrder.discount}</span>
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '16px', marginTop: '3px', paddingTop: '3px', borderTop: '1px solid black' }}>
+              <span>TOTAL:</span>
+              <span>₹{printLabelOrder.total}</span>
+            </div>
+          </div>
+          
+          {/* Barcode */}
+          <div style={{ textAlign: 'center', marginTop: '10px' }}>
+            <img src={`https://barcodeapi.org/api/128/${printLabelOrder.id}`} style={{ height: '40px', maxWidth: '100%' }} alt="Barcode" />
+          </div>
+
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.dashboard}>
@@ -1036,114 +1152,6 @@ export default function AdminDashboard() {
         )}
 
       </main>
-      
-      {/* Hidden Print Layout */}
-      {printLabelOrder && (
-        <div className={styles.printOnly} style={{ position: 'relative', padding: '10px', boxSizing: 'border-box' }}>
-          
-          {/* PREPAID STAMP (Absolute Positioned, Circular) */}
-          <div style={{
-            position: 'absolute',
-            top: '80px',
-            left: '50%',
-            transform: 'translateX(-50%) rotate(-15deg)',
-            width: '100px',
-            height: '100px',
-            borderRadius: '50%',
-            border: '4px solid black',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '18px',
-            fontWeight: '900',
-            textTransform: 'uppercase',
-            letterSpacing: '2px',
-            zIndex: 10,
-            backgroundColor: 'transparent'
-          }}>
-            PREPAID
-          </div>
-
-          <div style={{ fontFamily: 'Arial, sans-serif', color: 'black', position: 'relative', zIndex: 1 }}>
-            
-            {/* Header: Logo Left, Order Info Right */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid black', paddingBottom: '15px', marginBottom: '15px' }}>
-              <img src="/logo.png" style={{ height: '140px', objectFit: 'contain' }} alt="Avanthika Fashions" />
-              <div style={{ textAlign: 'right', marginTop: '10px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '4px' }}>ORDER: {printLabelOrder.id.replace('ORD-', '')}</div>
-                <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>
-                  SKU(s): {printLabelOrder.items.map((i: any) => i.sku || i.id).join(', ')}
-                </div>
-                <div style={{ fontSize: '12px' }}>{new Date().toLocaleDateString('en-IN')}</div>
-              </div>
-            </div>
-            
-            {/* Shipping Address */}
-            <div style={{ border: '2px solid black', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
-              <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '5px', textTransform: 'uppercase' }}>Ship To:</div>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '4px' }}>
-                {printLabelOrder.customer_name} <span style={{ fontSize: '16px', fontWeight: 'normal', marginLeft: '10px' }}>{printLabelOrder.customer_phone}</span>
-              </div>
-              <div style={{ fontSize: '16px', lineHeight: '1.4' }}>
-                {printLabelOrder.shipping_address?.address}<br/>
-                {printLabelOrder.shipping_address?.city}, {printLabelOrder.shipping_address?.state}<br/>
-                <span style={{ fontWeight: 'bold', fontSize: '18px' }}>PIN: {printLabelOrder.shipping_address?.pin}</span>
-              </div>
-            </div>
-
-            {/* Items Table */}
-            <div style={{ marginBottom: '10px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', borderBottom: '2px solid black', paddingBottom: '2px', marginBottom: '4px' }}>ITEMS ENCLOSED</div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid #000', textAlign: 'left' }}>
-                    <th style={{ padding: '2px 0' }}>Description</th>
-                    <th style={{ padding: '2px 0', textAlign: 'center', width: '30px' }}>Qty</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {printLabelOrder.items.map((item: any, idx: number) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid #ddd' }}>
-                      <td style={{ padding: '4px 0', fontWeight: 'bold' }}>
-                        {item.name} {item.size !== 'Standard' && `(${item.size})`}
-                      </td>
-                      <td style={{ padding: '4px 0', textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }}>{item.quantity}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {/* Cost Breakdown */}
-            <div style={{ borderTop: '2px solid black', paddingTop: '5px', fontSize: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                <span>Subtotal:</span>
-                <span>₹{printLabelOrder.subtotal}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                <span>Shipping:</span>
-                <span>₹{printLabelOrder.shipping_cost}</span>
-              </div>
-              {printLabelOrder.discount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                  <span>Discount:</span>
-                  <span>-₹{printLabelOrder.discount}</span>
-                </div>
-              )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '16px', marginTop: '3px', paddingTop: '3px', borderTop: '1px solid black' }}>
-                <span>TOTAL:</span>
-                <span>₹{printLabelOrder.total}</span>
-              </div>
-            </div>
-            
-            {/* Barcode */}
-            <div style={{ textAlign: 'center', marginTop: '10px' }}>
-              <img src={`https://barcodeapi.org/api/128/${printLabelOrder.id}`} style={{ height: '40px', maxWidth: '100%' }} alt="Barcode" />
-            </div>
-
-          </div>
-        </div>
-      )}
     </div>
   );
 }

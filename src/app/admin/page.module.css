@@ -327,20 +327,11 @@
 }
 
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  .printOnly, .printOnly * {
-    visibility: visible;
-  }
   .printOnly {
     display: block;
-    position: fixed;
-    left: 0;
-    top: 0;
     width: 4in; /* 4x6 label standard */
-    padding: 0;
     margin: 0;
+    padding: 0;
   }
   @page {
     size: 4in 6in;
