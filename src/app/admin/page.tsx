@@ -24,7 +24,7 @@ export default function AdminDashboard() {
       { title: 'Shipping & Delivery', content: 'Dispatched within 24-48 hours. Delivery takes 3-5 business days.' },
       { title: 'Return Policies', content: '7-day easy returns if the product is defective or incorrect.' }
     ],
-    variants: [{ color: '', sku: '', images: [] as string[] }]
+    variants: [{ color: '', sku: '', stock: 0, images: [] as string[] }]
   });
   const [uploadingVariantIndex, setUploadingVariantIndex] = useState<number | null>(null);
   const [hasMultipleVariants, setHasMultipleVariants] = useState(false);
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
         { title: 'Shipping & Delivery', content: 'Dispatched within 24-48 hours. Delivery takes 3-5 business days.' },
         { title: 'Return Policies', content: '7-day easy returns if the product is defective or incorrect.' }
       ],
-      variants: [{ color: '', sku: '', images: [] }]
+      variants: [{ color: '', sku: '', stock: 0, images: [] }]
     });
     setHasMultipleVariants(false);
   };
@@ -755,7 +755,7 @@ export default function AdminDashboard() {
                                   isFreeShipping: p.isFreeShipping !== false,
                                   description: p.description || '',
                                   info: p.info || [],
-                                  variants: p.variants || [{ color: '', sku: '', images: [] }]
+                                  variants: p.variants || [{ color: '', sku: '', stock: 0, images: [] }]
                                 });
                                 setActiveTab('add-product');
                               }}
@@ -801,7 +801,7 @@ export default function AdminDashboard() {
                             { title: 'Shipping & Delivery', content: 'Dispatched within 24-48 hours. Delivery takes 3-5 business days.' },
                             { title: 'Return Policies', content: '7-day easy returns if the product is defective or incorrect.' }
                           ],
-                          variants: [{ color: '', sku: '', images: [] }]
+                          variants: [{ color: '', sku: '', stock: 0, images: [] }]
                         });
                       }}
                       style={{ background: 'none', border: '1px solid #ccc', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}
@@ -940,10 +940,25 @@ export default function AdminDashboard() {
                                     }} 
                                   />
                                 </div>
-                                {formData.variants.length > 1 && (
-                                  <button type="button" onClick={() => setFormData({...formData, variants: formData.variants.filter((_, i) => i !== idx)})} style={{background: 'none', border: 'none', color: 'red', cursor: 'pointer', minWidth: '70px'}}>Remove</button>
-                                )}
                               </div>
+                            </div>
+                            <div className={styles.fieldGroup}>
+                              <label>Stock Quantity</label>
+                              <input 
+                                type="number" min="0" placeholder="e.g. 10" 
+                                value={variant.stock === undefined ? 0 : variant.stock} required
+                                className={styles.input}
+                                onChange={e => {
+                                  const newVars = [...formData.variants]; 
+                                  newVars[idx].stock = parseInt(e.target.value) || 0; 
+                                  setFormData({...formData, variants: newVars});
+                                }} 
+                              />
+                            </div>
+                            <div className={styles.fieldGroup} style={{display: 'flex', alignItems: 'flex-end', paddingBottom: '5px'}}>
+                              {formData.variants.length > 1 && (
+                                <button type="button" onClick={() => setFormData({...formData, variants: formData.variants.filter((_, i) => i !== idx)})} style={{background: 'none', border: 'none', color: 'red', cursor: 'pointer', minWidth: '70px'}}>Remove</button>
+                              )}
                             </div>
                           </div>
                         )}
@@ -967,6 +982,19 @@ export default function AdminDashboard() {
                                 />
                               </div>
                             </div>
+                            <div className={styles.fieldGroup}>
+                              <label>Stock Quantity</label>
+                              <input 
+                                type="number" min="0" placeholder="e.g. 10" 
+                                value={variant.stock === undefined ? 0 : variant.stock} required={!hasMultipleVariants}
+                                className={styles.input}
+                                onChange={e => {
+                                  const newVars = [...formData.variants]; 
+                                  newVars[idx].stock = parseInt(e.target.value) || 0; 
+                                  setFormData({...formData, variants: newVars});
+                                }} 
+                              />
+                            </div>
                           </div>
                         )}
 
@@ -987,7 +1015,7 @@ export default function AdminDashboard() {
                     ))}
 
                     {hasMultipleVariants && (
-                      <button type="button" onClick={() => setFormData({...formData, variants: [...formData.variants, {color: '', sku: '', images: []}]})} className="btn-secondary" style={{width: 'auto'}}>+ Add Another Color</button>
+                      <button type="button" onClick={() => setFormData({...formData, variants: [...formData.variants, {color: '', sku: '', stock: 0, images: []}]})} className="btn-secondary" style={{width: 'auto'}}>+ Add Another Color</button>
                     )}
                   </div>
 
@@ -1008,7 +1036,7 @@ export default function AdminDashboard() {
                           <li key={p.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9f9f9', padding: '10px', borderRadius: '4px', marginBottom: '5px'}}>
                             <div>
                               <strong>{p.name}</strong><br/>
-                              <span className={styles.helper}>Rs.{p.price} | {p.variants?.[0]?.sku || p.sku} | {p.isFreeShipping !== false ? 'Free Shipping' : '+ Shipping'}</span>
+                              <span className={styles.helper}>Rs.{p.price} | {p.variants?.[0]?.sku || p.sku} | Total Stock: {p.variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || 0} | {p.isFreeShipping !== false ? 'Free Shipping' : '+ Shipping'}</span>
                             </div>
                             <a href={`/products/${p.slug}`} target="_blank" rel="noopener noreferrer" style={{color: 'var(--primary-color)', fontSize: '0.85rem', textDecoration: 'underline', fontWeight: 'bold'}}>View Live ↗</a>
                           </li>

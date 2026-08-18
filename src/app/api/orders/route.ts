@@ -47,6 +47,29 @@ export async function POST(request: Request) {
     const { error } = await supabase.from('orders').insert(newOrder);
     if (error) throw error;
 
+    // Deduct stock in real-time
+    try {
+      for (const item of payload.items) {
+        const { data: productData } = await supabase.from('products').select('variants').eq('id', item.productId).single();
+        if (productData && productData.variants) {
+          let updated = false;
+          const newVariants = productData.variants.map((v: any) => {
+            if ((v.color === item.size || (item.size === 'One Size' && v.color === 'Default')) && v.stock !== undefined) {
+              updated = true;
+              return { ...v, stock: Math.max(0, v.stock - item.quantity) };
+            }
+            return v;
+          });
+          if (updated) {
+            await supabase.from('products').update({ variants: newVariants }).eq('id', item.productId);
+          }
+        }
+      }
+    } catch (stockError) {
+      console.error('Failed to deduct stock:', stockError);
+      // We do not fail the order if stock deduction fails, just log it.
+    }
+
     // Send email confirmation asynchronously
     sendOrderConfirmationEmail(newOrder).catch(console.error);
 
