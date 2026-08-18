@@ -50,6 +50,26 @@ export default function AdminDashboard() {
         setTargetMainCategory(prodRes.categories[0].name);
       }
     });
+
+    // Real-time subscription for new orders
+    const ordersChannel = supabase.channel('realtime-orders')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'orders' },
+        (payload) => {
+          console.log('New order received!', payload.new);
+          // Prepend the new order to the orders list
+          setData((prevData: any) => ({
+            ...prevData,
+            orders: [payload.new, ...prevData.orders]
+          }));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ordersChannel);
+    };
   }, []);
 
   // --- Image Upload Logic (Direct to Supabase to preserve full quality) ---
@@ -157,6 +177,16 @@ export default function AdminDashboard() {
     setHasMultipleVariants(false);
   };
 
+  const handleToggleVisibility = async (productId: string, currentStatus: boolean) => {
+    const res = await fetch('/api/products', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'toggleProductVisibility', id: productId, isVisible: !currentStatus })
+    });
+    if (res.ok) {
+      setData({ ...data, products: data.products.map((p: any) => p.id === productId ? { ...p, isVisible: !currentStatus } : p) });
+    }
+  };
+
   const handleAddMainCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMainCategory) return;
@@ -254,10 +284,20 @@ export default function AdminDashboard() {
                         <span style={{fontSize: '0.85rem', color: '#666'}}>{new Date(order.created_at).toLocaleString()}</span>
                       </td>
                       <td style={{verticalAlign: 'top'}}>
-                        <strong>{order.customer_name}</strong><br/>
-                        📞 {order.customer_phone}<br/>
-                        📧 {order.customer_email || 'N/A'}<br/>
-                        📍 {order.shipping_address?.address}, {order.shipping_address?.city}, {order.shipping_address?.state} - {order.shipping_address?.pin}
+                        <div style={{ background: '#f8f8f8', padding: '10px', borderRadius: '6px', border: '1px solid #eaeaea', fontSize: '0.9rem' }}>
+                          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>{order.customer_name}</p>
+                          <p style={{ margin: '0 0 5px 0' }}>📞 {order.customer_phone}</p>
+                          <p style={{ margin: '0 0 10px 0' }}>📧 {order.customer_email || 'N/A'}</p>
+                          
+                          <div style={{ borderTop: '1px solid #ddd', paddingTop: '8px' }}>
+                            <p style={{ margin: '0 0 3px 0', fontWeight: 'bold', fontSize: '0.8rem', color: '#666', textTransform: 'uppercase' }}>Shipping Address</p>
+                            <p style={{ margin: 0, lineHeight: '1.4' }}>
+                              {order.shipping_address?.address}<br/>
+                              {order.shipping_address?.city}, {order.shipping_address?.state}<br/>
+                              PIN: <strong>{order.shipping_address?.pin}</strong>
+                            </p>
+                          </div>
+                        </div>
                       </td>
                       <td style={{verticalAlign: 'top'}}>
                         <ul style={{margin: 0, paddingLeft: '15px', fontSize: '0.9rem'}}>
@@ -328,6 +368,7 @@ export default function AdminDashboard() {
                         <th>Product Name</th>
                         <th>Price</th>
                         <th>Category</th>
+                        <th>Visibility</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -340,6 +381,18 @@ export default function AdminDashboard() {
                           <td><strong>{p.name}</strong><br/><span style={{fontSize: '0.8rem', color: '#666'}}>ID: {p.id}</span></td>
                           <td>₹{p.price}</td>
                           <td>{p.mainCategory} &gt; {p.subCategory}</td>
+                          <td>
+                            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: '8px' }}>
+                              <input 
+                                type="checkbox" 
+                                checked={p.isVisible !== false} 
+                                onChange={() => handleToggleVisibility(p.id, p.isVisible !== false)}
+                              />
+                              <span style={{ fontSize: '0.9rem', color: p.isVisible !== false ? 'green' : '#999' }}>
+                                {p.isVisible !== false ? 'Live' : 'Hidden'}
+                              </span>
+                            </label>
+                          </td>
                           <td>
                             <button 
                               onClick={() => {

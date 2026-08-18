@@ -91,6 +91,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, product: { id, ...updateData } });
     }
 
+    // Toggle Product Visibility
+    if (payload.action === 'toggleProductVisibility') {
+      const { error } = await supabase.from('products').update({ isVisible: payload.isVisible }).eq('id', payload.id);
+      if (error) throw error;
+      return NextResponse.json({ success: true });
+    }
+
     // Default: Add Product
     const newProduct = { ...payload };
     newProduct.id = 's' + Date.now();

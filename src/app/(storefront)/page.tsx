@@ -12,7 +12,7 @@ export default function Home() {
     fetch('/api/products').then(res => res.json()).then(res => {
       setData({
         categories: res.categories || [],
-        products: res.products || [],
+        products: (res.products || []).filter((p: any) => p.isVisible !== false),
         siteSettings: res.siteSettings || { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true }
       });
     });

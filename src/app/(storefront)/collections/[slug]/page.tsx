@@ -18,7 +18,7 @@ export default function CollectionPage() {
 
   useEffect(() => {
     fetch('/api/products').then(res => res.json()).then(data => {
-      let prods = data.products;
+      let prods = (data.products || []).filter((p: any) => p.isVisible !== false);
       
       // Filter by category slug if it's not 'all'
       if (slug !== 'all') {
