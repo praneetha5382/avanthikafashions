@@ -74,10 +74,11 @@ export default function AdminDashboard() {
         // Clear input to prevent double firing or allow re-upload of same file
         e.target.value = '';
       } else {
-        alert("Upload failed.");
+        const errorText = await res.text();
+        alert(`Upload failed! Status: ${res.status}. Message: ${errorText}`);
       }
-    } catch (err) {
-      alert("Error connecting to upload server.");
+    } catch (err: any) {
+      alert(`Error connecting to upload server: ${err.message}`);
     } finally {
       setUploadingVariantIndex(null);
     }
