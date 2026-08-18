@@ -304,12 +304,12 @@ export default function AdminDashboard() {
 
   if (printLabelOrder) {
     return (
-      <div className={styles.printOnly} style={{ position: 'relative', padding: '10px', boxSizing: 'border-box', backgroundColor: 'white', minHeight: '100vh', width: '4in', margin: '0' }}>
+      <div className={styles.printOnly} style={{ position: 'relative', padding: '10px', boxSizing: 'border-box', backgroundColor: 'white', width: '4in', margin: '0' }}>
         
         {/* Force page margin 0 to hide browser headers/footers */}
         <style dangerouslySetInnerHTML={{__html: `
           @media print {
-            @page { margin: 0 !important; size: 4in 6in; }
+            @page { margin: 0; size: 4in 6in; }
             body { margin: 0 !important; padding: 0 !important; background: white; }
           }
         `}} />
