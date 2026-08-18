@@ -400,22 +400,64 @@ export default function AdminDashboard() {
                         <span style={{fontSize: '0.85rem', color: order.payment_method === 'cod' ? '#d97706' : '#059669', background: order.payment_method === 'cod' ? '#fef3c7' : '#d1fae5', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase'}}>{order.payment_method}</span>
                       </td>
                       <td style={{verticalAlign: 'top'}}>
-                        <select 
-                          className={styles.input} 
-                          value={order.status} 
-                          onChange={(e) => handleOrderStatusChange(order.id, e.target.value)}
-                          style={{
-                            background: order.status === 'Delivered' ? '#d1fae5' : order.status === 'Shipped' ? '#dbeafe' : order.status === 'Packed' ? '#fef3c7' : '#f3f4f6',
-                            fontWeight: 'bold',
-                            border: '1px solid #ccc'
-                          }}
-                        >
-                          <option value="Pending">New (Pending)</option>
-                          <option value="Packed">Packed</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Delivered">Delivered</option>
-                          <option value="Cancelled">Cancelled</option>
-                        </select>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New') && (
+                            <button 
+                              onClick={() => handleOrderStatusChange(order.id, 'Packed')}
+                              style={{ background: '#fef3c7', color: '#d97706', border: '1px solid #d97706', padding: '8px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}
+                              onMouseOver={(e) => e.currentTarget.style.background = '#fde68a'}
+                              onMouseOut={(e) => e.currentTarget.style.background = '#fef3c7'}
+                            >
+                              📦 Pack Order
+                            </button>
+                          )}
+                          
+                          {order.status === 'Packed' && (
+                            <button 
+                              onClick={() => handleOrderStatusChange(order.id, 'Shipped')}
+                              style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', padding: '8px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}
+                              onMouseOver={(e) => e.currentTarget.style.background = '#bfdbfe'}
+                              onMouseOut={(e) => e.currentTarget.style.background = '#dbeafe'}
+                            >
+                              🚚 Dispatch Order
+                            </button>
+                          )}
+
+                          {order.status === 'Shipped' && (
+                            <button 
+                              onClick={() => handleOrderStatusChange(order.id, 'Delivered')}
+                              style={{ background: '#d1fae5', color: '#047857', border: '1px solid #059669', padding: '8px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}
+                              onMouseOver={(e) => e.currentTarget.style.background = '#a7f3d0'}
+                              onMouseOut={(e) => e.currentTarget.style.background = '#d1fae5'}
+                            >
+                              🏠 Mark Delivered
+                            </button>
+                          )}
+
+                          {(order.status === 'Delivered' || order.status === 'Cancelled') && (
+                            <span style={{ 
+                              display: 'inline-block', textAlign: 'center', padding: '8px 12px', borderRadius: '6px', fontWeight: 'bold',
+                              background: order.status === 'Delivered' ? '#d1fae5' : '#fee2e2',
+                              color: order.status === 'Delivered' ? '#047857' : '#b91c1c',
+                              border: `1px solid ${order.status === 'Delivered' ? '#059669' : '#dc2626'}`
+                            }}>
+                              {order.status === 'Delivered' ? '✅ Delivered' : '❌ Cancelled'}
+                            </span>
+                          )}
+
+                          {order.status !== 'Delivered' && order.status !== 'Cancelled' && (
+                            <button 
+                              onClick={() => {
+                                if (confirm('Are you sure you want to cancel this order?')) {
+                                  handleOrderStatusChange(order.id, 'Cancelled');
+                                }
+                              }}
+                              style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline', marginTop: '4px' }}
+                            >
+                              Cancel Order
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
