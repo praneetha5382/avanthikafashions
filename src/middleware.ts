@@ -27,15 +27,17 @@ export function middleware(req: NextRequest) {
 
   // Check if the current request is for the admin subdomain
   if (hostname.startsWith('admin.')) {
+    // If it's a static file from the public folder, don't rewrite it to /admin
+    if (url.pathname.match(/\.(png|jpg|jpeg|svg|ico)$/)) {
+      return NextResponse.next();
+    }
+
     // If they are on the admin subdomain but trying to access the root, rewrite to /admin
     if (url.pathname === '/') {
       return NextResponse.rewrite(new URL('/admin', req.url));
     }
     
     // Rewrite all other requests on the admin subdomain to be prefixed with /admin
-    // (e.g., admin.avanthikafashions.com/settings -> /admin/settings)
-    // Note: If you only have the single /admin page, everything can just rewrite to /admin
-    // but the below handles nested routes under /admin if you add them later.
     return NextResponse.rewrite(new URL(`/admin${url.pathname}`, req.url));
   }
 
