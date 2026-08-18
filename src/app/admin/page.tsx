@@ -42,6 +42,7 @@ export default function AdminDashboard() {
 
   // --- Order Filter State ---
   const [orderFilterStatus, setOrderFilterStatus] = useState('Pending Orders');
+  const [pipelineSearch, setPipelineSearch] = useState('');
   const [quickScanInput, setQuickScanInput] = useState('');
   const [quickScanResult, setQuickScanResult] = useState<any | null>(null);
   const [trackingModalOrder, setTrackingModalOrder] = useState<any | null>(null);
@@ -318,7 +319,13 @@ export default function AdminDashboard() {
 
   const handleQuickScan = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!quickScanInput.trim()) return;
+    if (!quickScanInput.trim()) {
+      if (quickScanResult && ['Pending', 'Pending Payment', 'New'].includes(quickScanResult.status)) {
+        handleOrderStatusChange(quickScanResult.id, 'Packed');
+        setQuickScanResult({...quickScanResult, status: 'Packed'});
+      }
+      return;
+    }
     const foundOrder = data.orders.find((o: any) => o.id.toLowerCase().includes(quickScanInput.toLowerCase().trim()));
     if (foundOrder) {
       setQuickScanResult(foundOrder);
@@ -904,6 +911,16 @@ export default function AdminDashboard() {
               </div>
             ) : (
             <div className={styles.card}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px 20px', borderBottom: '1px solid #eee' }}>
+                <input 
+                  type="text" 
+                  placeholder="Search by Order ID, Name, or Phone..." 
+                  value={pipelineSearch} 
+                  onChange={(e) => setPipelineSearch(e.target.value)}
+                  className={styles.input}
+                  style={{ padding: '8px 12px', width: '300px' }}
+                />
+              </div>
               <div className={styles.tableWrapper}>
                 <table className={styles.table}>
                   <thead>
@@ -922,6 +939,13 @@ export default function AdminDashboard() {
                       if (orderFilterStatus === 'Packed & Ready') return o.status === 'Packed';
                       if (orderFilterStatus === 'Dispatched') return o.status === 'Shipped';
                       return o.status === orderFilterStatus;
+                    })
+                    .filter((o: any) => {
+                      if (!pipelineSearch) return true;
+                      const q = pipelineSearch.toLowerCase();
+                      return o.id.toLowerCase().includes(q) || 
+                             (o.customer_name && o.customer_name.toLowerCase().includes(q)) ||
+                             (o.customer_phone && o.customer_phone.includes(q));
                     })
                     .map((order: any) => (
                     <tr key={order.id}>
