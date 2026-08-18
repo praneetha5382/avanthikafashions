@@ -18,11 +18,34 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   
+  // Smart Header Logic
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  
   const { isLoggedIn } = useAuth();
   const router = useRouter();
   
   const pathname = usePathname();
   const isHome = pathname === '/';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (typeof window !== 'undefined') {
+        const currentScrollY = window.scrollY;
+        // Hide only if scrolling down and scrolled past 100px
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          setShowNavbar(false);
+        } else {
+          // Show when scrolling up
+          setShowNavbar(true);
+        }
+        setLastScrollY(currentScrollY);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   useEffect(() => {
     fetch('/api/products').then(res => res.json()).then(data => {
@@ -40,7 +63,7 @@ export default function Navbar() {
         onClose={() => setIsLoginModalOpen(false)} 
         onSuccess={() => router.push('/account')}
       />
-      <header className={`${styles.header} ${isHome ? styles.headerTransparent : ''}`}>
+      <header className={`${styles.header} ${isHome ? styles.headerTransparent : ''} ${!showNavbar ? styles.headerHidden : ''}`}>
       <div className={`container ${styles.navContainer}`}>
         
         {/* Left: Mobile Hamburger & WhatsApp */}
