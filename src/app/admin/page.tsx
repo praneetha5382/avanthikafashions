@@ -238,6 +238,11 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleOrderStatusChange = async (orderId: string, newStatus: string) => {
+    setData({...data, orders: data.orders.map((o:any) => o.id === orderId ? {...o, status: newStatus} : o)});
+    await fetch('/api/orders', { method: 'PATCH', body: JSON.stringify({ id: orderId, status: newStatus }) });
+  };
+
   const handleQuickScan = (e: React.FormEvent) => {
     e.preventDefault();
     if (!quickScanInput.trim()) return;
