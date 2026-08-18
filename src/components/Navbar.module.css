@@ -1,13 +1,9 @@
 .header {
   background-color: #fff0f5; /* Soft pink header */
-  padding: 5px 0; /* Reduced padding for compact header */
-  position: sticky;
-  top: 0;
-  z-index: 1000; /* Increased z-index to stay above everything */
+  padding: 10px 0; /* Restore decent padding */
+  position: relative; /* Not sticky anymore */
+  z-index: 1000; 
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  transition: background-color 0.3s ease;
-  transform: translateZ(0); /* Hardware acceleration to stop mobile shaking */
-  -webkit-transform: translateZ(0);
 }
 
 .headerTransparent {
@@ -43,7 +39,7 @@
 /* Ensure logo scales on mobile and never gets too big */
 .logo img {
   max-width: 100%;
-  max-height: 50px; /* Force an ultra-slim header */
+  max-height: 80px; /* Restore original good size */
   width: auto;
   object-fit: contain;
 }
@@ -317,24 +313,14 @@
     box-shadow: none;
     border: none;
     background-color: transparent;
-    opacity: 0;
-    visibility: hidden;
-    height: 0;
-    overflow: hidden;
-    transform: none;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    transition: all 0.3s ease;
     margin-top: 0;
   }
   
   .showDropdown {
-    opacity: 1;
-    visibility: visible;
-    height: auto;
-    padding: 15px 0 10px 15px; /* Indent the sub-items */
-    margin-top: 10px;
+    /* No longer needed since React unmounts it */
   }
 
   .dropdownGroup {

@@ -60,21 +60,16 @@ export default function AddToCartLogic({ product, selectedVariant }: { product: 
         </div>
       </div>
 
-      <div className={styles.actionRow} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div className={styles.actionRow} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <button className={styles.addBtn} onClick={() => handleAddToCart(false)} style={{
-          width: '100%', padding: '15px', background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, cursor: 'pointer'
+          width: '100%', padding: '18px', background: 'white', border: '1px solid #e2e8f0', color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, cursor: 'pointer', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s'
         }}>
           Add to Cart
         </button>
         <button className={styles.buyBtn} onClick={handleBuyNow} style={{
-          width: '100%', padding: '15px', background: 'var(--primary-color)', border: 'none', color: 'white', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, cursor: 'pointer'
+          width: '100%', padding: '18px', background: 'var(--primary-color)', border: 'none', color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, cursor: 'pointer', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', transition: 'all 0.2s'
         }}>
-          Buy it now
-        </button>
-        <button className={styles.addBtn} style={{
-          width: '100%', padding: '15px', background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, cursor: 'pointer', display: 'flex', justifyContent: 'center', gap: '8px'
-        }}>
-          <span>♡</span> Add to Wishlist
+          Buy It Now
         </button>
       </div>
     </div>
