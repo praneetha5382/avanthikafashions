@@ -33,6 +33,9 @@ export default function AdminDashboard() {
   const [newSubCategory, setNewSubCategory] = useState('');
   const [targetMainCategory, setTargetMainCategory] = useState('');
 
+  // --- Order Filter State ---
+  const [orderFilterStatus, setOrderFilterStatus] = useState('Pending');
+
   useEffect(() => {
     Promise.all([
       fetch('/api/products').then(res => res.json()),
@@ -51,24 +54,23 @@ export default function AdminDashboard() {
       }
     });
 
-    // Real-time subscription for new orders
-    const ordersChannel = supabase.channel('realtime-orders')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'orders' },
-        (payload) => {
-          console.log('New order received!', payload.new);
-          // Prepend the new order to the orders list
+    // Auto-Sync polling for orders (Bulletproof replacement for Realtime)
+    const interval = setInterval(async () => {
+      try {
+        const ordRes = await fetch('/api/orders').then(res => res.json());
+        if (ordRes.orders) {
           setData((prevData: any) => ({
             ...prevData,
-            orders: [payload.new, ...prevData.orders]
+            orders: ordRes.orders
           }));
         }
-      )
-      .subscribe();
+      } catch (err) {
+        console.error('Failed to poll orders', err);
+      }
+    }, 10000);
 
     return () => {
-      supabase.removeChannel(ordersChannel);
+      clearInterval(interval);
     };
   }, []);
 
@@ -261,9 +263,32 @@ export default function AdminDashboard() {
         {activeTab === 'orders' && (
           <div className={styles.tabContent}>
             <header className={styles.tabHeader}>
-              <h1>Orders & Dispatch</h1>
-              <p>Manage incoming orders, view packing details, and update statuses.</p>
+              <h1>Orders & Dispatch Pipeline</h1>
+              <p>Move orders through the fulfillment stages to keep tracking accurate.</p>
             </header>
+
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
+              {['New', 'Packed', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
+                <button
+                  key={status}
+                  onClick={() => setOrderFilterStatus(status)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '20px',
+                    border: '1px solid',
+                    borderColor: orderFilterStatus === status ? 'var(--primary-color)' : '#ddd',
+                    background: orderFilterStatus === status ? 'var(--primary-color)' : 'white',
+                    color: orderFilterStatus === status ? 'white' : '#666',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {status} 
+                  {status !== 'All' && ` (${data.orders.filter((o: any) => o.status === status || (status === 'New' && o.status === 'Pending')).length})`}
+                </button>
+              ))}
+            </div>
             
             <div className={styles.card}>
               <table className={styles.table}>
@@ -277,7 +302,12 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.orders.map((order: any) => (
+                  {data.orders
+                    .filter((order: any) => {
+                      if (orderFilterStatus === 'New') return order.status === 'Pending';
+                      return order.status === orderFilterStatus;
+                    })
+                    .map((order: any) => (
                     <tr key={order.id}>
                       <td style={{verticalAlign: 'top'}}>
                         <strong>{order.id}</strong><br/>
@@ -324,14 +354,13 @@ export default function AdminDashboard() {
                             await fetch('/api/orders', { method: 'PATCH', body: JSON.stringify({ id: order.id, status: newStatus }) });
                           }}
                           style={{
-                            background: order.status === 'Delivered' ? '#d1fae5' : order.status === 'Shipped' ? '#dbeafe' : order.status === 'Processing' ? '#fef3c7' : '#f3f4f6',
+                            background: order.status === 'Delivered' ? '#d1fae5' : order.status === 'Shipped' ? '#dbeafe' : order.status === 'Packed' ? '#fef3c7' : '#f3f4f6',
                             fontWeight: 'bold',
                             border: '1px solid #ccc'
                           }}
                         >
-                          <option value="Pending">Pending</option>
-                          <option value="Pending Payment">Pending Payment</option>
-                          <option value="Processing">Processing</option>
+                          <option value="Pending">New (Pending)</option>
+                          <option value="Packed">Packed</option>
                           <option value="Shipped">Shipped</option>
                           <option value="Delivered">Delivered</option>
                           <option value="Cancelled">Cancelled</option>
