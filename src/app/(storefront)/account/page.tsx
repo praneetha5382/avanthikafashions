@@ -11,6 +11,7 @@ export default function AccountPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders'>('dashboard');
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -70,11 +71,49 @@ export default function AccountPage() {
         </button>
       </header>
 
-      <div>
-        <h2 style={{ fontSize: '1.4rem', marginBottom: '20px', fontFamily: 'var(--font-serif)' }}>Order History</h2>
-        
-        {orders.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '8px' }}>
+      <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
+        <button 
+          onClick={() => setActiveTab('dashboard')} 
+          style={{ padding: '10px 20px', background: activeTab === 'dashboard' ? 'var(--primary-color)' : '#f9f9f9', color: activeTab === 'dashboard' ? 'white' : '#333', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          Dashboard
+        </button>
+        <button 
+          onClick={() => setActiveTab('orders')} 
+          style={{ padding: '10px 20px', background: activeTab === 'orders' ? 'var(--primary-color)' : '#f9f9f9', color: activeTab === 'orders' ? 'white' : '#333', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          My Orders {orders.length > 0 && `(${orders.length})`}
+        </button>
+      </div>
+
+      {activeTab === 'dashboard' && (
+        <div style={{ padding: '40px', background: '#f9f9f9', borderRadius: '8px', border: '1px solid #eee' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', marginBottom: '15px' }}>Account Dashboard</h2>
+          <p style={{ color: '#555', marginBottom: '20px', lineHeight: '1.6' }}>
+            From your account dashboard you can view your recent orders, track packages, and manage your account details.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginTop: '30px' }}>
+            <div style={{ background: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #eaeaea', textAlign: 'center' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>📦</div>
+              <h3 style={{ marginBottom: '10px' }}>Track Orders</h3>
+              <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '15px' }}>Check the status of your recent purchases.</p>
+              <button onClick={() => setActiveTab('orders')} style={{ background: 'var(--primary-color)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>View Orders</button>
+            </div>
+            <div style={{ background: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #eaeaea', textAlign: 'center' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>👤</div>
+              <h3 style={{ marginBottom: '10px' }}>Account Details</h3>
+              <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '15px' }}>You are logged in with Mobile: +91 {userPhone}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'orders' && (
+        <div>
+          <h2 style={{ fontSize: '1.4rem', marginBottom: '20px', fontFamily: 'var(--font-serif)' }}>Order History</h2>
+          
+          {orders.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '8px' }}>
             <p style={{ color: '#666', marginBottom: '20px' }}>You haven't placed any orders yet.</p>
             <Link href="/" className="btn-primary" style={{ textDecoration: 'none', display: 'inline-block' }}>Start Shopping</Link>
           </div>
@@ -150,7 +189,8 @@ export default function AccountPage() {
             ))}
           </div>
         )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
