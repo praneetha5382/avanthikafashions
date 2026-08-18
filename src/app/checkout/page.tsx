@@ -84,10 +84,9 @@ export default function CheckoutPage() {
         customer_name: `${firstName} ${lastName}`,
         shipping_address: { address, city, state, pin },
         items: cartItems,
-        subtotal: taxableAmount,
+        subtotal: cartTotal,
         shipping_cost: shippingCost,
         discount: discountAmount,
-        tax: tax,
         total: finalTotal,
         payment_method: paymentMethod
       };
@@ -117,9 +116,7 @@ export default function CheckoutPage() {
   // Pricing Logic
   const shippingCost = cartRequiresShipping ? 99 : 0;
   const discountAmount = couponApplied ? cartTotal * 0.1 : 0; // 10% discount
-  const taxableAmount = cartTotal - discountAmount;
-  const tax = taxableAmount * 0.18;
-  const finalTotal = taxableAmount + tax + shippingCost;
+  const finalTotal = cartTotal - discountAmount + shippingCost;
 
   return (
     <div className={styles.checkoutPage}>
@@ -228,13 +225,6 @@ export default function CheckoutPage() {
                 <p>You will be redirected to Razorpay Secure to complete your purchase.</p>
               </div>
             )}
-            
-            <label className={`${styles.paymentOption} ${paymentMethod === 'cod' ? styles.selected : ''}`}>
-              <div>
-                <input type="radio" name="payment" value="cod" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
-                <span className={styles.payText}>Cash on Delivery (COD)</span>
-              </div>
-            </label>
           </div>
 
           <button 
@@ -311,7 +301,6 @@ export default function CheckoutPage() {
                 <span className={styles.currency}>INR</span> ₹{finalTotal.toLocaleString('en-IN')}
               </span>
             </div>
-            <p className={styles.taxNote}>Including ₹{tax.toLocaleString('en-IN')} in taxes</p>
           </div>
         </div>
       </div>

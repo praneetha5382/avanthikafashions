@@ -13,7 +13,7 @@ export default function AddToCartLogic({ product, selectedVariant }: { product: 
   const totalPrice = product.price * quantity;
   const originalTotalPrice = product.originalPrice ? product.originalPrice * quantity : null;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (suppressOpen: boolean = false) => {
     addToCart({
       id: `${product.id}-${selectedVariant?.color || 'default'}`,
       productId: product.id,
@@ -24,11 +24,11 @@ export default function AddToCartLogic({ product, selectedVariant }: { product: 
       image: selectedVariant?.images?.[0] || product.images?.[0] || '',
       sku: selectedVariant?.sku || product.sku || 'N/A',
       isFreeShipping: product.isFreeShipping !== false
-    });
+    }, suppressOpen);
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
+    handleAddToCart(true); // Suppress cart drawer
     router.push('/checkout');
   };
 
@@ -48,7 +48,6 @@ export default function AddToCartLogic({ product, selectedVariant }: { product: 
             <span className={styles.currency}>INR</span>
             <span className={styles.amount}>{totalPrice.toLocaleString('en-IN')}</span>
           </div>
-          <p className={styles.taxNote}>Inclusive of all taxes.</p>
           <p style={{ marginTop: '15px', fontSize: '1.1rem', fontWeight: 500, fontFamily: 'monospace' }}>
             Sku: {selectedVariant?.sku || product.sku}
           </p>

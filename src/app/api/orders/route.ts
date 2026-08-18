@@ -38,7 +38,6 @@ export async function POST(request: Request) {
       subtotal: payload.subtotal,
       shipping_cost: payload.shipping_cost,
       discount: payload.discount,
-      tax: payload.tax,
       total: payload.total,
       payment_method: payload.payment_method,
       status: payload.payment_method === 'razorpay' ? 'Pending Payment' : 'Pending'

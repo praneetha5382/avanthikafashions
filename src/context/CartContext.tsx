@@ -17,7 +17,7 @@ export interface CartItem {
 interface CartContextType {
   cartItems: CartItem[];
   isCartOpen: boolean;
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: CartItem, suppressOpen?: boolean) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   toggleCart: () => void;
@@ -46,7 +46,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = (item: CartItem, suppressOpen: boolean = false) => {
     setCartItems(prev => {
       const existing = prev.find(i => i.productId === item.productId && i.size === item.size);
       if (existing) {
@@ -54,7 +54,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, item];
     });
-    setIsCartOpen(true); // Open drawer on add
+    if (!suppressOpen) {
+      setIsCartOpen(true); // Open drawer on add unless suppressed
+    }
   };
 
   const removeFromCart = (id: string) => {

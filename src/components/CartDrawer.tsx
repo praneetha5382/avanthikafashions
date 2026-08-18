@@ -61,7 +61,7 @@ export default function CartDrawer() {
               <span>Subtotal</span>
               <span>₹{cartTotal.toLocaleString('en-IN')}</span>
             </div>
-            <p className={styles.taxNote}>Shipping & taxes calculated at checkout.</p>
+            <p className={styles.taxNote}>Shipping calculated at checkout.</p>
             <Link href="/checkout" onClick={toggleCart} className={`btn-primary ${styles.checkoutBtn}`}>
               Checkout
             </Link>
