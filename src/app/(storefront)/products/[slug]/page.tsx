@@ -2,14 +2,18 @@ import Image from 'next/image';
 import styles from './page.module.css';
 import ProductDetailsClient from '@/components/ProductDetailsClient';
 import { notFound } from 'next/navigation';
-import fs from 'fs';
-import path from 'path';
+import { getServiceSupabase } from '@/lib/supabaseClient';
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const dbPath = path.join(process.cwd(), 'src/lib/db.json');
-  const products = JSON.parse(fs.readFileSync(dbPath, 'utf-8')).products;
-  const product = products.find((p: any) => p.slug === slug);
+  const decodedSlug = decodeURIComponent(slug);
+  
+  const supabase = getServiceSupabase();
+  const { data: product } = await supabase
+    .from('products')
+    .select('*')
+    .eq('slug', decodedSlug)
+    .single();
 
   if (!product) {
     notFound();
