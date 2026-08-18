@@ -758,7 +758,12 @@ export default function AdminDashboard() {
                           <td>
                             <img src={p.variants[0]?.images[0] || '/placeholder.jpg'} alt={p.name} style={{width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px'}} />
                           </td>
-                          <td><strong>{p.name}</strong><br/><span style={{fontSize: '0.8rem', color: '#666'}}>ID: {p.id}</span></td>
+                          <td>
+                            <strong>{p.name}</strong><br/>
+                            <span style={{fontSize: '0.8rem', color: '#666'}}>
+                              SKU: {p.variants?.[0]?.sku || p.sku || 'N/A'} | Stock: {p.variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || 0}
+                            </span>
+                          </td>
                           <td>₹{p.price}</td>
                           <td>{p.mainCategory} &gt; {p.subCategory}</td>
                           <td>
