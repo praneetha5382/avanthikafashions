@@ -6,6 +6,7 @@ import NextImage from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function AdminDashboard() {
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [data, setData] = useState<any>({ categories: [], products: [], menus: [], customers: [], orders: [], siteSettings: { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true } });
   const [activeTab, setActiveTab] = useState('orders'); // orders, inventory, categories, storefront, customers
   const [menuItems, setMenuItems] = useState<any[]>([{ name: '', href: '' }]);
@@ -285,21 +286,44 @@ export default function AdminDashboard() {
   return (
     <div className={styles.dashboard}>
       
+      {/* Mobile Top Bar */}
+      <div className={styles.mobileTopBar}>
+        <button 
+          className={styles.hamburger} 
+          onClick={() => setIsMobileSidebarOpen(true)}
+          aria-label="Open Menu"
+        >
+          ☰
+        </button>
+        <div className={styles.mobileBrand}>Avanthika Admin</div>
+      </div>
+
+      {/* Sidebar Overlay for Mobile */}
+      {isMobileSidebarOpen && (
+        <div className={styles.sidebarOverlay} onClick={() => setIsMobileSidebarOpen(false)}></div>
+      )}
+
       {/* Sidebar */}
-      <aside className={styles.sidebar}>
+      <aside className={`${styles.sidebar} ${isMobileSidebarOpen ? styles.sidebarOpen : ''}`}>
+        <button 
+          className={styles.closeSidebar} 
+          onClick={() => setIsMobileSidebarOpen(false)}
+        >
+          ✕
+        </button>
         <div className={styles.brand} style={{ padding: '20px 0', display: 'flex', justifyContent: 'center' }}>
           <img 
             src="/logo.png" 
             alt="Avanthika Fashions" 
-            style={{ width: '240px', height: '100px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} 
+            style={{ width: '200px', height: '80px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} 
           />
         </div>
         <nav className={styles.navLinks}>
-          <button className={activeTab === 'orders' ? styles.active : ''} onClick={() => setActiveTab('orders')}>🚚 Orders & Dispatch</button>
-          <button className={activeTab === 'inventory' ? styles.active : ''} onClick={() => setActiveTab('inventory')}>📦 Add Product</button>
-          <button className={activeTab === 'categories' ? styles.active : ''} onClick={() => setActiveTab('categories')}>🏷️ Manage Categories</button>
-          <button className={activeTab === 'storefront' ? styles.active : ''} onClick={() => setActiveTab('storefront')}>⚙️ Storefront Settings</button>
-          <button className={activeTab === 'customers' ? styles.active : ''} onClick={() => setActiveTab('customers')}>👥 Customer Intelligence</button>
+          <button className={activeTab === 'orders' ? styles.active : ''} onClick={() => {setActiveTab('orders'); setIsMobileSidebarOpen(false);}}>🚚 Orders & Dispatch</button>
+          <button className={activeTab === 'inventory' ? styles.active : ''} onClick={() => {setActiveTab('inventory'); setIsMobileSidebarOpen(false);}}>📦 Add Product</button>
+          <button className={activeTab === 'categories' ? styles.active : ''} onClick={() => {setActiveTab('categories'); setIsMobileSidebarOpen(false);}}>🏷️ Manage Categories</button>
+          <button className={activeTab === 'storefront' ? styles.active : ''} onClick={() => {setActiveTab('storefront'); setIsMobileSidebarOpen(false);}}>⚙️ Storefront Settings</button>
+          <button className={activeTab === 'customers' ? styles.active : ''} onClick={() => {setActiveTab('customers'); setIsMobileSidebarOpen(false);}}>👥 Customer Intelligence</button>
         </nav>
       </aside>
 
@@ -414,10 +438,11 @@ export default function AdminDashboard() {
             </div>
             
             <div className={styles.card}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Order Details</th>
+              <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Order Details</th>
                     <th>Customer & Delivery</th>
                     <th>Items to Pack</th>
                     <th>Amount & Payment</th>
@@ -539,7 +564,8 @@ export default function AdminDashboard() {
                     <tr><td colSpan={5} style={{textAlign: 'center', padding: '20px'}}>No orders found.</td></tr>
                   )}
                 </tbody>
-              </table>
+                </table>
+              </div>
             </div>
           </div>
         )}
@@ -556,7 +582,7 @@ export default function AdminDashboard() {
               {data.products.length === 0 ? (
                 <p>No products yet.</p>
               ) : (
-                <div style={{overflowX: 'auto'}}>
+                <div className={styles.tableWrapper}>
                   {Array.from(new Set(data.products.map((p: any) => p.mainCategory))).map((categoryName: any) => (
                     <div key={categoryName} style={{ marginBottom: '30px' }}>
                       <h3 style={{ padding: '10px', background: '#f0f0f0', borderLeft: '4px solid var(--primary-color)', margin: '0 0 10px 0' }}>{categoryName}</h3>
@@ -976,26 +1002,28 @@ export default function AdminDashboard() {
             </header>
             
             <div className={styles.card}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Customer Name</th>
-                    <th>Mobile Number</th>
-                    <th>Status</th>
-                    <th>Joined</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.customers.map((c: any) => (
-                    <tr key={c.id}>
-                      <td><strong>{c.name}</strong></td>
-                      <td>{c.mobile}</td>
-                      <td>{c.verified ? <span className={styles.tagGreen}>Verified OTP</span> : <span className={styles.tagPending}>Pending</span>}</td>
-                      <td>{c.joined}</td>
+              <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Customer Name</th>
+                      <th>Mobile Number</th>
+                      <th>Status</th>
+                      <th>Joined</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {data.customers.map((c: any) => (
+                      <tr key={c.id}>
+                        <td><strong>{c.name}</strong></td>
+                        <td>{c.mobile}</td>
+                        <td>{c.verified ? <span className={styles.tagGreen}>Verified OTP</span> : <span className={styles.tagPending}>Pending</span>}</td>
+                        <td>{c.joined}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
