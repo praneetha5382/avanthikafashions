@@ -479,14 +479,18 @@ export default function AdminDashboard() {
                           )}
 
                           {order.status === 'Shipped' && (
-                            <button 
-                              onClick={() => handleOrderStatusChange(order.id, 'Delivered')}
-                              style={{ background: '#d1fae5', color: '#047857', border: '1px solid #059669', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
-                              onMouseOver={(e) => e.currentTarget.style.background = '#a7f3d0'}
-                              onMouseOut={(e) => e.currentTarget.style.background = '#d1fae5'}
-                            >
-                              🏠 Mark Delivered
-                            </button>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', textAlign: 'center' }}>
+                              <span style={{ background: '#f8fafc', color: '#475569', border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.85rem' }}>
+                                📡 Awaiting Courier Delivery
+                              </span>
+                              <button 
+                                onClick={() => handleOrderStatusChange(order.id, 'Delivered')}
+                                style={{ background: 'none', border: 'none', color: '#059669', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline' }}
+                                title="Use this until Courier API is fully integrated"
+                              >
+                                (Force manual delivery)
+                              </button>
+                            </div>
                           )}
 
                           {(order.status === 'Delivered' || order.status === 'Cancelled') && (
