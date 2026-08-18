@@ -70,13 +70,11 @@ export default function ProductGallery({ images }: { images: string[] }) {
                 className={styles.carouselSlide}
                 onClick={() => setIsLightboxOpen(true)}
               >
-                <NextImage 
+                <img 
                   src={src} 
                   alt="Product View" 
-                  fill 
                   className={styles.mainImage} 
-                  priority={idx === 0}
-                  unoptimized 
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
                 />
               </div>
             ))}
