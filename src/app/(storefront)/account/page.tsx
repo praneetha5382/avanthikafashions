@@ -135,12 +135,12 @@ export default function AccountPage() {
                         width: order.status === 'Delivered' ? '80%' : order.status === 'Shipped' ? '53%' : order.status === 'Packed' ? '26%' : '0%' 
                       }}></div>
 
-                      {['Placed', 'Packed', 'Shipped', 'Delivered'].map((step, idx) => {
+                      {['Placed Successfully', 'Packaged Successfully', 'Shipped via Courier', 'Delivered'].map((step, idx) => {
                         const isActive = 
-                          (step === 'Placed') ||
-                          (step === 'Packed' && ['Packed', 'Shipped', 'Delivered'].includes(order.status)) ||
-                          (step === 'Shipped' && ['Shipped', 'Delivered'].includes(order.status)) ||
-                          (step === 'Delivered' && order.status === 'Delivered');
+                          (idx === 0) ||
+                          (idx === 1 && ['Packed', 'Shipped', 'Delivered'].includes(order.status)) ||
+                          (idx === 2 && ['Shipped', 'Delivered'].includes(order.status)) ||
+                          (idx === 3 && order.status === 'Delivered');
                         
                         return (
                           <div key={step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3, flex: 1 }}>
