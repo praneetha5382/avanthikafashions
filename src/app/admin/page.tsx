@@ -923,7 +923,8 @@ export default function AdminDashboard() {
                                   <input 
                                     type="text" placeholder="123456" maxLength={6}
                                     value={variant.sku.replace('SKU-', '')} required={hasMultipleVariants}
-                                    style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem'}}
+                                    disabled={!!editingProductId}
+                                    style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem', color: editingProductId ? '#999' : 'inherit'}}
                                     onChange={e => {
                                       const sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
                                       const newVars = [...formData.variants]; 
@@ -964,7 +965,8 @@ export default function AdminDashboard() {
                                 <input 
                                   type="text" placeholder="123456" maxLength={6}
                                   value={variant.sku.replace('SKU-', '')} required={!hasMultipleVariants}
-                                  style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem'}}
+                                  disabled={!!editingProductId}
+                                  style={{border: 'none', background: 'transparent', outline: 'none', padding: '12px 0', width: '100%', fontSize: '1rem', color: editingProductId ? '#999' : 'inherit'}}
                                   onChange={e => {
                                     const sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
                                     const newVars = [...formData.variants]; 
