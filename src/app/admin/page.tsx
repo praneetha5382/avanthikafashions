@@ -177,14 +177,10 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <aside className={styles.sidebar}>
         <div className={styles.brand} style={{ padding: '20px 0', display: 'flex', justifyContent: 'center' }}>
-          <NextImage 
+          <img 
             src="/logo.png" 
             alt="Avanthika Fashions" 
-            width={240} 
-            height={100} 
-            style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} 
-            unoptimized 
-            priority 
+            style={{ width: '240px', height: '100px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} 
           />
         </div>
         <nav className={styles.navLinks}>
