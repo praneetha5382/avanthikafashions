@@ -71,21 +71,19 @@ export default function CollectionPage() {
           {filteredProducts.map(p => (
             <Link href={`/products/${p.slug}`} key={p.id} className={styles.card}>
               <div className={styles.imageWrapper}>
-                {p.discount && <span className={styles.discountBadge}>{p.discount}</span>}
-                <Image 
+                {p.discount && <span className={styles.discountBadge}>{p.discount} OFF</span>}
+                <img 
                   src={p.variants?.[0]?.images?.[0] || p.images?.[0] || '/placeholder.jpg'} 
                   alt={p.name} 
-                  fill 
                   className={styles.primaryImg}
-                  unoptimized
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
                 />
                 {(p.variants?.[0]?.images?.[1] || p.images?.[1]) && (
-                  <Image 
+                  <img 
                     src={p.variants?.[0]?.images?.[1] || p.images?.[1]} 
                     alt={p.name} 
-                    fill 
                     className={styles.secondaryImg}
-                    unoptimized
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
                   />
                 )}
               </div>

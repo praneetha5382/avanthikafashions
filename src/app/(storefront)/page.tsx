@@ -114,10 +114,10 @@ export default function Home() {
             {topPicks.map((p: any) => (
               <Link href={`/products/${p.slug}`} key={p.id} className={styles.productCard}>
                 <div className={styles.cardImgWrapper}>
-                  {p.discount && <span className={styles.badge}>{p.discount}</span>}
-                  <Image src={p.variants?.[0]?.images?.[0] || p.images?.[0] || '/saree-hero.jpg'} alt={p.name} fill style={{ objectFit: 'cover' }} unoptimized className={styles.primaryImg} />
+                  {p.discount && <span className={styles.badge}>{p.discount} OFF</span>}
+                  <img src={p.variants?.[0]?.images?.[0] || p.images?.[0] || '/saree-hero.jpg'} alt={p.name} className={styles.primaryImg} style={{ width: '100%', height: 'auto', display: 'block' }} />
                   {(p.variants?.[0]?.images?.[1] || p.images?.[1]) && (
-                    <Image src={p.variants?.[0]?.images?.[1] || p.images?.[1]} alt={p.name} fill style={{ objectFit: 'cover' }} unoptimized className={styles.secondaryImg} />
+                    <img src={p.variants?.[0]?.images?.[1] || p.images?.[1]} alt={p.name} className={styles.secondaryImg} style={{ width: '100%', height: 'auto', display: 'block' }} />
                   )}
                 </div>
                 <div className={styles.cardInfo}>

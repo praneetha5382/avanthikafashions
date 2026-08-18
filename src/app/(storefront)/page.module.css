@@ -243,7 +243,8 @@
 .cardImgWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 3/4;
+  height: auto;
+  background-color: #f8f8f8;
 }
 
 .primaryImg {
