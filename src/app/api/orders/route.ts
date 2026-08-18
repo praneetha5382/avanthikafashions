@@ -37,7 +37,8 @@ export async function POST(request: Request) {
       items: payload.items,
       subtotal: payload.subtotal,
       shipping_cost: payload.shipping_cost,
-      discount: payload.discount,
+      discount: payload.discount || 0,
+      tax: payload.tax || 0,
       total: payload.total,
       payment_method: payload.payment_method,
       status: payload.payment_method === 'razorpay' ? 'Pending Payment' : 'Pending'
@@ -50,9 +51,9 @@ export async function POST(request: Request) {
     sendOrderConfirmationEmail(newOrder).catch(console.error);
 
     return NextResponse.json({ success: true, orderId });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Supabase POST Order Error:', error);
-    return NextResponse.json({ error: 'Failed to place order' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to place order' }, { status: 500 });
   }
 }
 
