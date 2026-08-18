@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import NextImage from 'next/image';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function AdminDashboard() {
   const [data, setData] = useState<any>({ categories: [], products: [], menus: [], customers: [], orders: [], siteSettings: { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true } });
@@ -51,88 +52,50 @@ export default function AdminDashboard() {
     });
   }, []);
 
-  // --- Image Compression ---
-  const compressImage = (file: File): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target?.result as string;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 1080;
-          const MAX_HEIGHT = 1920;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob((blob) => {
-            if (blob) {
-              // Convert to jpeg to reduce file size significantly
-              resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg' }));
-            } else {
-              reject(new Error('Canvas to Blob failed'));
-            }
-          }, 'image/jpeg', 0.85); // 85% quality
-        };
-      };
-      reader.onerror = error => reject(error);
-    });
-  };
-
-  // --- Image Upload Logic ---
+  // --- Image Upload Logic (Direct to Supabase to preserve full quality) ---
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, variantIndex: number) => {
     if (!e.target.files?.length) return;
     setUploadingVariantIndex(variantIndex);
     
-    const uploadData = new FormData();
-    for (const file of Array.from(e.target.files)) {
-      try {
-        const compressedFile = await compressImage(file);
-        uploadData.append('files', compressedFile);
-      } catch (err) {
-        console.error("Compression failed, using original file", err);
-        uploadData.append('files', file);
-      }
-    }
-
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: uploadData });
-      if (res.ok) {
-        const result = await res.json();
-        setFormData(prev => {
-          const newVariants = [...prev.variants];
-          // Ensure no duplicate URLs are added
-          const existingImages = newVariants[variantIndex].images;
-          const newUniqueImages = result.urls.filter((url: string) => !existingImages.includes(url));
-          newVariants[variantIndex].images = [...existingImages, ...newUniqueImages];
-          return { ...prev, variants: newVariants };
-        });
-        // Clear input to prevent double firing or allow re-upload of same file
-        e.target.value = '';
-      } else {
-        const errorText = await res.text();
-        alert(`Upload failed! Status: ${res.status}. Message: ${errorText}`);
+      const fileUrls: string[] = [];
+      
+      for (const file of Array.from(e.target.files)) {
+        const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+        
+        // Upload directly from browser to Supabase (bypasses Vercel limits entirely)
+        const { data, error } = await supabase.storage
+          .from('product-images')
+          .upload(fileName, file, {
+            contentType: file.type,
+            upsert: false
+          });
+
+        if (error) {
+          console.error("Supabase direct upload error:", error);
+          throw error;
+        }
+
+        // Get the public URL
+        const { data: publicUrlData } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+
+        fileUrls.push(publicUrlData.publicUrl);
       }
+
+      // Update state with new images
+      setFormData(prev => {
+        const newVariants = [...prev.variants];
+        const existingImages = newVariants[variantIndex].images;
+        const newUniqueImages = fileUrls.filter((url: string) => !existingImages.includes(url));
+        newVariants[variantIndex].images = [...existingImages, ...newUniqueImages];
+        return { ...prev, variants: newVariants };
+      });
+      
+      e.target.value = ''; // Reset input
     } catch (err: any) {
-      alert(`Error connecting to upload server: ${err.message}`);
+      alert(`Direct Upload Failed: ${err.message}. Please ensure the Supabase Storage Policy allows public uploads.`);
     } finally {
       setUploadingVariantIndex(null);
     }
