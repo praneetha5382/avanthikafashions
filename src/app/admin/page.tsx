@@ -35,7 +35,7 @@ export default function AdminDashboard() {
   const [targetMainCategory, setTargetMainCategory] = useState('');
 
   // --- Order Filter State ---
-  const [orderFilterStatus, setOrderFilterStatus] = useState('New');
+  const [orderFilterStatus, setOrderFilterStatus] = useState('Processing');
   const [quickScanInput, setQuickScanInput] = useState('');
   const [quickScanResult, setQuickScanResult] = useState<any | null>(null);
   const [trackingModalOrder, setTrackingModalOrder] = useState<any | null>(null);
@@ -411,9 +411,9 @@ export default function AdminDashboard() {
             )}
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-              {['New', 'Processing', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
+              {['Processing', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
                 const mapStatus = status === 'Dispatched' ? 'Shipped' : status === 'Processing' ? 'Packed' : status;
-                const count = data.orders.filter((o: any) => o.status === mapStatus || (status === 'New' && (o.status === 'Pending' || o.status === 'Pending Payment'))).length;
+                const count = data.orders.filter((o: any) => o.status === mapStatus || (status === 'Processing' && (o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New'))).length;
                 return (
                 <button
                   key={status}
@@ -452,8 +452,7 @@ export default function AdminDashboard() {
                 <tbody>
                   {data.orders
                     .filter((o: any) => {
-                      if (orderFilterStatus === 'New') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New';
-                      if (orderFilterStatus === 'Processing') return o.status === 'Packed';
+                      if (orderFilterStatus === 'Processing') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'New' || o.status === 'Packed';
                       if (orderFilterStatus === 'Dispatched') return o.status === 'Shipped';
                       return o.status === orderFilterStatus;
                     })
@@ -464,19 +463,18 @@ export default function AdminDashboard() {
                         <span style={{fontSize: '0.85rem', color: '#666'}}>{new Date(order.created_at).toLocaleString()}</span>
                       </td>
                       <td style={{verticalAlign: 'top'}}>
-                        <div style={{ background: '#f8f8f8', padding: '10px', borderRadius: '6px', border: '1px solid #eaeaea', fontSize: '0.9rem' }}>
-                          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>{order.customer_name}</p>
-                          <p style={{ margin: '0 0 5px 0' }}>📞 {order.customer_phone}</p>
-                          <p style={{ margin: '0 0 10px 0' }}>📧 {order.customer_email || 'N/A'}</p>
-                          
-                          <div style={{ borderTop: '1px solid #ddd', paddingTop: '8px' }}>
-                            <p style={{ margin: '0 0 3px 0', fontWeight: 'bold', fontSize: '0.8rem', color: '#666', textTransform: 'uppercase' }}>Shipping Address</p>
-                            <p style={{ margin: 0, lineHeight: '1.4' }}>
-                              {order.shipping_address?.address}<br/>
-                              {order.shipping_address?.city}, {order.shipping_address?.state}<br/>
-                              PIN: <strong>{order.shipping_address?.pin}</strong>
-                            </p>
-                          </div>
+                        <div style={{ background: '#fcfcfc', padding: '15px', borderRadius: '6px', border: '1px solid #eaeaea', fontSize: '0.85rem' }}>
+                          <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary-color)', fontSize: '0.95rem' }}>Customer Details</h4>
+                          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '6px' }}>
+                            <li><strong>Mobile Number:</strong> {order.customer_phone}</li>
+                            <li><strong>Email Address:</strong> {order.customer_email || 'N/A'}</li>
+                            <li><strong>First Name:</strong> {order.customer_name.split(' ')[0] || ''}</li>
+                            <li><strong>Last Name:</strong> {order.customer_name.split(' ').slice(1).join(' ') || ''}</li>
+                            <li><strong>Delivery Address:</strong> {order.shipping_address?.address}</li>
+                            <li><strong>City:</strong> {order.shipping_address?.city}</li>
+                            <li><strong>State:</strong> {order.shipping_address?.state}</li>
+                            <li><strong>PIN code:</strong> {order.shipping_address?.pin}</li>
+                          </ul>
                         </div>
                       </td>
                       <td style={{verticalAlign: 'top'}}>
@@ -496,18 +494,7 @@ export default function AdminDashboard() {
                       </td>
                       <td style={{verticalAlign: 'top'}}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New') && (
-                            <button 
-                              onClick={() => handleOrderStatusChange(order.id, 'Packed')}
-                              style={{ background: '#fef3c7', color: '#d97706', border: '1px solid #d97706', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
-                              onMouseOver={(e) => e.currentTarget.style.background = '#fde68a'}
-                              onMouseOut={(e) => e.currentTarget.style.background = '#fef3c7'}
-                            >
-                              👍 Acknowledge & Process
-                            </button>
-                          )}
-
-                          {order.status === 'Packed' && (
+                          {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New' || order.status === 'Packed') && (
                             <button 
                               onClick={() => setTrackingModalOrder(order)}
                               style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
