@@ -22,13 +22,7 @@ export default function ProductDetailsClient({ product }: { product: any }) {
       {/* Info Section */}
       <div className={styles.infoSection}>
         <h1 className={styles.title} style={{ textTransform: 'capitalize', marginBottom: '10px' }}>{product.name}</h1>
-        
-        {/* Use the new Sol Attire style description */}
-        {product.description && (
-          <p style={{ margin: '15px 0 25px 0', fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: '1.6', fontWeight: 300 }}>
-            {product.description}
-          </p>
-        )}
+        {/* Description is moved to the accordion below */}
 
         {/* Removed hidden title */}
 

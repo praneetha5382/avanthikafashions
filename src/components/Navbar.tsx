@@ -56,7 +56,7 @@ export default function Navbar() {
         {/* Center: Logo */}
         <div className={styles.logo}>
           <Link href="/">
-            <NextImage src="/logo.png" alt="Avanthika Fashions" width={180} height={80} style={{ objectFit: 'contain' }} priority unoptimized />
+            <NextImage src="/logo.png" alt="Avanthika Fashions" width={120} height={40} style={{ objectFit: 'contain' }} priority unoptimized />
           </Link>
         </div>
 

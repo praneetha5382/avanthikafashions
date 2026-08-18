@@ -25,10 +25,10 @@
 
 .title {
   font-family: var(--font-serif);
-  font-size: 2.5rem; /* Reduced from 3rem */
+  font-size: 2.2rem; /* Reduced to fit better */
   line-height: 1.1;
   color: var(--primary-color);
-  margin-bottom: 5px; /* Tightened */
+  margin-bottom: 2px; /* Tightened */
 }
 
 .price {

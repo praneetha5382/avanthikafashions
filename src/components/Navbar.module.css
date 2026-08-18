@@ -1,11 +1,13 @@
 .header {
   background-color: #fff0f5; /* Soft pink header */
-  padding: 10px 0;
+  padding: 5px 0; /* Reduced padding for compact header */
   position: sticky;
   top: 0;
-  z-index: 100;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  z-index: 1000; /* Increased z-index to stay above everything */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   transition: background-color 0.3s ease;
+  transform: translateZ(0); /* Hardware acceleration to stop mobile shaking */
+  -webkit-transform: translateZ(0);
 }
 
 .headerTransparent {
@@ -14,7 +16,7 @@
   top: 32px; /* Offset for marquee */
   width: 100%;
   box-shadow: none;
-  padding: 20px 0; /* Extra breathing room when overlaid on hero */
+  padding: 10px 0; /* Reduced padding here too */
 }
 
 .navContainer {
