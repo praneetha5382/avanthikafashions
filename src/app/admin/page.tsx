@@ -317,8 +317,8 @@ export default function AdminDashboard() {
         <div style={{ fontFamily: 'Arial, sans-serif', color: 'black', position: 'relative', zIndex: 1 }}>
           
           {/* Header: Logo Left, Order Info Right */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid black', paddingBottom: '15px', marginBottom: '15px' }}>
-            <img src="/logo.png" style={{ height: '140px', objectFit: 'contain' }} alt="Avanthika Fashions" />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid black', paddingBottom: '8px', marginBottom: '8px' }}>
+            <img src="/logo.png" style={{ height: '70px', objectFit: 'contain' }} alt="Avanthika Fashions" />
             <div style={{ textAlign: 'right', marginTop: '10px' }}>
               <div style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '4px' }}>ORDER: {printLabelOrder.id.replace('ORD-', '')}</div>
               <div style={{ display: 'inline-block', background: 'black', color: 'white', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold', fontSize: '14px', marginBottom: '8px' }}>
@@ -332,16 +332,16 @@ export default function AdminDashboard() {
           </div>
           
           {/* Shipping Address */}
-          <div style={{ border: '2px solid black', padding: '12px', borderRadius: '4px', marginBottom: '15px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', textTransform: 'uppercase', borderBottom: '1px solid black', paddingBottom: '4px' }}>Customer Details</div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '14px', lineHeight: '1.6' }}>
-              <li><strong>Full Name:</strong> <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{printLabelOrder.customer_name}</span></li>
+          <div style={{ border: '2px solid black', padding: '8px', borderRadius: '4px', marginBottom: '10px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', textTransform: 'uppercase', borderBottom: '1px solid black', paddingBottom: '2px' }}>Customer Details</div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '12px', lineHeight: '1.3' }}>
+              <li><strong>Full Name:</strong> <span style={{ fontSize: '14px', fontWeight: 'bold' }}>{printLabelOrder.customer_name}</span></li>
               <li><strong>Phone Number:</strong> {printLabelOrder.customer_phone}</li>
               {printLabelOrder.customer_email && <li><strong>Email Address:</strong> {printLabelOrder.customer_email}</li>}
               <li><strong>Delivery Address:</strong> {printLabelOrder.shipping_address?.address}</li>
               <li><strong>City:</strong> {printLabelOrder.shipping_address?.city}</li>
               <li><strong>State:</strong> {printLabelOrder.shipping_address?.state}</li>
-              <li><strong>PIN code:</strong> <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{printLabelOrder.shipping_address?.pin}</span></li>
+              <li><strong>PIN code:</strong> <span style={{ fontSize: '14px', fontWeight: 'bold' }}>{printLabelOrder.shipping_address?.pin}</span></li>
             </ul>
           </div>
 
@@ -358,10 +358,10 @@ export default function AdminDashboard() {
               <tbody>
                 {printLabelOrder.items.map((item: any, idx: number) => (
                   <tr key={idx} style={{ borderBottom: '1px solid #ddd' }}>
-                    <td style={{ padding: '4px 0', fontWeight: 'bold' }}>
+                    <td style={{ padding: '2px 0', fontWeight: 'bold' }}>
                       {item.name} {item.size !== 'Standard' && `(${item.size})`}
                     </td>
-                    <td style={{ padding: '4px 0', textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }}>{item.quantity}</td>
+                    <td style={{ padding: '2px 0', textAlign: 'center', fontWeight: 'bold', fontSize: '12px' }}>{item.quantity}</td>
                   </tr>
                 ))}
               </tbody>
@@ -391,8 +391,8 @@ export default function AdminDashboard() {
           </div>
           
           {/* Barcode */}
-          <div style={{ textAlign: 'center', marginTop: '10px' }}>
-            <img src={`https://barcodeapi.org/api/128/${printLabelOrder.id}`} style={{ height: '40px', maxWidth: '100%' }} alt="Barcode" />
+          <div style={{ textAlign: 'center', marginTop: '6px' }}>
+            <img src={`https://barcodeapi.org/api/128/${printLabelOrder.id}`} style={{ height: '35px', maxWidth: '100%' }} alt="Barcode" />
           </div>
 
         </div>
