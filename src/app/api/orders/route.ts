@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabaseClient';
+import { sendOrderConfirmationEmail, sendOrderStatusEmail } from '@/lib/email';
 
 // GET all orders for Admin Panel
 export async function GET() {
@@ -46,6 +47,9 @@ export async function POST(request: Request) {
     const { error } = await supabase.from('orders').insert(newOrder);
     if (error) throw error;
 
+    // Send email confirmation asynchronously
+    sendOrderConfirmationEmail(newOrder).catch(console.error);
+
     return NextResponse.json({ success: true, orderId });
   } catch (error) {
     console.error('Supabase POST Order Error:', error);
@@ -59,8 +63,14 @@ export async function PATCH(request: Request) {
     const { id, status } = await request.json();
     const supabase = getServiceSupabase();
     
-    const { error } = await supabase.from('orders').update({ status }).eq('id', id);
+    // Fetch the updated order to get the customer details for the email
+    const { data: updatedOrder, error } = await supabase.from('orders').update({ status }).eq('id', id).select('*').single();
     if (error) throw error;
+
+    // Send status update email if Shipped or Delivered
+    if (status === 'Shipped' || status === 'Delivered') {
+      sendOrderStatusEmail(updatedOrder).catch(console.error);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

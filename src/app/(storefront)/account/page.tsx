@@ -53,12 +53,14 @@ export default function AccountPage() {
     router.push('/');
   };
 
+  const customerName = orders.length > 0 && orders[0].customer_name ? orders[0].customer_name.split(' ')[0] : '';
+
   return (
     <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '0 20px', minHeight: '60vh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid #eee', paddingBottom: '20px' }}>
         <div>
           <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-color)' }}>My Account</h1>
-          <p style={{ color: '#666', marginTop: '5px' }}>Welcome back, +91 {userPhone}</p>
+          <p style={{ color: '#666', marginTop: '5px' }}>Welcome back{customerName ? `, ${customerName}` : ''}! (+91 {userPhone})</p>
         </div>
         <button 
           onClick={handleLogout} 
