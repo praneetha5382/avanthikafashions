@@ -34,7 +34,9 @@ export default function AdminDashboard() {
   const [targetMainCategory, setTargetMainCategory] = useState('');
 
   // --- Order Filter State ---
-  const [orderFilterStatus, setOrderFilterStatus] = useState('Pending');
+  const [orderFilterStatus, setOrderFilterStatus] = useState('New');
+  const [quickScanInput, setQuickScanInput] = useState('');
+  const [quickScanResult, setQuickScanResult] = useState<any | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -236,6 +238,23 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleQuickScan = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickScanInput.trim()) return;
+    const foundOrder = data.orders.find((o: any) => o.id.toLowerCase().includes(quickScanInput.toLowerCase().trim()));
+    if (foundOrder) {
+      setQuickScanResult(foundOrder);
+    } else {
+      alert(`Order ${quickScanInput} not found!`);
+      setQuickScanResult(null);
+    }
+    setQuickScanInput('');
+  };
+
+  const closeQuickScan = () => {
+    setQuickScanResult(null);
+  };
+
   return (
     <div className={styles.dashboard}>
       
@@ -262,10 +281,41 @@ export default function AdminDashboard() {
         
         {activeTab === 'orders' && (
           <div className={styles.tabContent}>
-            <header className={styles.tabHeader}>
-              <h1>Orders & Dispatch Pipeline</h1>
-              <p>Move orders through the fulfillment stages to keep tracking accurate.</p>
+            <header className={styles.tabHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h1>Orders & Dispatch Pipeline</h1>
+                <p>Move orders through the fulfillment stages to keep tracking accurate.</p>
+              </div>
+              <form onSubmit={handleQuickScan} style={{ display: 'flex', gap: '10px' }}>
+                <input 
+                  type="text" 
+                  placeholder="Scan or Enter Order ID..." 
+                  value={quickScanInput}
+                  onChange={(e) => setQuickScanInput(e.target.value)}
+                  className={styles.input}
+                  style={{ width: '250px' }}
+                />
+                <button type="submit" className="btn-primary" style={{ padding: '10px 20px' }}>Search</button>
+              </form>
             </header>
+
+            {quickScanResult && (
+              <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: 'white', padding: '30px', borderRadius: '12px', width: '500px', maxWidth: '90%' }}>
+                  <h2 style={{ marginTop: 0 }}>Quick Update</h2>
+                  <p><strong>Order ID:</strong> {quickScanResult.id}</p>
+                  <p><strong>Customer:</strong> {quickScanResult.customer_name}</p>
+                  <p><strong>Current Status:</strong> <span style={{ padding: '3px 8px', background: '#f0f0f0', borderRadius: '4px', fontWeight: 'bold' }}>{quickScanResult.status}</span></p>
+                  
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '25px', flexWrap: 'wrap' }}>
+                    <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Packed'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#fef3c7', border: '1px solid #d97706', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Mark Packed</button>
+                    <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Shipped'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#dbeafe', border: '1px solid #2563eb', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Mark Shipped</button>
+                    <button onClick={() => { handleOrderStatusChange(quickScanResult.id, 'Delivered'); closeQuickScan(); }} style={{ flex: 1, padding: '12px', background: '#d1fae5', border: '1px solid #059669', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Mark Delivered</button>
+                  </div>
+                  <button onClick={closeQuickScan} style={{ width: '100%', marginTop: '15px', padding: '10px', background: 'none', border: 'none', color: '#666', cursor: 'pointer', textDecoration: 'underline' }}>Close</button>
+                </div>
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
               {['New', 'Packed', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
@@ -348,11 +398,7 @@ export default function AdminDashboard() {
                         <select 
                           className={styles.input} 
                           value={order.status} 
-                          onChange={async (e) => {
-                            const newStatus = e.target.value;
-                            setData({...data, orders: data.orders.map((o:any) => o.id === order.id ? {...o, status: newStatus} : o)});
-                            await fetch('/api/orders', { method: 'PATCH', body: JSON.stringify({ id: order.id, status: newStatus }) });
-                          }}
+                          onChange={(e) => handleOrderStatusChange(order.id, e.target.value)}
                           style={{
                             background: order.status === 'Delivered' ? '#d1fae5' : order.status === 'Shipped' ? '#dbeafe' : order.status === 'Packed' ? '#fef3c7' : '#f3f4f6',
                             fontWeight: 'bold',

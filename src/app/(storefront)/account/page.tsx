@@ -37,6 +37,11 @@ export default function AccountPage() {
     };
 
     fetchOrders();
+
+    // Auto-refresh order statuses every 10 seconds
+    const interval = setInterval(fetchOrders, 10000);
+
+    return () => clearInterval(interval);
   }, [isLoggedIn, userPhone, router]);
 
   if (!isLoggedIn || loading) {
@@ -78,9 +83,38 @@ export default function AccountPage() {
                 <div style={{ flex: '1 1 250px' }}>
                   <p style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '5px' }}>{order.id}</p>
                   <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '15px' }}>Placed on {new Date(order.created_at).toLocaleDateString()}</p>
-                  <span style={{ display: 'inline-block', background: order.status === 'Pending' ? '#fff3cd' : '#d4edda', color: order.status === 'Pending' ? '#856404' : '#155724', padding: '4px 10px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 'bold', textTransform: 'uppercase' }}>
-                    {order.status}
-                  </span>
+                  <div style={{ marginTop: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', marginBottom: '8px' }}>
+                      {/* Background Line */}
+                      <div style={{ position: 'absolute', top: '10px', left: '10%', right: '10%', height: '4px', background: '#eaeaea', zIndex: 1 }}></div>
+                      
+                      {/* Active Fill Line */}
+                      <div style={{ 
+                        position: 'absolute', top: '10px', left: '10%', height: '4px', background: 'var(--primary-color)', zIndex: 2, transition: 'width 0.5s ease',
+                        width: order.status === 'Delivered' ? '80%' : order.status === 'Shipped' ? '53%' : order.status === 'Packed' ? '26%' : '0%' 
+                      }}></div>
+
+                      {['Placed', 'Packed', 'Shipped', 'Delivered'].map((step, idx) => {
+                        const isActive = 
+                          (step === 'Placed') ||
+                          (step === 'Packed' && ['Packed', 'Shipped', 'Delivered'].includes(order.status)) ||
+                          (step === 'Shipped' && ['Shipped', 'Delivered'].includes(order.status)) ||
+                          (step === 'Delivered' && order.status === 'Delivered');
+                        
+                        return (
+                          <div key={step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3, flex: 1 }}>
+                            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: isActive ? 'var(--primary-color)' : '#eaeaea', color: isActive ? 'white' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem', border: `3px solid white`, transition: 'all 0.3s' }}>
+                              {isActive ? '✓' : ''}
+                            </div>
+                            <span style={{ fontSize: '0.75rem', marginTop: '5px', fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#333' : '#999' }}>{step}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {order.status === 'Cancelled' && (
+                       <p style={{ color: 'red', fontWeight: 'bold', textAlign: 'center', marginTop: '10px' }}>Order Cancelled</p>
+                    )}
+                  </div>
                 </div>
                 
                 <div style={{ flex: '1 1 250px' }}>
