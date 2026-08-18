@@ -10,8 +10,11 @@ export default function AdminDashboard() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [data, setData] = useState<any>({ categories: [], products: [], menus: [], customers: [], orders: [], siteSettings: { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true } });
   const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, all-orders, orders, inventory, categories, storefront, customers
-  const [dashboardDateFilter, setDashboardDateFilter] = useState('This Month');
-  const [allOrdersDateFilter, setAllOrdersDateFilter] = useState('All Time');
+  const [dashboardStartDate, setDashboardStartDate] = useState('');
+  const [dashboardEndDate, setDashboardEndDate] = useState('');
+  const [allOrdersStartDate, setAllOrdersStartDate] = useState('');
+  const [allOrdersEndDate, setAllOrdersEndDate] = useState('');
+  const [allOrdersSearch, setAllOrdersSearch] = useState('');
   const [menuItems, setMenuItems] = useState<any[]>([{ name: '', href: '' }]);
   const [menuTitle, setMenuTitle] = useState('');
   // --- Inventory State ---
@@ -500,36 +503,43 @@ export default function AdminDashboard() {
                 <h1>Main Analytics Dashboard</h1>
                 <p>Track your sales, revenue, and product performance.</p>
               </div>
-              <select 
-                value={dashboardDateFilter} 
-                onChange={(e) => setDashboardDateFilter(e.target.value)}
-                className={styles.input}
-                style={{ width: '200px' }}
-              >
-                <option value="Today">Today</option>
-                <option value="This Week">This Week</option>
-                <option value="This Month">This Month</option>
-                <option value="This Year">This Year</option>
-                <option value="All Time">All Time</option>
-              </select>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'bold' }}>Date Range:</span>
+                <input 
+                  type="date" 
+                  value={dashboardStartDate} 
+                  onChange={(e) => setDashboardStartDate(e.target.value)} 
+                  className={styles.input} 
+                  style={{ padding: '8px 12px' }}
+                />
+                <span style={{ fontWeight: 'bold', color: '#ccc' }}>to</span>
+                <input 
+                  type="date" 
+                  value={dashboardEndDate} 
+                  onChange={(e) => setDashboardEndDate(e.target.value)} 
+                  className={styles.input} 
+                  style={{ padding: '8px 12px' }}
+                />
+                <button 
+                  onClick={() => { setDashboardStartDate(''); setDashboardEndDate(''); }}
+                  style={{ background: '#f1f5f9', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}
+                >
+                  Clear
+                </button>
+              </div>
             </header>
             
             {/* Compute Metrics */}
             {(() => {
               const now = new Date();
               let filteredOrders = data.orders.filter((o: any) => o.status !== 'Cancelled');
-              if (dashboardDateFilter === 'Today') {
-                filteredOrders = filteredOrders.filter((o: any) => new Date(o.created_at).toDateString() === now.toDateString());
-              } else if (dashboardDateFilter === 'This Week') {
-                const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-                filteredOrders = filteredOrders.filter((o: any) => new Date(o.created_at) >= startOfWeek);
-              } else if (dashboardDateFilter === 'This Month') {
-                filteredOrders = filteredOrders.filter((o: any) => {
-                  const d = new Date(o.created_at);
-                  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-                });
-              } else if (dashboardDateFilter === 'This Year') {
-                filteredOrders = filteredOrders.filter((o: any) => new Date(o.created_at).getFullYear() === now.getFullYear());
+              if (dashboardStartDate) {
+                filteredOrders = filteredOrders.filter((o: any) => new Date(o.created_at) >= new Date(dashboardStartDate));
+              }
+              if (dashboardEndDate) {
+                const end = new Date(dashboardEndDate);
+                end.setHours(23, 59, 59, 999);
+                filteredOrders = filteredOrders.filter((o: any) => new Date(o.created_at) <= end);
               }
 
               const totalRevenue = filteredOrders.reduce((sum: number, o: any) => sum + (o.total || 0), 0);
@@ -590,7 +600,7 @@ export default function AdminDashboard() {
                   <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
                     <div style={{ background: 'white', padding: '25px', borderRadius: '12px', border: '1px solid #eaeaea' }}>
                        <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Revenue & Order Trends</h3>
-                       <div style={{ width: '100%', height: '300px' }}>
+                       <div style={{ width: '100%', height: '350px' }}>
                          <ResponsiveContainer width="100%" height="100%">
                            <LineChart data={chartData}>
                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
@@ -599,25 +609,38 @@ export default function AdminDashboard() {
                              <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
                              <RechartsTooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
                              <Legend />
-                             <Line yAxisId="left" type="monotone" dataKey="Revenue" stroke="var(--primary-color)" strokeWidth={3} dot={{r: 4, fill: 'var(--primary-color)'}} activeDot={{r: 6}} />
-                             <Line yAxisId="right" type="monotone" dataKey="Orders" stroke="#3b82f6" strokeWidth={3} dot={{r: 4, fill: '#3b82f6'}} />
+                             <Line yAxisId="left" type="monotone" dataKey="Revenue" stroke="var(--primary-color)" strokeWidth={4} dot={{r: 4, fill: 'var(--primary-color)'}} activeDot={{r: 8}} animationDuration={1500} />
+                             <Line yAxisId="right" type="monotone" dataKey="Orders" stroke="#3b82f6" strokeWidth={4} dot={{r: 4, fill: '#3b82f6'}} animationDuration={1500} />
                            </LineChart>
                          </ResponsiveContainer>
                        </div>
                     </div>
 
                     <div style={{ background: 'white', padding: '25px', borderRadius: '12px', border: '1px solid #eaeaea' }}>
-                       <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Top Selling Products</h3>
-                       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                       <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Sales Distribution</h3>
+                       <div style={{ width: '100%', height: '200px', marginBottom: '20px' }}>
+                         <ResponsiveContainer width="100%" height="100%">
+                           <PieChart>
+                             <Pie data={topProducts} dataKey="revenue" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} animationDuration={1500}>
+                               {topProducts.map((entry: any, index: number) => (
+                                 <Cell key={`cell-${index}`} fill={['var(--primary-color)', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'][index % 5]} />
+                               ))}
+                             </Pie>
+                             <RechartsTooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
+                           </PieChart>
+                         </ResponsiveContainer>
+                       </div>
+                       
+                       <h4 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>Top Sellers List</h4>
+                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, maxHeight: '120px', overflowY: 'auto' }}>
                          {topProducts.map((p: any, i: number) => (
-                           <li key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #f0f0f0' }}>
+                           <li key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>
                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
-                               <span style={{ fontWeight: 'bold', color: '#888', width: '20px' }}>#{i+1}</span>
-                               <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{p.name}</span>
+                               <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: ['var(--primary-color)', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'][i % 5] }}></div>
+                               <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px', fontSize: '0.9rem' }}>{p.name}</span>
                              </div>
                              <div style={{ textAlign: 'right' }}>
-                               <div style={{ fontWeight: 'bold' }}>{p.quantity} sold</div>
-                               <div style={{ fontSize: '0.8rem', color: 'var(--primary-color)' }}>₹{p.revenue.toLocaleString()}</div>
+                               <div style={{ fontSize: '0.85rem', color: 'var(--primary-color)', fontWeight: 'bold' }}>₹{p.revenue.toLocaleString()}</div>
                              </div>
                            </li>
                          ))}
@@ -638,18 +661,37 @@ export default function AdminDashboard() {
                 <h1>All Orders Database</h1>
                 <p>A comprehensive view of every order placed in your store.</p>
               </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <select 
-                  value={allOrdersDateFilter} 
-                  onChange={(e) => setAllOrdersDateFilter(e.target.value)}
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <input 
+                  type="text" 
+                  placeholder="Search Order ID or Name..." 
+                  value={allOrdersSearch} 
+                  onChange={(e) => setAllOrdersSearch(e.target.value)}
                   className={styles.input}
-                  style={{ width: '150px' }}
+                  style={{ padding: '8px 12px', width: '220px' }}
+                />
+                <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'bold', marginLeft: '10px' }}>Date Range:</span>
+                <input 
+                  type="date" 
+                  value={allOrdersStartDate} 
+                  onChange={(e) => setAllOrdersStartDate(e.target.value)} 
+                  className={styles.input} 
+                  style={{ padding: '8px 12px' }}
+                />
+                <span style={{ fontWeight: 'bold', color: '#ccc' }}>to</span>
+                <input 
+                  type="date" 
+                  value={allOrdersEndDate} 
+                  onChange={(e) => setAllOrdersEndDate(e.target.value)} 
+                  className={styles.input} 
+                  style={{ padding: '8px 12px' }}
+                />
+                <button 
+                  onClick={() => { setAllOrdersStartDate(''); setAllOrdersEndDate(''); setAllOrdersSearch(''); }}
+                  style={{ background: '#f1f5f9', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}
                 >
-                  <option value="All Time">All Time</option>
-                  <option value="This Year">This Year</option>
-                  <option value="This Month">This Month</option>
-                  <option value="Today">Today</option>
-                </select>
+                  Clear
+                </button>
               </div>
             </header>
 
@@ -669,19 +711,25 @@ export default function AdminDashboard() {
                     {(() => {
                       const now = new Date();
                       let filtered = data.orders;
-                      if (allOrdersDateFilter === 'Today') {
-                        filtered = filtered.filter((o: any) => new Date(o.created_at).toDateString() === now.toDateString());
-                      } else if (allOrdersDateFilter === 'This Month') {
-                        filtered = filtered.filter((o: any) => {
-                          const d = new Date(o.created_at);
-                          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-                        });
-                      } else if (allOrdersDateFilter === 'This Year') {
-                        filtered = filtered.filter((o: any) => new Date(o.created_at).getFullYear() === now.getFullYear());
+                      if (allOrdersSearch) {
+                        const q = allOrdersSearch.toLowerCase();
+                        filtered = filtered.filter((o: any) => 
+                          o.id.toLowerCase().includes(q) || 
+                          (o.customer_name && o.customer_name.toLowerCase().includes(q)) ||
+                          (o.customer_phone && o.customer_phone.includes(q))
+                        );
+                      }
+                      if (allOrdersStartDate) {
+                        filtered = filtered.filter((o: any) => new Date(o.created_at) >= new Date(allOrdersStartDate));
+                      }
+                      if (allOrdersEndDate) {
+                        const end = new Date(allOrdersEndDate);
+                        end.setHours(23, 59, 59, 999);
+                        filtered = filtered.filter((o: any) => new Date(o.created_at) <= end);
                       }
 
                       if (filtered.length === 0) {
-                         return <tr><td colSpan={5} style={{textAlign: 'center', padding: '20px'}}>No orders found for {allOrdersDateFilter}.</td></tr>;
+                         return <tr><td colSpan={5} style={{textAlign: 'center', padding: '20px'}}>No orders found matching your filters.</td></tr>;
                       }
 
                       return filtered.map((order: any) => (
