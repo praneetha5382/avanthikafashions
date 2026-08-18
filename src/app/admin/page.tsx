@@ -145,6 +145,31 @@ export default function AdminDashboard() {
     }
   };
 
+  const getNextSkuNum = (currentFormDataVariants: any[] = []) => {
+    let max = 100000;
+    if (data.products) {
+      data.products.forEach((p: any) => {
+        if (p.variants && Array.isArray(p.variants)) {
+          p.variants.forEach((v: any) => {
+            if (v.sku && v.sku.startsWith('SKU-')) {
+              const num = parseInt(v.sku.replace('SKU-', ''), 10);
+              if (!isNaN(num) && num > max) max = num;
+            }
+          });
+        }
+      });
+    }
+    if (currentFormDataVariants) {
+      currentFormDataVariants.forEach((v: any) => {
+        if (v.sku && v.sku.startsWith('SKU-')) {
+          const num = parseInt(v.sku.replace('SKU-', ''), 10);
+          if (!isNaN(num) && num > max) max = num;
+        }
+      });
+    }
+    return max + 1;
+  };
+
   // --- Inventory Logic ---
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,7 +223,7 @@ export default function AdminDashboard() {
         { title: 'Shipping & Delivery', content: 'Dispatched within 24-48 hours. Delivery takes 3-5 business days.' },
         { title: 'Return Policies', content: '7-day easy returns if the product is defective or incorrect.' }
       ],
-      variants: [{ color: '', sku: '', stock: 0, images: [] }]
+      variants: [{ color: '', sku: `SKU-${getNextSkuNum([])}`, stock: 0, images: [] }]
     });
     setHasMultipleVariants(false);
   };
@@ -438,7 +463,23 @@ export default function AdminDashboard() {
         <nav className={styles.navLinks}>
           <button className={activeTab === 'orders' ? styles.active : ''} onClick={() => {setActiveTab('orders'); setIsMobileSidebarOpen(false);}}>🚚 Orders & Dispatch</button>
           <button className={activeTab === 'inventory' ? styles.active : ''} onClick={() => {setActiveTab('inventory'); setIsMobileSidebarOpen(false);}}>📦 Manage Inventory</button>
-          <button className={activeTab === 'add-product' ? styles.active : ''} onClick={() => {setActiveTab('add-product'); setIsMobileSidebarOpen(false);}}>➕ Add Product</button>
+          <button className={activeTab === 'add-product' ? styles.active : ''} onClick={() => {
+            setEditingProductId(null);
+            setFormData({
+              name: '', originalPrice: '', price: '', 
+              mainCategory: data.categories[0]?.name || '', subCategory: '',
+              isTrending: false, isNewArrival: true, isFreeShipping: true, description: '', 
+              info: [
+                { title: 'Product Care', content: 'Dry clean only. Do not bleach.' },
+                { title: 'Shipping & Delivery', content: 'Dispatched within 24-48 hours. Delivery takes 3-5 business days.' },
+                { title: 'Return Policies', content: '7-day easy returns if the product is defective or incorrect.' }
+              ],
+              variants: [{ color: '', sku: `SKU-${getNextSkuNum([])}`, stock: 0, images: [] }]
+            });
+            setHasMultipleVariants(false);
+            setActiveTab('add-product'); 
+            setIsMobileSidebarOpen(false);
+          }}>➕ Add Product</button>
           <button className={activeTab === 'categories' ? styles.active : ''} onClick={() => {setActiveTab('categories'); setIsMobileSidebarOpen(false);}}>🏷️ Manage Categories</button>
           <button className={activeTab === 'storefront' ? styles.active : ''} onClick={() => {setActiveTab('storefront'); setIsMobileSidebarOpen(false);}}>⚙️ Storefront Settings</button>
           <button className={activeTab === 'customers' ? styles.active : ''} onClick={() => {setActiveTab('customers'); setIsMobileSidebarOpen(false);}}>👥 Customer Intelligence</button>
@@ -793,7 +834,7 @@ export default function AdminDashboard() {
                             { title: 'Shipping & Delivery', content: 'Dispatched within 24-48 hours. Delivery takes 3-5 business days.' },
                             { title: 'Return Policies', content: '7-day easy returns if the product is defective or incorrect.' }
                           ],
-                          variants: [{ color: '', sku: '', stock: 0, images: [] }]
+                          variants: [{ color: '', sku: `SKU-${getNextSkuNum([])}`, stock: 0, images: [] }]
                         });
                       }}
                       style={{ background: 'none', border: '1px solid #ccc', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}
@@ -999,7 +1040,7 @@ export default function AdminDashboard() {
                     ))}
 
                     {hasMultipleVariants && (
-                      <button type="button" onClick={() => setFormData({...formData, variants: [...formData.variants, {color: '', sku: '', stock: 0, images: []}]})} className="btn-secondary" style={{width: 'auto'}}>+ Add Another Color</button>
+                      <button type="button" onClick={() => setFormData({...formData, variants: [...formData.variants, {color: '', sku: `SKU-${getNextSkuNum(formData.variants)}`, stock: 0, images: []}]})} className="btn-secondary" style={{width: 'auto'}}>+ Add Another Color</button>
                     )}
                   </div>
 
