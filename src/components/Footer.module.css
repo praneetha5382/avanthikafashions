@@ -57,6 +57,11 @@
   color: var(--primary-color);
 }
 
+.linksContainer {
+  display: flex;
+  flex-direction: column;
+}
+
 .footerAccordion {
   border-bottom: 1px solid rgba(0,0,0,0.05);
   margin-bottom: 15px;
@@ -148,6 +153,30 @@
 }
 
 @media (min-width: 768px) {
+  .linksContainer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+  }
+  
+  .footerAccordion {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  
+  .footerAccordion summary {
+    pointer-events: none; /* Disable accordion toggle on desktop */
+  }
+  
+  .footerAccordion summary::after {
+    display: none; /* Hide chevron on desktop */
+  }
+
+  .footerAccordion > *:not(summary) {
+    display: block !important;
+  }
+
   .bottomRow {
     flex-direction: row;
     justify-content: space-between;

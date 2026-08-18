@@ -40,10 +40,12 @@
   flex: 2; /* Take up remaining space */
 }
 
-/* Ensure logo scales on mobile */
+/* Ensure logo scales on mobile and never gets too big */
 .logo img {
   max-width: 100%;
-  height: auto;
+  max-height: 50px; /* Force an ultra-slim header */
+  width: auto;
+  object-fit: contain;
 }
 
 .hamburger {
@@ -277,10 +279,41 @@
     width: 100%;
   }
 
+  .dropdownToggle {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem; /* Match .link size */
+    text-transform: uppercase;
+    font-weight: 400;
+    font-family: var(--font-sans);
+    letter-spacing: 0.05em;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .dropdownItem {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    font-weight: 300;
+    transition: color 0.3s ease;
+    padding: 10px 0 10px 15px; /* Indent the sub-items */
+    border-left: 1px solid var(--border-color);
+    margin-left: 5px;
+    display: block;
+  }
+
   .dropdownMenu {
     position: static;
     width: 100%;
-    padding: 0;
+    padding: 15px 0 0 0;
     box-shadow: none;
     border: none;
     background-color: transparent;

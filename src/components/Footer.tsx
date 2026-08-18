@@ -19,7 +19,7 @@ export default function Footer() {
 
       {/* Accordion Links Section */}
       <div className={styles.linksSection}>
-        <div className="container">
+        <div className={`container ${styles.linksContainer}`}>
           <details className={styles.footerAccordion}>
             <summary>SHOP</summary>
             <ul>
