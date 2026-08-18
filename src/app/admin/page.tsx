@@ -41,7 +41,7 @@ export default function AdminDashboard() {
         siteSettings: res.siteSettings || { showHero: true, showQuickLinks: true, showTrending: true, showTopPicks: true }
       });
       if (res.categories?.length > 0) {
-        setFormData(f => ({ ...f, mainCategory: res.categories[0].name, subCategory: res.categories[0].subcategories?.[0] || '' }));
+        setFormData(f => ({ ...f, mainCategory: res.categories[0].name, subCategory: '' }));
         setTargetMainCategory(res.categories[0].name);
       }
     });
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
       setFormData({
         name: '', originalPrice: '', price: '', 
         mainCategory: data.categories[0]?.name || '', 
-        subCategory: data.categories[0]?.subcategories?.[0] || '',
+        subCategory: '',
         isTrending: false, isNewArrival: true,
         isFreeShipping: true,
         description: '', 
@@ -241,15 +241,15 @@ export default function AdminDashboard() {
                       <label>Main Category</label>
                       <select className={styles.input} value={formData.mainCategory} onChange={e => {
                         const newMain = e.target.value;
-                        const cat = data.categories.find((c:any) => c.name === newMain);
-                        setFormData({...formData, mainCategory: newMain, subCategory: cat?.subcategories?.[0] || ''});
+                        setFormData({...formData, mainCategory: newMain, subCategory: ''});
                       }}>
                         {data.categories.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
                       </select>
                     </div>
                     <div className={styles.fieldGroup}>
-                      <label>Weave</label>
+                      <label>Weave (Optional)</label>
                       <select className={styles.input} value={formData.subCategory} onChange={e => setFormData({...formData, subCategory: e.target.value})}>
+                        <option value="">-- Not Applicable --</option>
                         {data.categories.find((c:any) => c.name === formData.mainCategory)?.subcategories?.map((sub: string, i: number) => (
                            <option key={i} value={sub}>{sub}</option>
                         ))}
