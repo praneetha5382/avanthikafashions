@@ -1,55 +1,85 @@
 import styles from './Footer.module.css';
 import Link from 'next/link';
+import Image from 'next/image';
+
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-      <div className={`container ${styles.footerContainer}`}>
-        
-        <div className={styles.section}>
-          <h3 className={styles.brandTitle}>Avanthika Fashions</h3>
-          <p className={styles.brandDesc}>
-            Avanthika Fashions brings you the pinnacle of authentic Indian craftsmanship. 
-            We specialize in pure silk Banarasi sarees, meticulously handwoven by master artisans 
-            to preserve our rich weaving heritage.
-          </p>
-        </div>
-
-        <div className={styles.section}>
-          <h3>Shop</h3>
-          <ul>
-            <li><Link href="/collections/all">All Sarees</Link></li>
-            <li><Link href="/collections/banarasi">Banarasi Silk</Link></li>
-            <li><Link href="/collections/bridal">Bridal Collection</Link></li>
-            <li><Link href="/about">About Us</Link></li>
-          </ul>
-        </div>
-
-        <div className={styles.section}>
-          <h3>Customer Care</h3>
-          <ul>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="#">Track Order</a></li>
-            <li><Link href="/policies/refund-policy">Returns & Refunds</Link></li>
-            <li><Link href="/policies/terms-of-service">Terms of Service</Link></li>
-            <li><Link href="/policies/privacy-policy">Privacy Policy</Link></li>
-          </ul>
-        </div>
-
-        <div className={styles.section}>
-          <h3>Exclusive Access</h3>
-          <p className={styles.newsletterText}>Join our newsletter for early access to new collections and exclusive offers.</p>
-          <div className={styles.subscribe}>
-            <input type="email" placeholder="Email Address" className={styles.input} />
-            <button className={styles.subscribeBtn}>Join</button>
+      {/* Top Newsletter Section */}
+      <div className={styles.newsletterSection}>
+        <div className="container">
+          <h2 className={styles.newsletterTitle}>STAY IN THE LOOP</h2>
+          <p className={styles.newsletterSub}>Subscribe for new arrivals & exclusive offers.</p>
+          <div className={styles.subscribeRow}>
+            <input type="email" placeholder="Email" className={styles.subscribeInput} />
+            <button aria-label="Subscribe" className={styles.subscribeArrow}>→</button>
           </div>
         </div>
-
       </div>
-      <div className={styles.bottomBar}>
-        <div className={`container ${styles.bottomContent}`}>
-          <p>&copy; {new Date().getFullYear()} Avanthika Fashions. All rights reserved.</p>
-          <div className={styles.paymentIcons}>
-            <span>Secure Payments via Razorpay</span>
+
+      {/* Accordion Links Section */}
+      <div className={styles.linksSection}>
+        <div className="container">
+          <details className={styles.footerAccordion}>
+            <summary>SHOP</summary>
+            <ul>
+              <li><Link href="/collections/all">All Collections</Link></li>
+              <li><Link href="/collections/banarasi">Banarasi Silk</Link></li>
+            </ul>
+          </details>
+
+          <details className={styles.footerAccordion}>
+            <summary>CUSTOMER CARE</summary>
+            <ul>
+              <li><Link href="/account">My Account</Link></li>
+              <li><a href="#">Track Order</a></li>
+            </ul>
+          </details>
+
+          <details className={styles.footerAccordion}>
+            <summary>ABOUT US</summary>
+            <ul>
+              <li><Link href="/about">Our Story</Link></li>
+              <li><a href="#">Artisans</a></li>
+            </ul>
+          </details>
+
+          <details className={styles.footerAccordion}>
+            <summary>LEGAL</summary>
+            <ul>
+              <li><Link href="/policies/terms-of-service">Terms of Service</Link></li>
+              <li><Link href="/policies/privacy-policy">Privacy Policy</Link></li>
+              <li><Link href="/policies/refund-policy">Refund Policy</Link></li>
+            </ul>
+          </details>
+
+          <details className={styles.footerAccordion}>
+            <summary>NEED HELP</summary>
+            <ul>
+              <li><a href="#">FAQ</a></li>
+              <li><a href="#">Contact Support</a></li>
+            </ul>
+          </details>
+
+          {/* Contact Icons */}
+          <div className={styles.contactList}>
+            <a href="#"><span className={styles.icon}>📍</span> Store Locator</a>
+            <a href="mailto:hello@avanthika.com"><span className={styles.icon}>✉️</span> Email Us</a>
+            <a href="https://wa.me/919876543210"><span className={styles.icon}>💬</span> Whatsapp Us</a>
+            <a href="#"><span className={styles.icon}>🗂️</span> Sitemap</a>
+          </div>
+
+          <div className={styles.bottomRow}>
+            <p className={styles.copyright}>&copy; {new Date().getFullYear()}, Avanthika Fashions. All rights reserved.</p>
+            <div className={styles.badges}>
+              {/* Fake App Store Badges */}
+              <div style={{ background: '#000', color: '#fff', padding: '5px 10px', borderRadius: '5px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span>▶</span> GET IT ON Google Play
+              </div>
+              <div style={{ background: '#000', color: '#fff', padding: '5px 10px', borderRadius: '5px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span>🍎</span> Download on the App Store
+              </div>
+            </div>
           </div>
         </div>
       </div>

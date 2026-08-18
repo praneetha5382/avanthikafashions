@@ -38,14 +38,13 @@ export default function Home() {
       {data.siteSettings?.showHero && (
         <section className={styles.hero}>
           <div className={styles.heroImageWrapper}>
-            <Image src="/saree-hero.jpg" alt="Avanthika Fashions" fill className={styles.heroImage} priority unoptimized />
+            {/* The image now acts as a full-bleed background */}
+            <Image src="/saree-hero.jpg" alt="The Occasion Edit" fill className={styles.heroImage} priority unoptimized />
             <div className={styles.heroOverlay}></div>
           </div>
           <div className={styles.heroContent}>
-            <p className={styles.categoryName}>Avanthika Signature</p>
-            <h1 className={styles.title}>The Festive<br/>Symphony Collection</h1>
-            <p className={styles.subtitle}>Discover handcrafted luxury weaves for your celebrations.</p>
-            <Link href="/collections/all" className={`btn-primary`}>Explore the Collection</Link>
+            <h1 className={styles.heroTitle}>THE OCCASION EDIT</h1>
+            <p className={styles.heroSubtitle}>Elegant silhouettes with timeless charm.</p>
           </div>
         </section>
       )}

@@ -127,13 +127,17 @@
   letter-spacing: 0.1em;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   list-style: none;
   color: var(--text-primary);
+  text-transform: capitalize;
+  font-size: 1rem;
+  letter-spacing: normal;
 }
 
 .accordion summary::-webkit-details-marker { display: none; }
-.accordion summary::after { content: '+'; color: var(--primary-color); }
-.accordion[open] summary::after { content: '-'; }
+.accordion summary::after { content: 'v'; color: var(--primary-color); font-family: monospace; transform: scaleY(0.7); }
+.accordion[open] summary::after { content: '^'; }
 
 .accordion p {
   padding-bottom: 25px;

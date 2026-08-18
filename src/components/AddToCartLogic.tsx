@@ -60,12 +60,28 @@ export default function AddToCartLogic({ product, selectedVariant }: { product: 
         </div>
       </div>
 
-      <div className={styles.actionRow}>
-        <button className={`btn-secondary ${styles.addBtn}`} onClick={handleAddToCart}>
+      <div className={styles.actionRow} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <button className={styles.addBtn} onClick={() => handleAddToCart(false)} style={{
+          width: '100%', padding: '15px', background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, cursor: 'pointer'
+        }}>
           Add to Cart
         </button>
-        <button className={`btn-primary ${styles.buyBtn}`} onClick={handleBuyNow}>
+        <button className={styles.buyBtn} onClick={handleBuyNow} style={{
+          width: '100%', padding: '15px', background: 'var(--primary-color)', border: 'none', color: 'white', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, cursor: 'pointer'
+        }}>
           Buy it now
+        </button>
+        <button className={styles.addBtn} style={{
+          width: '100%', padding: '15px', background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, cursor: 'pointer', display: 'flex', justifyContent: 'center', gap: '8px'
+        }}>
+          <span>♡</span> Add to Wishlist
+        </button>
+        
+        {/* Buy on video call */}
+        <button style={{
+          alignSelf: 'flex-start', padding: '8px 20px', background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', borderRadius: '25px', marginTop: '10px', cursor: 'pointer'
+        }}>
+          Buy on video call
         </button>
       </div>
     </div>

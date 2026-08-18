@@ -31,16 +31,16 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to right, rgba(253,251,247,0.95) 0%, rgba(253,251,247,0.7) 40%, transparent 100%);
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 40%);
 }
 
 .heroContent {
   position: relative;
   z-index: 10;
-  text-align: left;
+  text-align: center;
   width: 100%;
-  max-width: 1200px;
-  padding: 100px 40px 0 40px; /* Top padding clears the absolute header */
+  padding-top: 50vh; /* Push text down */
+  color: white;
 }
 
 .categoryName {
@@ -52,23 +52,24 @@
   color: var(--text-secondary);
 }
 
-.title {
+.heroTitle {
   font-family: var(--font-serif);
-  font-size: 4.5rem;
-  font-weight: 400;
-  margin-bottom: 20px;
+  font-size: 4rem;
+  font-weight: 300;
+  margin-bottom: 10px;
   line-height: 1.1;
-  color: var(--primary-color);
-  max-width: 600px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.subtitle {
+.heroSubtitle {
   font-family: var(--font-serif);
   font-size: 1.4rem;
   font-style: italic;
-  margin-bottom: 50px;
-  color: var(--text-secondary);
-  max-width: 500px;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
 /* -- NEW HOMEPAGE SECTIONS -- */
@@ -341,14 +342,14 @@
     margin-bottom: 10px;
   }
 
-  .title {
+  .heroTitle {
     font-size: 2.8rem;
     color: #fff;
     line-height: 1.1;
     margin-bottom: 15px;
   }
 
-  .subtitle {
+  .heroSubtitle {
     font-size: 1.05rem;
     color: rgba(255,255,255,0.8);
     font-weight: 300;

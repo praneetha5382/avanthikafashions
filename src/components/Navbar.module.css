@@ -1,5 +1,5 @@
 .header {
-  background-color: var(--secondary-color);
+  background-color: #fff0f5; /* Soft pink header */
   padding: 10px 0;
   position: sticky;
   top: 0;
@@ -20,12 +20,32 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+}
+
+.leftActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+/* Force logo to be absolute center for symmetry */
+.logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
 }
 
 .hamburger {
-  display: none;
+  display: block; /* Hamburger always visible to match screenshot */
   font-size: 1.5rem;
   color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .closeMenu {
@@ -41,10 +61,7 @@
 }
 
 .navLinks {
-  display: flex;
-  align-items: center; /* Center the links vertically */
-  gap: 30px;
-  flex: 1;
+  display: none; /* Hide desktop nav links to match screenshot */
 }
 
 .link {

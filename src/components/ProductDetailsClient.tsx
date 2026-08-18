@@ -21,8 +21,34 @@ export default function ProductDetailsClient({ product }: { product: any }) {
       
       {/* Info Section */}
       <div className={styles.infoSection}>
-        <h1 className={styles.title} style={{ textTransform: 'capitalize' }}>{product.name}</h1>
-        <div className={styles.divider}></div>
+        <h1 className={styles.title} style={{ textTransform: 'capitalize', marginBottom: '10px' }}>{product.name}</h1>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
+          <div style={{ color: 'var(--primary-color)', fontSize: '1.2rem', display: 'flex', gap: '2px' }}>
+            <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+          </div>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No reviews</span>
+        </div>
+
+        {/* Use the new Sol Attire style description */}
+        {product.description && (
+          <p style={{ margin: '15px 0 25px 0', fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: '1.6', fontWeight: 300 }}>
+            {product.description}
+          </p>
+        )}
+
+        {/* Customization Button */}
+        <button style={{ 
+          display: 'flex', alignItems: 'center', gap: '10px', 
+          background: 'transparent', border: '1px solid var(--primary-color)', 
+          color: 'var(--primary-color)', padding: '10px 20px', 
+          borderRadius: '25px', fontSize: '0.9rem', fontWeight: 500, 
+          cursor: 'pointer', marginBottom: '20px' 
+        }}>
+          <span>📏</span> Need Customization?
+        </button>
+
+        {/* Removed hidden title */}
 
         {/* Color Selection UI (Image Thumbnails) */}
         {variants.length > 1 && variants[0].color !== 'Default' && (
