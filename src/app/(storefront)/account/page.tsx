@@ -116,6 +116,17 @@ export default function AccountPage() {
                     {order.status === 'Cancelled' && (
                        <p style={{ color: 'red', fontWeight: 'bold', textAlign: 'center', marginTop: '10px' }}>Order Cancelled</p>
                     )}
+                    {order.shipping_address?.tracking && order.status !== 'Cancelled' && (
+                      <div style={{ marginTop: '15px', background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>Shipped via {order.shipping_address.tracking.courier}</p>
+                          <p style={{ fontWeight: 'bold', margin: 0 }}>{order.shipping_address.tracking.trackingId}</p>
+                        </div>
+                        <a href={`https://www.google.com/search?q=${order.shipping_address.tracking.courier}+tracking+${order.shipping_address.tracking.trackingId}`} target="_blank" rel="noopener noreferrer" style={{ background: 'var(--primary-color)', color: 'white', padding: '6px 12px', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                          Track Package
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
                 

@@ -99,6 +99,16 @@ export const sendOrderStatusEmail = async (order: any) => {
         </span>
       </div>
 
+      ${order.status === 'Shipped' && order.shipping_address?.tracking ? `
+      <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; margin-bottom: 25px;">
+        <p style="margin: 0 0 5px 0; color: #64748b;">Shipped via <strong>${order.shipping_address.tracking.courier}</strong></p>
+        <p style="margin: 0; font-size: 1.1rem; font-weight: bold;">Tracking ID: ${order.shipping_address.tracking.trackingId}</p>
+        <div style="margin-top: 15px;">
+          <a href="https://www.google.com/search?q=${order.shipping_address.tracking.courier}+tracking+${order.shipping_address.tracking.trackingId}" style="color: #2563eb; font-weight: bold; text-decoration: underline;">Track on Google</a>
+        </div>
+      </div>
+      ` : ''}
+
       <div style="margin-top: 30px; text-align: center;">
         <a href="https://avanthikafashions.vercel.app/account" style="background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">View Order Tracking</a>
       </div>

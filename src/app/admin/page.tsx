@@ -37,6 +37,8 @@ export default function AdminDashboard() {
   const [orderFilterStatus, setOrderFilterStatus] = useState('New');
   const [quickScanInput, setQuickScanInput] = useState('');
   const [quickScanResult, setQuickScanResult] = useState<any | null>(null);
+  const [trackingModalOrder, setTrackingModalOrder] = useState<any | null>(null);
+  const [trackingData, setTrackingData] = useState({ courier: 'DTDC', trackingId: '' });
 
   useEffect(() => {
     Promise.all([
@@ -238,9 +240,29 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleOrderStatusChange = async (orderId: string, newStatus: string) => {
-    setData({...data, orders: data.orders.map((o:any) => o.id === orderId ? {...o, status: newStatus} : o)});
-    await fetch('/api/orders', { method: 'PATCH', body: JSON.stringify({ id: orderId, status: newStatus }) });
+  const handleOrderStatusChange = async (orderId: string, newStatus: string, trackingDataObj: any = null) => {
+    let updatedOrder: any = { status: newStatus };
+    
+    setData({...data, orders: data.orders.map((o:any) => {
+      if (o.id === orderId) {
+        let newOrderObj = {...o, status: newStatus};
+        if (trackingDataObj) {
+          newOrderObj.shipping_address = { ...o.shipping_address, tracking: trackingDataObj };
+          updatedOrder.shipping_address = newOrderObj.shipping_address;
+        }
+        return newOrderObj;
+      }
+      return o;
+    })});
+    
+    await fetch('/api/orders', { method: 'PATCH', body: JSON.stringify({ id: orderId, ...updatedOrder }) });
+  };
+
+  const submitTracking = () => {
+    if (!trackingModalOrder || !trackingData.trackingId) return alert('Please enter tracking number');
+    handleOrderStatusChange(trackingModalOrder.id, 'Shipped', trackingData);
+    setTrackingModalOrder(null);
+    setTrackingData({ courier: 'DTDC', trackingId: '' });
   };
 
   const handleQuickScan = (e: React.FormEvent) => {
@@ -322,8 +344,50 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {trackingModalOrder && (
+              <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: 'white', padding: '30px', borderRadius: '12px', width: '500px', maxWidth: '90%' }}>
+                  <h2 style={{ marginTop: 0 }}>Dispatch Order: {trackingModalOrder.id}</h2>
+                  <p>Enter the tracking details below. The customer will be notified.</p>
+                  
+                  <div style={{ marginTop: '20px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Courier Service</label>
+                    <select 
+                      value={trackingData.courier}
+                      onChange={(e) => setTrackingData({...trackingData, courier: e.target.value})}
+                      className={styles.input}
+                      style={{ width: '100%', marginBottom: '15px' }}
+                    >
+                      <option value="DTDC">DTDC</option>
+                      <option value="Delhivery">Delhivery</option>
+                      <option value="BlueDart">BlueDart</option>
+                      <option value="Shiprocket">Shiprocket (Other)</option>
+                    </select>
+
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Tracking Number (AWB)</label>
+                    <input 
+                      type="text" 
+                      value={trackingData.trackingId}
+                      onChange={(e) => setTrackingData({...trackingData, trackingId: e.target.value})}
+                      className={styles.input}
+                      placeholder="e.g. D12345678"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '25px' }}>
+                    <button onClick={() => setTrackingModalOrder(null)} style={{ flex: 1, padding: '12px', background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Cancel</button>
+                    <button onClick={submitTracking} style={{ flex: 1, padding: '12px', background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Save & Dispatch</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-              {['New', 'Packed', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
+              {['New', 'Dispatched', 'Delivered', 'Cancelled'].map(status => {
+                const mapStatus = status === 'Dispatched' ? 'Shipped' : status;
+                const count = data.orders.filter((o: any) => o.status === mapStatus || (status === 'New' && (o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'Packed'))).length;
+                return (
                 <button
                   key={status}
                   onClick={() => setOrderFilterStatus(status)}
@@ -340,9 +404,10 @@ export default function AdminDashboard() {
                   }}
                 >
                   {status} 
-                  {status !== 'All' && ` (${data.orders.filter((o: any) => o.status === status || (status === 'New' && o.status === 'Pending')).length})`}
+                  {status !== 'All' && ` (${count})`}
                 </button>
-              ))}
+                );
+              })}
             </div>
             
             <div className={styles.card}>
@@ -358,9 +423,10 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody>
                   {data.orders
-                    .filter((order: any) => {
-                      if (orderFilterStatus === 'New') return order.status === 'Pending';
-                      return order.status === orderFilterStatus;
+                    .filter((o: any) => {
+                      if (orderFilterStatus === 'New') return o.status === 'Pending' || o.status === 'Pending Payment' || o.status === 'Packed' || o.status === 'New';
+                      if (orderFilterStatus === 'Dispatched') return o.status === 'Shipped';
+                      return o.status === orderFilterStatus;
                     })
                     .map((order: any) => (
                     <tr key={order.id}>
@@ -401,32 +467,21 @@ export default function AdminDashboard() {
                       </td>
                       <td style={{verticalAlign: 'top'}}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New') && (
+                          {(order.status === 'Pending' || order.status === 'Pending Payment' || order.status === 'New' || order.status === 'Packed') && (
                             <button 
-                              onClick={() => handleOrderStatusChange(order.id, 'Packed')}
-                              style={{ background: '#fef3c7', color: '#d97706', border: '1px solid #d97706', padding: '8px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}
-                              onMouseOver={(e) => e.currentTarget.style.background = '#fde68a'}
-                              onMouseOut={(e) => e.currentTarget.style.background = '#fef3c7'}
-                            >
-                              📦 Pack Order
-                            </button>
-                          )}
-                          
-                          {order.status === 'Packed' && (
-                            <button 
-                              onClick={() => handleOrderStatusChange(order.id, 'Shipped')}
-                              style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', padding: '8px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}
+                              onClick={() => setTrackingModalOrder(order)}
+                              style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #2563eb', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
                               onMouseOver={(e) => e.currentTarget.style.background = '#bfdbfe'}
                               onMouseOut={(e) => e.currentTarget.style.background = '#dbeafe'}
                             >
-                              🚚 Dispatch Order
+                              📦 Dispatch & Add Tracking
                             </button>
                           )}
 
                           {order.status === 'Shipped' && (
                             <button 
                               onClick={() => handleOrderStatusChange(order.id, 'Delivered')}
-                              style={{ background: '#d1fae5', color: '#047857', border: '1px solid #059669', padding: '8px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}
+                              style={{ background: '#d1fae5', color: '#047857', border: '1px solid #059669', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
                               onMouseOver={(e) => e.currentTarget.style.background = '#a7f3d0'}
                               onMouseOut={(e) => e.currentTarget.style.background = '#d1fae5'}
                             >
